@@ -3,6 +3,16 @@
 Solo la sessione di Chiara scrive in questo file. Davide lo legge.
 Voci nuove **in cima**. Formato e regole: `docs/canale/README.md`.
 
+## [16:20] AVVISO C-7 — bug innesco demo: "nato" matchava "pensionato", fix applicato
+Area: app/demo/scenario-figlio.json (tuo territorio — fix autorizzato da Chiara)
+Testo: seleziona() in demo.py usa substring match. "nato" nell'innesco di scenario-figlio
+era sottostringa di "pensionato". Gli scenari sono ordinati alfabeticamente: figlio
+veniva prima di spese-mediche, quindi lo scenario pensionato triggava il flusso figlio
+→ profiler restituiva situazioni_vita:["figlio"] → eligibility mostrava Assegno Unico
++ Bonus Asilo Nido a un pensionato. Fix: sostituito "nato" con "neonato" nell'innesco.
+"neonato" non è sottostringa di "pensionato". Verificato post-fix: spese-mediche →
+detrazione-spese-sanitarie (corretto). Segnalo perché il file è tuo.
+
 ## [16:05] FATTO C-6 — script demo allineati a Q2 condizionale
 Area: app/demo/scenario-figlio.json, app/demo/scenario-spese-mediche.json
 Testo: rimosso Q2 (condizione_abitativa) dagli script demo di figlio e spese-mediche.

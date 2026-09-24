@@ -4,7 +4,7 @@
   "descrizione": "Nucleo con figlio appena nato, reddito da lavoro dipendente, in affitto.",
   "innesco": [
     "figlio",
-    "nato",
+    "neonato",
     "aspetto un figlio",
     "nascita"
   ],
