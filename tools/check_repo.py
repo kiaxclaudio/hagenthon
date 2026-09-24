@@ -170,6 +170,8 @@ def leggi(p: Path) -> str | None:
     Un file illeggibile non deve far esplodere il linter: viene registrato e
     riportato in fondo come nota, i controlli proseguono sugli altri file.
     """
+    if not p.is_file():
+        return None  # l'assenza la segnala il controllo che l'ha richiesto
     try:
         if p.stat().st_size > MAX_BYTE_FILE:
             FILE_ILLEGGIBILI.append(f"{rel(p)} (oltre {MAX_BYTE_FILE} byte, saltato)")
@@ -369,35 +371,100 @@ def c_link(rep: Report) -> None:
                      f"{totale} link relativi verificati, nessuno rotto")
 
 
-def c_path_readme(rep: Report) -> None:
-    """Ogni path citato fra backtick nel README esiste davvero.
+# Estensioni che rendono un token fra backtick un riferimento a file.
+EST_RIFERIMENTO = (".md", ".json", ".py", ".html", ".css", ".js", ".txt",
+                   ".yml", ".yaml", ".sh", ".ksh", ".sql")
 
-    Vengono ignorati i blocchi di codice (comandi di esempio) e i link
-    markdown, gia' coperti dal controllo precedente.
+
+def _indice_path() -> list[str]:
+    """Tutti i path del repo, per risolvere i riferimenti abbreviati."""
+    tutti: list[str] = []
+    for radice, cartelle, nomi in os.walk(ROOT):
+        cartelle[:] = [c for c in cartelle if c not in DIR_ESCLUSE]
+        for n in nomi:
+            tutti.append(rel(Path(radice) / n))
+    return tutti
+
+
+def c_riferimenti_backtick(rep: Report) -> None:
+    """Ogni file citato fra backtick nei .md esiste davvero.
+
+    Copre i riferimenti che non sono link markdown (quelli li verifica
+    c_link). Esclusioni dichiarate, per non produrre falsi positivi:
+    - token con caratteri glob o segnaposto (`agents/**`, `<nome>.input.json`);
+    - artefatti di runtime sotto `state/`, generati a esecuzione e in .gitignore;
+    - token che coincide con la coda di un path esistente: e' un riferimento
+      abbreviato (`schemas/profiler.input.json` per
+      `agents/schemas/profiler.input.json`), non un riferimento rotto.
     """
-    p = ROOT / "README.md"
-    testo = leggi(p) if p.exists() else None
-    if testo is None:
-        rep.aggiungi("documentazione", "path citati nel README", FAIL,
-                     "README.md assente o illeggibile")
-        return
-    pulito = RE_LINK_MD.sub("", senza_blocchi_codice(testo))
-    mancanti = []
-    for i, riga in enumerate(pulito.splitlines(), start=1):
-        for tok in RE_BACKTICK.findall(riga):
-            tok = tok.strip()
-            sembra_path = ("/" in tok) or re.fullmatch(r"[\w.\-]+\.\w{1,5}", tok)
-            if not sembra_path or " " in tok or tok.startswith((".env", "http")):
-                continue
-            if not (ROOT / tok).exists():
-                mancanti.append(f"README.md:{i} -> `{tok}` (inesistente)")
+    indice = _indice_path()
+    mancanti, totale = [], 0
+    for p in file_markdown():
+        testo = leggi(p)
+        if testo is None:
+            continue
+        pulito = RE_LINK_MD.sub("", senza_blocchi_codice(testo))
+        for i, riga in enumerate(pulito.splitlines(), start=1):
+            for tok in RE_BACKTICK.findall(riga):
+                tok = tok.strip()
+                if any(c in tok for c in " *<>?|"):
+                    continue
+                if not tok.lower().endswith(EST_RIFERIMENTO) and "/" not in tok:
+                    continue
+                if not re.search(r"\.[A-Za-z]{1,5}$", tok):
+                    continue  # non e' un file: es. `haiku-4.5`, `0.6`
+                if re.fullmatch(r"\.[A-Za-z]{1,5}", tok):
+                    continue  # e' solo un'estensione citata: es. `.md`
+                if tok.startswith((".env", "http")) or "state/" in tok:
+                    continue
+                totale += 1
+                if (p.parent / tok).exists() or (ROOT / tok).exists():
+                    continue
+                if any(rp == tok or rp.endswith("/" + tok) for rp in indice):
+                    continue
+                mancanti.append(f"{rel(p)}:{i} -> `{tok}` (nessun file corrispondente)")
     if mancanti:
-        rep.aggiungi("documentazione", "path citati nel README", WARN,
-                     f"{len(mancanti)} riferimenti senza file corrispondente",
+        rep.aggiungi("documentazione", "riferimenti fra backtick", WARN,
+                     f"{len(mancanti)} riferimenti senza file, su {totale}",
                      mancanti)
     else:
-        rep.aggiungi("documentazione", "path citati nel README", OK,
-                     "tutti i path citati nel README esistono")
+        rep.aggiungi("documentazione", "riferimenti fra backtick", OK,
+                     f"{totale} riferimenti a file verificati nei .md")
+
+
+# Risorse che devono essere locali perche' la pagina si apra senza rete.
+# Un <a href="https://..."> non e' una risorsa: non blocca l'apertura offline.
+RE_SRC_ESTERNO = re.compile(r"""src\s*=\s*["']\s*(?:https?:)?//""", re.I)
+RE_LINK_ESTERNO = re.compile(
+    r"""<link[^>]+href\s*=\s*["']\s*(?:https?:)?//""", re.I)
+RE_IMPORT_ESTERNO = re.compile(r"""url\(\s*["']?\s*(?:https?:)?//""", re.I)
+
+
+def c_presentazione_offline(rep: Report) -> None:
+    """La presentazione non dipende da risorse remote (deve aprirsi offline)."""
+    d = ROOT / "presentation"
+    pagine = [p for p in d.rglob("*.htm*")] if d.is_dir() else []
+    if not pagine:
+        rep.aggiungi("consegna", "presentazione offline", FAIL,
+                     "nessun file .html in presentation/")
+        return
+    esterne = []
+    for p in pagine:
+        testo = leggi(p)
+        if testo is None:
+            continue
+        for i, riga in enumerate(testo.splitlines(), start=1):
+            if (RE_SRC_ESTERNO.search(riga) or RE_LINK_ESTERNO.search(riga)
+                    or RE_IMPORT_ESTERNO.search(riga)):
+                esterne.append(f"{rel(p)}:{i} {tronca(riga, 70)}")
+    if esterne:
+        rep.aggiungi("consegna", "presentazione offline", WARN,
+                     f"{len(esterne)} risorse remote: la pagina potrebbe non "
+                     f"aprirsi senza rete", esterne)
+    else:
+        rep.aggiungi("consegna", "presentazione offline", OK,
+                     f"{len(pagine)} pagina/e senza risorse remote",
+                     [rel(p) for p in pagine])
 
 
 # --------------------------------------------------------------------------
@@ -462,6 +529,25 @@ RE_PATH_AGENTE = re.compile(r"subagents/([a-z][a-z0-9\-]*)(?:\.md)?")
 RE_TOKEN_AGENTE = re.compile(r"`([a-z][a-z0-9]*(?:-[a-z0-9]+)*)`")
 
 
+def frontmatter(testo: str) -> dict[str, str]:
+    """Coppie chiave: valore del blocco YAML iniziale (parser minimale).
+
+    Volutamente ingenuo: il frontmatter degli agenti e' piatto e di poche
+    righe. Un valore su piu' righe o annidato viene semplicemente ignorato.
+    """
+    righe = testo.splitlines()
+    if not righe or righe[0].strip() != "---":
+        return {}
+    dati: dict[str, str] = {}
+    for r in righe[1:]:
+        if r.strip() == "---":
+            break
+        m = re.match(r"^([A-Za-z_][\w-]*)\s*:\s*(.*)$", r)
+        if m:
+            dati[m.group(1)] = m.group(2).strip()
+    return dati
+
+
 def agenti_su_disco() -> list[str]:
     """Nomi degli agenti = file .md in agents/subagents/, template escluso."""
     d = ROOT / "agents" / "subagents"
@@ -470,23 +556,30 @@ def agenti_su_disco() -> list[str]:
     return sorted(p.stem for p in d.glob("*.md") if not p.name.startswith("_"))
 
 
-def _citazioni(testo: str, noti: set[str]) -> set[str]:
-    """Nomi di agente citati in un testo.
+def _nomi_citati(testo: str) -> set[str]:
+    """Nomi che il testo presenta come agenti (direzione citazione -> file).
 
-    Due segnali: il path 'subagents/<nome>', e il token fra backtick in
-    kebab-case. I token di una sola parola sono accettati solo se
-    corrispondono a un agente esistente: un nome inventato di una parola sola
-    (es. `degraded`) non e' distinguibile da un valore di dominio, quindi la
-    verifica di quel caso resta manuale (vedi PRE-FREEZE-CHECKLIST).
+    Conservativa per costruzione: conta solo i segnali inequivocabili, cioe'
+    il path 'subagents/<nome>' e il token kebab-case fra backtick. Un nome
+    inventato di una parola sola (es. `degraded`) non e' distinguibile da un
+    valore di dominio: quel caso resta una voce manuale della checklist.
     """
     trovati = set(RE_PATH_AGENTE.findall(testo))
     for tok in RE_TOKEN_AGENTE.findall(testo):
-        if tok in TERMINI_NON_AGENTE:
-            continue
-        if "-" in tok or tok in noti:
+        if "-" in tok and tok not in TERMINI_NON_AGENTE:
             trovati.add(tok)
     trovati.discard("orchestrator")
     return trovati
+
+
+def _e_menzionato(nome: str, testo: str) -> bool:
+    """Vero se il testo nomina l'agente (direzione file -> citazione).
+
+    Permissiva per costruzione: basta il nome come parola intera, anche in
+    chiaro dentro un diagramma ASCII, senza backtick.
+    """
+    return re.search(r"(?<![a-z0-9\-])" + re.escape(nome) + r"(?![a-z0-9\-])",
+                     testo) is not None
 
 
 def c_nomi_agenti(rep: Report) -> None:
@@ -497,6 +590,22 @@ def c_nomi_agenti(rep: Report) -> None:
                      "agents/subagents/ non contiene file di agente")
         return
     dettagli, esito = [f"agenti su disco ({len(noti)}): {', '.join(sorted(noti))}"], OK
+
+    # Il campo 'name' del frontmatter deve coincidere con il nome del file:
+    # e' il nome con cui l'agente viene invocato a runtime.
+    for nome in sorted(noti):
+        testo = leggi(ROOT / "agents" / "subagents" / f"{nome}.md")
+        if testo is None:
+            continue
+        fm = frontmatter(testo)
+        if not fm:
+            dettagli.append(f"warn: {nome}.md: nessun frontmatter")
+            esito = WARN if esito == OK else esito
+        elif fm.get("name") != nome:
+            dettagli.append(f"FAIL: {nome}.md: frontmatter name='{fm.get('name')}' "
+                            f"diverso dal nome del file")
+            esito = FAIL
+
     for nome_file in FILE_CITAZIONE:
         p = ROOT / nome_file
         testo = leggi(p) if p.exists() else None
@@ -504,9 +613,8 @@ def c_nomi_agenti(rep: Report) -> None:
             dettagli.append(f"FAIL: {nome_file} assente o illeggibile")
             esito = FAIL
             continue
-        citati = _citazioni(testo, noti)
-        fantasma = sorted(citati - noti)
-        assenti = sorted(noti - citati)
+        fantasma = sorted(_nomi_citati(testo) - noti)
+        assenti = sorted(n for n in noti if not _e_menzionato(n, testo))
         if fantasma:
             dettagli.append(f"FAIL: {nome_file} cita agenti senza file: "
                             f"{', '.join(fantasma)}")
@@ -552,13 +660,19 @@ def c_tier(rep: Report) -> None:
     sorgenti: dict[str, list[tuple[str, str, str]]] = {c: [] for c in componenti}
     sorgenti["orchestrator"] = []
 
-    # 1) dichiarazione autorevole nel file del componente
+    # 1) dichiarazione autorevole nel file del componente: sezione in prosa
+    #    e campo 'model' del frontmatter, che devono coincidere fra loro.
     for nome in componenti:
         testo = leggi(ROOT / "agents" / "subagents" / f"{nome}.md")
         if testo:
             t = _tier_dichiarato(testo)
             if t:
                 sorgenti[nome].append((f"agents/subagents/{nome}.md", t[0], t[1]))
+            modello = frontmatter(testo).get("model", "")
+            tf = _tier_riga(modello)
+            if tf:
+                sorgenti[nome].append(
+                    (f"agents/subagents/{nome}.md (frontmatter)", tf[0], tf[1]))
     testo_orch = leggi(ROOT / "agents" / "orchestrator.md")
     if testo_orch:
         t = _tier_dichiarato(testo_orch)
@@ -693,12 +807,13 @@ CONTROLLI = [
     c_marcatori,
     c_json,
     c_link,
-    c_path_readme,
+    c_riferimenti_backtick,
     c_segreti,
     c_env,
     c_nomi_agenti,
     c_tier,
     c_sezioni_template,
+    c_presentazione_offline,
     c_git,
 ]
 

@@ -4,7 +4,7 @@
 |---|---|
 | **Caricata da** | `agents/subagents/simplifier.md`. Unico consumatore. |
 | **Quando** | Al passo A3 di `agents/workflows/main-pipeline.md`: alla prima riscrittura di un passo e a ogni correzione dopo un rifiuto di `fidelity-validator`. Fuori da A3 non sta in contesto. |
-| **Cosa restituisce a chi la usa** | Le 14 regole `PL-01..PL-14`, applicabili e controllabili, e la **checklist C1..C9** da superare prima di emettere il JSON. Non cambia lo schema di output del `simplifier`: ne vincola il contenuto testuale. Una violazione non sanabile si cita per codice `PL-xx` nella ragione del fallback previsto da `simplifier.md`. |
+| **Cosa restituisce a chi la usa** | Le 14 regole `PL-01..PL-14`, applicabili e controllabili, e la **checklist C1..C9** da superare prima di emettere il JSON. Non tocca il contratto `agents/schemas/simplifier.output.json`: vincola il contenuto del campo `payload.testo_semplificato`. Una violazione non sanabile si dichiara per codice `PL-xx` in `payload.note_semplificazione`, con `status: hitl_required` (fallback previsto da `simplifier.md`). |
 | **Perché non è caricata da altri** | `intervener` produce una frase sola, già vincolata dalla causa diagnosticata e dal registro del profilo: caricare questa skill costerebbe più di quanto renda. `profiler`, `source-analyzer` e `block-detector` non producono testo destinato alla persona. |
 
 ---
@@ -87,8 +87,8 @@ La nomenclatura delle divergenze (`D-xx`) è definita una volta sola in
 
 ## 3. Struttura del passo
 
-- **PL-12 Ordine fisso dei blocchi.** Un passo riscritto ha sempre questo ordine e salta i
-  blocchi che l'originale non contiene:
+- **PL-12 Ordine fisso dei blocchi.** Il testo vive tutto dentro `payload.testo_semplificato` e
+  ha sempre questo ordine, saltando i blocchi che l'originale non contiene:
   1. **titolo** — massimo 8 parole, comincia con un verbo all'infinito o con il nome della cosa;
   2. **a che serve** — una frase: che cosa ottieni completando il passo;
   3. **condizioni** — "Se... allora...", **prima** delle azioni, mai in coda;
@@ -173,8 +173,8 @@ confrontando. Un controllo fallito non è un'opinione: è un difetto da corregge
 | C9 | Lunghezza totale rispetto all'originale | ≤ 130% |
 
 Se un controllo fallisce e correggerlo costerebbe significato, **non si emette il testo**: si
-applica il fallback dichiarato in `simplifier.md`, indicando nella ragione il codice `PL-xx` del
-controllo fallito.
+applica il fallback dichiarato in `simplifier.md`, indicando in `payload.note_semplificazione` il
+codice `PL-xx` del controllo fallito.
 
 Regola di precedenza: **la fedeltà batte la leggibilità, sempre**. Un passo difficile da leggere
 si escala; un passo facile e infedele arriva alla persona, ed è il danno che questo sistema
@@ -189,10 +189,14 @@ capo. In pratica:
 
 1. Si legge il codice `D-xx` di ogni divergenza bloccante del verdetto.
 2. Si individua la regola `PL-xx` corrispondente: la corrispondenza sta nella colonna
-   "correzione attesa" di `fidelity-diff-taxonomy.md`.
+   "Correzione attesa" della tabella di riepilogo di `fidelity-diff-taxonomy.md` (sezione 6).
+   Il codice `D-xx` si legge in apertura del campo `descrizione` della divergenza.
 3. Si modifica **solo la frase citata** nella divergenza. Le altre restano invariate parola per
    parola: toccarle introduce divergenze nuove e brucia l'unico giro rimasto prima
    dell'escalation.
 4. Si rieseguono i soli controlli C1..C9 toccati dalla modifica.
 5. Le divergenze non bloccanti si correggono **solo** se la correzione non tocca frasi diverse da
    quelle già contestate.
+6. Si compila `payload.modifiche_dal_feedback` con l'elenco delle frasi cambiate e del codice
+   `D-xx` a cui rispondono, e si porta `payload.iterazione` a 2. È l'ultimo giro disponibile
+   (`orchestrator.md`, limiti di iterazione): se non basta, il passo esce `hitl_required`.

@@ -17,7 +17,7 @@
 | Ogni divergenza è motivata | `fidelity-validator.md` | Il formato minimo della motivazione (sezione 5) |
 | Divergenze su importi, date, scadenze, obblighi: sempre bloccanti | `fidelity-validator.md`, G-03 | La definizione operativa di che cosa **conta come** importo, data, scadenza, obbligo e riferimento (sezione 1) |
 | In dubbio si respinge | `fidelity-validator.md` | Il codice da usare quando il dubbio non è classificabile: `D-99` |
-| Secondo rifiuto consecutivo: escalation | `fidelity-validator.md`, `orchestrator.md` | Che cosa cambia e che cosa non cambia al secondo giro (sezione 6) |
+| Secondo rifiuto consecutivo: escalation | `fidelity-validator.md`, `orchestrator.md` | Che cosa cambia e che cosa non cambia al secondo giro (sezione 7) |
 
 ---
 
@@ -217,9 +217,14 @@ Differenza percepita che non rientra in nessuno dei dieci tipi.
 
 ## 4. Verdetto
 
-- **Precedenza.** Una sola divergenza bloccante rende il verdetto `rejected`, a prescindere da
-  quante non bloccanti ci sono e da quanto il resto è buono.
-- **Solo non bloccanti.** Verdetto `approved`, con le divergenze comunque elencate: servono al
+Il contratto `agents/schemas/fidelity-validator.output.json` gradua la gravità su tre livelli
+(`bloccante`, `major`, `minor`). La regola di verdetto li usa così:
+
+- **Precedenza.** Una sola divergenza `bloccante` rende il verdetto `rejected`, a prescindere da
+  quante altre ce ne sono e da quanto il resto è buono.
+- **Due o più `major` sullo stesso passo:** `rejected`. Una `major` isolata non forza il rifiuto,
+  ma si elenca e il `simplifier` la corregge al giro successivo se ne fa uno.
+- **Solo `minor`.** Verdetto `approved`, con le divergenze comunque elencate: servono al
   `simplifier` e restano come traccia nell'evidenza di validazione.
 - **Nessuna divergenza.** Verdetto `approved` con elenco vuoto. Un elenco vuoto va bene solo se
   V-1 è stato completato: un inventario mai costruito produce sempre zero divergenze.
@@ -228,36 +233,68 @@ Differenza percepita che non rientra in nessuno dei dieci tipi.
   passo che contiene importi, date o scadenze scatta il gate HITL dell'orchestratore (G-03):
   conviene ricordarlo, perché è un caso in cui un `approved` sincero non basta comunque.
 - **Incomparabile.** Originale mancante o illeggibile: si applica il fallback di
-  `fidelity-validator.md` (`rejected`, motivo `uncomparable`); non si usa `D-99`, che serve per
+  `fidelity-validator.md` (`rejected`, `tipo: uncomparable`); non si usa `D-99`, che serve per
   differenze osservate, non per confronti impossibili.
 
 ---
 
 ## 5. Come si scrive una divergenza
 
-Ogni voce contiene cinque informazioni, nessuna facoltativa:
+La forma è fissata dal contratto `agents/schemas/fidelity-validator.output.json`, che è congelato:
+questa skill vincola il **contenuto** dei campi, non i campi.
 
-1. **codice** `D-xx`, uno solo;
-2. **gravità**: `bloccante` o `non_bloccante`, coerente con la sezione 3;
-3. **citazione dall'originale**, letterale, la più breve che contenga il problema;
-4. **citazione dal semplificato**, letterale, oppure la parola `assente` per D-01;
-5. **perché**: una frase che dice **quale effetto pratico** ha la differenza sulla persona.
+| Campo dello schema | Che cosa ci va |
+|---|---|
+| `tipo` | Il valore dell'enum corrispondente al codice `D-xx`, secondo la tabella della sezione 6 |
+| `gravita` | `bloccante`, `major` o `minor`, secondo la sezione 3 e la regola di conversione qui sotto |
+| `testo_originale` | Citazione letterale dall'originale: la più breve che contenga il problema |
+| `testo_semplificato` | Citazione letterale dal testo riscritto; per D-01 la stringa `assente` |
+| `descrizione` | Il codice `D-xx` in apertura, poi una frase che dice **quale effetto pratico** ha la differenza sulla persona |
+| `passo_id`, `verdict`, `iterazione` | Identificatore del passo (identico all'input), esito, numero del giro (1 o 2) |
 
-I nomi esatti dei campi JSON sono fissati da `agents/schemas/fidelity-validator.output.json`:
-questa skill vincola il contenuto, non la forma del contratto.
+**Conversione della gravità.** L'enum dello schema ha tre livelli; la sezione 3 ne usa due.
+Le divergenze dichiarate bloccanti restano `bloccante`. Le altre diventano `major` se la
+differenza cambia ciò che la persona capisce o fa, `minor` se resta sul piano espositivo.
+
+**Perché il codice `D-xx` sta nella descrizione.** L'enum `tipo` ha sei valori e la tassonomia ne
+distingue undici: il codice è il livello di dettaglio che serve al `simplifier` per sapere quale
+regola `PL-xx` applicare (vedi `plain-language.md`, sezione 6), e la descrizione è l'unico campo
+libero del contratto. Nessuno dei due file va modificato per ottenere entrambe le cose.
 
 Esempio compilato, in forma leggibile:
 
-> `D-06` · bloccante · originale: "ai nuclei con ISEE non superiore a 15.000 euro" ·
-> semplificato: "hai diritto alla riduzione" · La condizione di accesso è sparita: chi ha un
-> ISEE più alto presenterebbe una domanda destinata a essere respinta.
+> `tipo: slittamento_senso` · `gravita: bloccante` · `testo_originale`: "ai nuclei con ISEE non
+> superiore a 15.000 euro" · `testo_semplificato`: "hai diritto alla riduzione" ·
+> `descrizione`: "D-06 perdita di condizione. La condizione di accesso è sparita: chi ha un ISEE
+> più alto presenterebbe una domanda destinata a essere respinta."
 
 Motivazioni non valide, in nessun caso: "non mi convince", "si può migliorare", "poco chiaro",
 "tono diverso". La leggibilità non è materia di questo agente.
 
 ---
 
-## 6. Che cosa cambia al secondo giro
+## 6. Riepilogo: codice, gravità, valore di `tipo`, correzione attesa
+
+| Codice | Divergenza | Gravità | `tipo` nello schema | Correzione attesa |
+|---|---|---|---|---|
+| D-01 | Omissione | bloccante se tocca una categoria della sezione 1 | `omissione` | PL-08 |
+| D-02 | Aggiunta non supportata | sempre bloccante | `aggiunta_non_autorizzata` | PL-08 |
+| D-03 | Slittamento di modalità | sempre bloccante | `obbligo_diventato_consiglio` | PL-09 |
+| D-04 | Alterazione numerica o di data | sempre bloccante | `numero_cambiato` | PL-10 |
+| D-05 | Cambio di soggetto responsabile | bloccante se l'azione è obbligo, divieto o condizione | `slittamento_senso` | PL-03 |
+| D-06 | Perdita di condizione o eccezione | sempre bloccante | `slittamento_senso` | PL-12.3 |
+| D-07 | Cambio di ordine con effetto sul significato | bloccante se l'ordine è vincolante | `slittamento_senso` | PL-13 |
+| D-08 | Ammorbidimento di una conseguenza | sempre bloccante | `slittamento_senso` | PL-11 |
+| D-09 | Riferimento reso generico | sempre bloccante | `slittamento_senso` | PL-07 |
+| D-10 | Cambio del grado di certezza | bloccante se crea aspettative su esito, tempi o importi | `slittamento_senso` | PL-08 |
+| D-99 | Non classificabile | sempre bloccante | `slittamento_senso` | nessuna automatica: va all'operatore |
+
+Il sesto valore dell'enum, `uncomparable`, non corrisponde a nessun codice: è il fallback per
+confronto impossibile (sezione 4).
+
+---
+
+## 7. Che cosa cambia al secondo giro
 
 Il secondo giro sullo stesso passo è l'ultimo (`orchestrator.md`, limiti di iterazione).
 
@@ -274,25 +311,7 @@ Il secondo giro sullo stesso passo è l'ultimo (`orchestrator.md`, limiti di ite
 
 ---
 
-## Riepilogo delle gravità
-
-| Codice | Tipo | Gravità |
-|---|---|---|
-| D-01 | Omissione | bloccante se tocca una categoria della sezione 1 |
-| D-02 | Aggiunta non supportata | sempre bloccante |
-| D-03 | Slittamento di modalità | sempre bloccante |
-| D-04 | Alterazione numerica o di data | sempre bloccante |
-| D-05 | Cambio di soggetto responsabile | bloccante se l'azione è obbligo, divieto o condizione |
-| D-06 | Perdita di condizione o eccezione | sempre bloccante |
-| D-07 | Cambio di ordine con effetto sul significato | bloccante se l'ordine è vincolante |
-| D-08 | Ammorbidimento di una conseguenza | sempre bloccante |
-| D-09 | Riferimento reso generico | sempre bloccante |
-| D-10 | Cambio del grado di certezza | bloccante se crea aspettative su esito, tempi o importi |
-| D-99 | Non classificabile | sempre bloccante |
-
----
-
-## 7. Che cosa NON è una divergenza
+## 8. Che cosa NON è una divergenza
 
 Elencato perché un validator avversariale senza limiti produce rifiuti a raffica, consuma i due
 giri disponibili e manda in escalation passi che andavano bene. Non si segnala:

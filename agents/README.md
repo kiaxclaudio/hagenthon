@@ -43,7 +43,7 @@ Un percorso che si ferma onestamente vale più di uno che tira a indovinare su u
 
 Tre leve, tutte visibili nel codice e non solo dichiarate qui:
 
-- **Tiering per compito, non per abitudine.** Due agenti su tre girano su Haiku. Opus è riservato
+- **Tiering per compito, non per abitudine.** Tre componenti su sette girano su Haiku, due su Sonnet, due su Opus. Opus è riservato
   ai due punti dove sbagliare costa davvero: capire l'artefatto e verificare la fedeltà.
 - **Costo pagato una volta.** La Fase A non si ripete: `journey.json` è il risultato persistito.
 - **JSON, non conversazione.** Gli agenti si passano payload strutturati; lo stato sta su disco.
