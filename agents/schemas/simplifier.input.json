@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hagenthon/agents/schemas/simplifier.input.json",
   "title": "SimplifierInput",
-  "description": "Input per l'agente simplifier. Un singolo passo del source-model piÃ¹ il profilo della persona. Al secondo giro include anche il feedback del fidelity-validator.",
+  "description": "Input per l'agente simplifier. Un singolo passo del source-model più il profilo della persona. Al secondo giro include anche il feedback del fidelity-validator.",
   "type": "object",
   "properties": {
     "passo": {
@@ -52,11 +52,11 @@
             "parziale",
             "unreadable"
           ],
-          "description": "LeggibilitÃ  nel sorgente."
+          "description": "Leggibilità nel sorgente."
         },
         "obbligatorio": {
           "type": "boolean",
-          "description": "Se il passo Ã¨ obbligatorio."
+          "description": "Se il passo è obbligatorio."
         }
       },
       "required": [
@@ -94,7 +94,7 @@
             "semplificato",
             "unknown"
           ],
-          "description": "ModalitÃ  di fruizione preferita."
+          "description": "Modalità di fruizione preferita."
         },
         "vincoli_sensoriali": {
           "type": "array",
@@ -142,7 +142,7 @@
       "additionalProperties": false
     },
     "iterazione": {
-      "description": "Numero del giro corrente di semplificazione per questo passo (1 o 2). Il limite massimo Ã¨ 2 (G-08); al secondo rifiuto l'orchestratore attiva HITL.",
+      "description": "Numero del giro corrente di semplificazione per questo passo (1 o 2). Il limite massimo è 2 (G-08); al secondo rifiuto l'orchestratore attiva HITL.",
       "type": "integer",
       "minimum": 1,
       "maximum": 2
@@ -176,7 +176,7 @@
               "major",
               "minor"
             ],
-            "description": "GravitÃ  della divergenza."
+            "description": "Gravità della divergenza."
           },
           "descrizione": {
             "type": "string",

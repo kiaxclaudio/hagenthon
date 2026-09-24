@@ -30,7 +30,7 @@
                 "type": "string"
               },
               "cosa_chiede": {
-                "description": "Descrizione precisa di ciÃ² che l'artefatto chiede di fare in questo passo. Copiato o parafrasato strettamente dall'originale (G-01, G-03).",
+                "description": "Descrizione precisa di ciò che l'artefatto chiede di fare in questo passo. Copiato o parafrasato strettamente dall'originale (G-01, G-03).",
                 "type": "string"
               },
               "informazione_necessaria": {
@@ -41,7 +41,7 @@
                 ]
               },
               "vincoli": {
-                "description": "Elenco di vincoli espliciti presenti nell'artefatto (es. scadenze, formati richiesti, obbligatorietÃ ). Copiati identici dalla fonte (G-03).",
+                "description": "Elenco di vincoli espliciti presenti nell'artefatto (es. scadenze, formati richiesti, obbligatorietà). Copiati identici dalla fonte (G-03).",
                 "type": "array",
                 "items": {
                   "type": "string"
@@ -55,7 +55,7 @@
                 }
               },
               "source_refs": {
-                "description": "Riferimenti al punto esatto dell'artefatto originale da cui proviene questo passo (G-07). Obbligatorio: senza riferimento il passo non Ã¨ verificabile.",
+                "description": "Riferimenti al punto esatto dell'artefatto originale da cui proviene questo passo (G-07). Obbligatorio: senza riferimento il passo non è verificabile.",
                 "type": "array",
                 "minItems": 1,
                 "items": {
@@ -63,7 +63,7 @@
                 }
               },
               "leggibilita": {
-                "description": "Stato di leggibilitÃ  del passo nel sorgente. 'leggibile' = completamente interpretabile; 'parziale' = alcune parti ambigue o mancanti; 'unreadable' = impossibile interpretare, il passo non entra nel journey.",
+                "description": "Stato di leggibilità del passo nel sorgente. 'leggibile' = completamente interpretabile; 'parziale' = alcune parti ambigue o mancanti; 'unreadable' = impossibile interpretare, il passo non entra nel journey.",
                 "type": "string",
                 "enum": [
                   "leggibile",
@@ -72,7 +72,7 @@
                 ]
               },
               "obbligatorio": {
-                "description": "True se il passo Ã¨ obbligatorio secondo l'artefatto sorgente.",
+                "description": "True se il passo è obbligatorio secondo l'artefatto sorgente.",
                 "type": "boolean"
               }
             },

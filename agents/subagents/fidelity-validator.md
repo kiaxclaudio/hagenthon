@@ -41,7 +41,7 @@ Secondo rifiuto consecutivo sullo stesso passo -> escalation umana. Iterazioni: 
 
 ## Strumenti assegnati
 
-TODO-TEMA: nessuno. Questa sezione e definitiva.
+Sezione definitiva: non dipende dal tema e non contiene segnaposto.
 
 Gli strumenti sono nel frontmatter e sono il minimo necessario al compito (criterio
 "Adeguatezza degli strumenti"). In particolare `fidelity-validator` ha **solo `Read`**:

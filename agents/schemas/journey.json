@@ -11,7 +11,7 @@
       "minLength": 1
     },
     "artifact_id": {
-      "description": "Identificatore dell'artefatto sorgente da cui Ã¨ stato generato.",
+      "description": "Identificatore dell'artefatto sorgente da cui è stato generato.",
       "type": "string"
     },
     "profile_id": {
@@ -28,7 +28,7 @@
       "type": "string"
     },
     "passi": {
-      "description": "Sequenza ordinata di tutti i passi del percorso guidato. Ogni passo Ã¨ approvato o marcato hitl_required. I passi hitl_required non vengono mostrati all'utente finale.",
+      "description": "Sequenza ordinata di tutti i passi del percorso guidato. Ogni passo è approvato o marcato hitl_required. I passi hitl_required non vengono mostrati all'utente finale.",
       "type": "array",
       "minItems": 1,
       "items": {
@@ -40,7 +40,7 @@
             "type": "string"
           },
           "stato": {
-            "description": "'approved' = il passo Ã¨ stato validato e puÃ² essere mostrato; 'hitl_required' = il passo ha esaurito i giri di semplificazione senza essere approvato: va gestito da una persona.",
+            "description": "'approved' = il passo è stato validato e può essere mostrato; 'hitl_required' = il passo ha esaurito i giri di semplificazione senza essere approvato: va gestito da una persona.",
             "type": "string",
             "enum": [
               "approved",
@@ -67,13 +67,13 @@
             }
           },
           "iterazioni_usate": {
-            "description": "Quanti giri simplifier-fidelity-validator sono stati necessari per questo passo (1 o 2). Metrica per monitorare la qualitÃ  del source-model.",
+            "description": "Quanti giri simplifier-fidelity-validator sono stati necessari per questo passo (1 o 2). Metrica per monitorare la qualità del source-model.",
             "type": "integer",
             "minimum": 1,
             "maximum": 2
           },
           "obbligatorio": {
-            "description": "True se il passo Ã¨ obbligatorio secondo l'artefatto sorgente.",
+            "description": "True se il passo è obbligatorio secondo l'artefatto sorgente.",
             "type": "boolean"
           }
         },

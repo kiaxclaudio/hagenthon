@@ -32,7 +32,7 @@
         },
         "passo_id": {
           "type": "string",
-          "description": "Passo su cui Ã¨ avvenuto il blocco."
+          "description": "Passo su cui è avvenuto il blocco."
         }
       },
       "required": [
@@ -101,7 +101,7 @@
             "semplificato",
             "unknown"
           ],
-          "description": "ModalitÃ  preferita."
+          "description": "Modalità preferita."
         },
         "vincoli_sensoriali": {
           "type": "array",
@@ -149,7 +149,7 @@
       "additionalProperties": false
     },
     "intervento_numero": {
-      "description": "Quale intervento Ã¨ questo sul passo corrente (1, 2 o 3). Al terzo intervento fallito l'orchestratore attiva HITL (G-08).",
+      "description": "Quale intervento è questo sul passo corrente (1, 2 o 3). Al terzo intervento fallito l'orchestratore attiva HITL (G-08).",
       "type": "integer",
       "minimum": 1,
       "maximum": 3

@@ -40,7 +40,7 @@
       "minimum": 0
     },
     "passo_corrente_id": {
-      "description": "Identificatore del passo corrente, ridondante con l'indice per leggibilitÃ .",
+      "description": "Identificatore del passo corrente, ridondante con l'indice per leggibilità.",
       "type": "string"
     },
     "interventi_passo_corrente": {
@@ -80,11 +80,11 @@
             "format": "date-time"
           },
           "passo_id": {
-            "description": "Passo su cui Ã¨ avvenuta l'escalation.",
+            "description": "Passo su cui è avvenuta l'escalation.",
             "type": "string"
           },
           "motivo": {
-            "description": "Causa dell'escalation. 'max_interventi' = 3 interventi falliti sullo stesso passo; 'max_blocchi' = 3 blocchi consecutivi sullo stesso passo; 'confidence_bassa' = confidence < 0.6 su passo con importi/date/scadenze; 'passo_hitl_required' = il passo era giÃ  marcato hitl_required in Fase A.",
+            "description": "Causa dell'escalation. 'max_interventi' = 3 interventi falliti sullo stesso passo; 'max_blocchi' = 3 blocchi consecutivi sullo stesso passo; 'confidence_bassa' = confidence < 0.6 su passo con importi/date/scadenze; 'passo_hitl_required' = il passo era già marcato hitl_required in Fase A.",
             "type": "string",
             "enum": [
               "max_interventi",

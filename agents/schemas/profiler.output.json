@@ -24,7 +24,7 @@
           ]
         },
         "modalita_preferita": {
-          "description": "ModalitÃ  di fruizione preferita per le istruzioni. 'testo' = testo scritto standard; 'audio' = indicazioni vocali/audio; 'visivo' = diagrammi o icone; 'semplificato' = testo con linguaggio facile; 'unknown' = non dichiarata. TODO-TEMA: rivedere l'enum sul tema scelto.",
+          "description": "Modalità di fruizione preferita per le istruzioni. 'testo' = testo scritto standard; 'audio' = indicazioni vocali/audio; 'visivo' = diagrammi o icone; 'semplificato' = testo con linguaggio facile; 'unknown' = non dichiarata. TODO-TEMA: rivedere l'enum sul tema scelto.",
           "type": "string",
           "enum": [
             "testo",

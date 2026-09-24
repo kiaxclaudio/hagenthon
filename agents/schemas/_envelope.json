@@ -15,13 +15,13 @@
       ]
     },
     "confidence": {
-      "description": "Stima di affidabilitÃ  dell'output, da 0 a 1 (G-06). L'orchestratore usa questo valore come gate: se < 0.6 su un passo che contiene importi, date o scadenze, attiva HITL (G-03, G-09).",
+      "description": "Stima di affidabilità dell'output, da 0 a 1 (G-06). L'orchestratore usa questo valore come gate: se < 0.6 su un passo che contiene importi, date o scadenze, attiva HITL (G-03, G-09).",
       "type": "number",
       "minimum": 0.0,
       "maximum": 1.0
     },
     "source_refs": {
-      "description": "Riferimenti alle parti esatte della fonte da cui provengono le affermazioni (G-07). Array vuoto solo se l'agente non ha accesso ad alcuna fonte originale. Un output senza source_refs Ã¨ una violazione di G-01.",
+      "description": "Riferimenti alle parti esatte della fonte da cui provengono le affermazioni (G-07). Array vuoto solo se l'agente non ha accesso ad alcuna fonte originale. Un output senza source_refs è una violazione di G-01.",
       "type": "array",
       "items": {
         "type": "string",
@@ -29,7 +29,7 @@
       }
     },
     "payload": {
-      "description": "Contenuto specifico dell'agente. L'unica parte che varia tra agenti; tutto il resto Ã¨ uniforme cosÃ¬ l'orchestratore puÃ² instradare senza conoscere il dominio.",
+      "description": "Contenuto specifico dell'agente. L'unica parte che varia tra agenti; tutto il resto è uniforme così l'orchestratore può instradare senza conoscere il dominio.",
       "type": "object"
     }
   },

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hagenthon/agents/schemas/block-detector.output.json",
   "title": "BlockDetectorOutput",
-  "description": "Output dell'agente block-detector. Diagnosi booleana del blocco e causa dalla tassonomia chiusa. La confidence nell'envelope Ã¨ il gate HITL a 0.6 per segnali ambigui (G-09).",
+  "description": "Output dell'agente block-detector. Diagnosi booleana del blocco e causa dalla tassonomia chiusa. La confidence nell'envelope è il gate HITL a 0.6 per segnali ambigui (G-09).",
   "allOf": [
     {
       "$ref": "./_envelope.json"
@@ -14,11 +14,11 @@
       "type": "object",
       "properties": {
         "blocked": {
-          "description": "True se la persona Ã¨ ritenuta bloccata sul passo corrente. False = nessun intervento necessario. In caso di segnale ambiguo il fallback Ã¨ False (G-09).",
+          "description": "True se la persona è ritenuta bloccata sul passo corrente. False = nessun intervento necessario. In caso di segnale ambiguo il fallback è False (G-09).",
           "type": "boolean"
         },
         "cause": {
-          "description": "Causa principale del blocco dalla tassonomia chiusa. Null se blocked=false. 'inattivita' = nessuna interazione rilevata nel timeout atteso; 'ripetizione_input' = stesso input inviato piÃ¹ volte senza successo; 'input_non_valido' = formato o valore non accettato ripetutamente; 'ritorno_indietro' = navigazione ripetuta a passi precedenti; 'richiesta_aiuto_esplicita' = la persona ha richiesto aiuto direttamente; 'abbandono_imminente' = segnali di abbandono della sessione; 'unknown' = segnale di blocco rilevato ma causa non classificabile nella tassonomia. TODO-TEMA: rivedere l'enum sul tema scelto.",
+          "description": "Causa principale del blocco dalla tassonomia chiusa. Null se blocked=false. 'inattivita' = nessuna interazione rilevata nel timeout atteso; 'ripetizione_input' = stesso input inviato più volte senza successo; 'input_non_valido' = formato o valore non accettato ripetutamente; 'ritorno_indietro' = navigazione ripetuta a passi precedenti; 'richiesta_aiuto_esplicita' = la persona ha richiesto aiuto direttamente; 'abbandono_imminente' = segnali di abbandono della sessione; 'unknown' = segnale di blocco rilevato ma causa non classificabile nella tassonomia. TODO-TEMA: rivedere l'enum sul tema scelto.",
           "type": [
             "string",
             "null"
@@ -35,7 +35,7 @@
           ]
         },
         "passo_id": {
-          "description": "Identificatore del passo su cui Ã¨ stato rilevato (o negato) il blocco.",
+          "description": "Identificatore del passo su cui è stato rilevato (o negato) il blocco.",
           "type": "string"
         }
       },

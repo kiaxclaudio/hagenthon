@@ -10,7 +10,7 @@
       "type": "object",
       "properties": {
         "tipo": {
-          "description": "Tipo di evento utente. 'inattivita' = nessun input dopo un timeout; 'ripetizione_input' = stesso input inviato piÃ¹ volte; 'input_non_valido' = formato o valore non accettabile; 'ritorno_indietro' = navigazione al passo precedente; 'richiesta_aiuto_esplicita' = pressione di un pulsante aiuto o testo che indica confusione; 'abbandono' = chiusura o abbandono della sessione; 'avanzamento' = input accettabile, passo completato.",
+          "description": "Tipo di evento utente. 'inattivita' = nessun input dopo un timeout; 'ripetizione_input' = stesso input inviato più volte; 'input_non_valido' = formato o valore non accettabile; 'ritorno_indietro' = navigazione al passo precedente; 'richiesta_aiuto_esplicita' = pressione di un pulsante aiuto o testo che indica confusione; 'abbandono' = chiusura o abbandono della sessione; 'avanzamento' = input accettabile, passo completato.",
           "type": "string",
           "enum": [
             "inattivita",
@@ -83,7 +83,7 @@
       "type": "object",
       "properties": {
         "interventi_passo_corrente": {
-          "description": "Quanti interventi dell'intervener sono giÃ  stati effettuati su questo passo.",
+          "description": "Quanti interventi dell'intervener sono già stati effettuati su questo passo.",
           "type": "integer",
           "minimum": 0,
           "maximum": 3

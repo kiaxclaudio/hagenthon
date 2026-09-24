@@ -15,9 +15,9 @@ esplicitamente le sovrapposizioni tra file.
 |---|---|---|---|---|
 | `plain-language.md` | `subagents/simplifier.md` | passo A3, a ogni riscrittura di un passo e a ogni correzione dopo un rifiuto | 202 righe, 1.896 parole | Sono 14 regole più una checklist di 9 controlli: oltre cinque volte il file del `simplifier` (36 righe). Inline, verrebbero caricate anche quando il `simplifier` non gira, cioè in tutta la Fase B |
 | `fidelity-diff-taxonomy.md` | `subagents/fidelity-validator.md` | passo A4, a ogni verifica, compreso il secondo giro | 330 righe, 2.847 parole | La tassonomia serve a **classificare**, e classificare è un lavoro che fa solo il validator. Tenerla fuori dal `simplifier` è anche una scelta di separazione: chi scrive non deve conoscere in anticipo la griglia con cui verrà giudicato, o la ottimizza invece di rispettarla |
-| `hitl-escalation.md` | `orchestrator.md`; la sola sezione 4 anche da `subagents/intervener.md` | quando scatta uno dei gate HITL dichiarati in `orchestrator.md`, e al terzo intervento fallito per l'`intervener` | 219 righe, 2.345 parole | È il percorso eccezionale: nel caso normale non serve mai. Caricarla sempre significherebbe pagare in ogni invocazione un contenuto che riguarda una frazione dei casi |
+| `hitl-escalation.md` | `orchestrator.md`; la sola sezione 4 anche da `subagents/intervener.md` | quando scatta uno dei gate HITL dichiarati in `orchestrator.md`, e al terzo intervento fallito per l'`intervener` | 219 righe, 2.344 parole | È il percorso eccezionale: nel caso normale non serve mai. Caricarla sempre significherebbe pagare in ogni invocazione un contenuto che riguarda una frazione dei casi |
 
-Totale: **751 righe, 7.088 parole** (stima: circa 11.000 token; conteggi con `wc -lw`).
+Totale: **751 righe, 7.087 parole** (stima: circa 11.000 token; conteggi con `wc -lw`).
 I quattro file agente coinvolti ne contano insieme 202 e 1.192. Inline, le istruzioni degli
 agenti peserebbero **quasi sei volte tanto**, in ogni invocazione di ogni agente. Con il
 caricamento on-demand, nessuna invocazione ne carica più di una, e le invocazioni di Fase B non
@@ -48,9 +48,10 @@ verificabile leggendo il file e non solo dichiarato a parole:
 4. **Perché non è caricata da altri** — la giustificazione del confine. È la riga che dimostra
    che il perimetro è stato scelto e non subìto.
 
-Il caricamento è un'operazione reale, non una figura retorica: ogni agente che carica una skill
-ha `Read` fra i `tools` del proprio frontmatter, e apre il file solo nel momento dichiarato nella
-riga "Quando". Un agente che non carica nessuna skill non legge nessuno di questi file.
+Il caricamento è un'operazione reale, non una figura retorica: i tre sub-agenti che caricano una
+skill (`simplifier`, `fidelity-validator`, `intervener`) hanno `Read` fra i `tools` dichiarati nel
+frontmatter, e aprono il file solo nel momento indicato nella riga "Quando". Chi non carica
+nessuna skill non legge nessuno di questi file.
 
 ## Regola di non sovrapposizione
 

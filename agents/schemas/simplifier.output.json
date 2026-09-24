@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hagenthon/agents/schemas/simplifier.output.json",
   "title": "SimplifierOutput",
-  "description": "Output dell'agente simplifier. Un singolo passo riscritto nel linguaggio e nel formato del profilo della persona. Non entra nel journey finchÃ© non supera la validazione del fidelity-validator.",
+  "description": "Output dell'agente simplifier. Un singolo passo riscritto nel linguaggio e nel formato del profilo della persona. Non entra nel journey finché non supera la validazione del fidelity-validator.",
   "allOf": [
     {
       "$ref": "./_envelope.json"
@@ -10,7 +10,7 @@
   ],
   "properties": {
     "payload": {
-      "description": "Il passo semplificato con metadati di tracciabilitÃ .",
+      "description": "Il passo semplificato con metadati di tracciabilità.",
       "type": "object",
       "properties": {
         "passo_id": {

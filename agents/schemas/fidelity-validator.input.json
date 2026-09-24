@@ -15,7 +15,7 @@
         },
         "cosa_chiede": {
           "type": "string",
-          "description": "Testo originale di ciÃ² che il passo chiede."
+          "description": "Testo originale di ciò che il passo chiede."
         },
         "informazione_necessaria": {
           "type": [
@@ -47,7 +47,7 @@
         },
         "obbligatorio": {
           "type": "boolean",
-          "description": "Se il passo Ã¨ obbligatorio."
+          "description": "Se il passo è obbligatorio."
         }
       },
       "required": [

@@ -6,7 +6,7 @@
   "type": "object",
   "properties": {
     "persona_description": {
-      "description": "Descrizione in prosa della persona: etÃ  approssimativa, contesto d'uso, eventuali difficoltÃ  dichiarate. Nessun dato identificativo reale (G-17).",
+      "description": "Descrizione in prosa della persona: età approssimativa, contesto d'uso, eventuali difficoltà dichiarate. Nessun dato identificativo reale (G-17).",
       "type": "string",
       "minLength": 10
     },
@@ -16,7 +16,7 @@
       "pattern": "^[a-z]{2}$"
     },
     "contesto_uso": {
-      "description": "Breve descrizione del contesto in cui la persona utilizzerÃ  il percorso guidato (es. 'compilazione modulo online', 'sportello fisico'). Opzionale.",
+      "description": "Breve descrizione del contesto in cui la persona utilizzerà il percorso guidato (es. 'compilazione modulo online', 'sportello fisico'). Opzionale.",
       "type": "string"
     }
   },

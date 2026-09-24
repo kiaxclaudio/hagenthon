@@ -28,7 +28,7 @@ si ridefiniscono qui. Questa skill dice che cosa fare **dopo** che uno di essi Ã
 
 ---
 
-## 2. I quattro gate, e che cosa cambia per ciascuno
+## 2. I gate, e che cosa cambia per ciascuno
 
 | Gate (condizione in `orchestrator.md`) | Fase | Chi riceve | Che cosa vede la persona | Dossier | `motivo` in `run-state.json` |
 |---|---|---|---|---|---|
