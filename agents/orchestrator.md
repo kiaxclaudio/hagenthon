@@ -73,6 +73,11 @@ navigator (haiku)             come si accede, documenti, scadenze, glossario
 
 ## Regole di routing
 
+Il tool `Task` è l'unico meccanismo con cui vengono invocati i sub-agenti. Garantisce un limite
+di iterazioni dichiarato (`maxTurns` nel frontmatter di ogni sub-agente), tracciabilità dello
+stato e possibilità di esecuzione in parallelo dove l'architettura lo prevede. `Read` e `Write`
+servono a leggere e aggiornare i file di stato su disco tra un passo e l'altro.
+
 1. La Fase B non parte se `agents/state/catalogo.json` non esiste o è vuoto: senza catalogo
    verificato non c'è risposta ammissibile, e l'orchestratore lo dice invece di improvvisare.
 2. In Fase A ogni misura attraversa `explainer` e `fidelity-validator` in coppia, una alla volta.

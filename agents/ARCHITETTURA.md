@@ -12,15 +12,15 @@ decisione (G-04).
 
 ## I sette componenti
 
-| Componente | Verbo | Tier | Fase | Tool |
-|---|---|---|---|---|
-| `orchestrator` | instrada | haiku | A + B | Read, Write, Task |
-| `source-analyzer` | destruttura | opus | A | Read, Write, Grep, Glob |
-| `explainer` | riscrive | sonnet | A | Read, Write |
-| `fidelity-validator` | verifica | opus | A | **solo Read** |
-| `profiler` | normalizza | haiku | B | Read, Write |
-| `eligibility` | incrocia | sonnet | B | Read, Write |
-| `navigator` | guida | haiku | B | Read, Write |
+| Componente | Verbo | Tier | Fase | Tool | Perche quel set |
+|---|---|---|---|---|---|
+| `orchestrator` | instrada | haiku | A + B | Read, Write, Task | Task per invocare i sub-agenti (limite di iterazioni + parallelismo); Read/Write per lo stato su disco tra un passo e l'altro |
+| `source-analyzer` | destruttura | opus | A | Read, Write, Grep, Glob | Grep e Glob per navigare le fonti nel filesystem; unico agente che cerca testo nelle sorgenti |
+| `explainer` | riscrive | sonnet | A | Read, Write | Riceve l'input dall'orchestratore, non cerca nel filesystem |
+| `fidelity-validator` | verifica | opus | A | **solo Read** | Non puo modificare cio che giudica: la separazione produttore/giudice e imposta dai permessi, non dal prompt |
+| `profiler` | normalizza | haiku | B | Read, Write | Legge gli schemi di tassonomia, scrive profilo.json |
+| `eligibility` | incrocia | sonnet | B | Read, Write | Legge il catalogo verificato, scrive l'output con confidence e misure pertinenti |
+| `navigator` | guida | haiku | B | Read, Write | Legge catalogo e profilo, scrive i percorsi con passi e documenti |
 
 Eliminati: `block-detector` e `intervener`. Nel flusso a scelta multipla non servono, e un
 agente che non serve costa punti sul criterio "Adeguatezza degli strumenti".
