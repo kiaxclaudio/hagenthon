@@ -1,0 +1,17 @@
+﻿{
+    "data":  "2026-09-24",
+    "motivo_escalation":  "confidence_bassa",
+    "sistema":  "DEMO_MODE=true, catalogo v0.1.0",
+    "stage":  "escalation",
+    "scenario":  "scenario-05-escalation",
+    "pipeline":  {
+                     "disclaimer":  "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+                     "escalation":  true,
+                     "explainer":  null,
+                     "messaggio_escalation":  "Il sistema non è abbastanza sicuro della lettura del tuo caso (affidabilità 0.45, soglia 0.6). Preferiamo non mostrarti misure incerte: un CAF può verificare la tua posizione con i tuoi documenti.",
+                     "motivo_escalation":  "confidence_bassa",
+                     "navigator":  null,
+                     "status":  "hitl_required"
+                 },
+    "status":  "hitl_required"
+}

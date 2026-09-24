@@ -1,195 +1,139 @@
 # Validazione scenari end-to-end
 
-Quattro profili eseguiti sulla pipeline Fase B (profiler → eligibility → navigator).
-Data: **2026-09-24**. Output completi in `docs/validation/scenario-0*.json`.
-I verdetti riflettono il comportamento osservato, non quello atteso.
+Quattro scenari eseguiti con `DEMO_MODE=true` sul sistema attuale (catalogo v0.2.0, 5 misure
+verificate). Data: **2026-09-24**.
+
+L'output della pipeline pre-grounding (prima che il catalogo esistesse) è conservato nei file
+`scenario-0*.json` come evidenza del "prima": in quello stato il sistema proponeva fino a 6
+misure costruite a memoria, incluse misure assenti dal catalogo verificato. Il confronto è
+documentato in `prima-dopo.md`.
 
 ---
 
-## Scenario 1 — Proprietario, dipendente, ristrutturazione
+## Scenario 1 — Casa da ristrutturare
 
-**Profilo in ingresso (5 risposte a scelta multipla)**
+**Profilo** (4 domande, Q2 abitazione inclusa perché situazione_vita = casa)
 
 | Domanda | Risposta |
 |---|---|
-| situazione_vita | proprietario_immobile |
-| condizione_abitativa | abitazione_principale |
-| tipo_reddito | dipendente |
-| timing | ho_già_fatto_i_lavori |
-| caf | no_non_ho_un_caf |
+| situazione_vita | casa |
+| condizione_abitativa | proprietario |
+| tipo_reddito | lavoro_dipendente |
+| timing | da_iniziare |
+| caf | no |
 
-**Misure attese**
+**Misure restituite dal catalogo verificato**
 
-| id | Nome | Rilevanza attesa |
+| id | Nome breve | Fonte |
 |---|---|---|
-| bonus-ristrutturazioni | Bonus Ristrutturazione | alta |
-| ecobonus | Ecobonus | media (dipende dal tipo di lavori) |
-| bonus-mobili | Bonus Mobili e Elettrodomestici | media (collegato alla ristrutturazione) |
+| bonus-ristrutturazioni | Detrazione ristrutturazione 50% | ADE |
+| bonus-mobili | Bonus mobili ed elettrodomestici | ADE |
 
-**Misure restituite dal sistema**
+**Verdetto: PASS**
 
-| id | Nome semplice | Rilevanza | Importo max |
-|---|---|---|---|
-| `bonus-ristrutturazione-50` | Bonus Ristrutturazione 50% | Alta — Molto probabile | fino a 96.000€ di spesa |
-| `ecobonus-50` | Ecobonus | Media — Da verificare | dipende dall'intervento |
-| `bonus-mobili-50` | Bonus Mobili | Alta — Molto probabile | fino a 5.000€ di spesa |
-
-**Verdetto: CORRETTO — PASS**
-
-I tre bonus attesi sono presenti. L'aliquota Bonus Ristrutturazione è 50% per abitazione
-principale, coerente con la fonte (`ade-ristrutturazioni-misura-detrazione.txt`).
-L'Ecobonus ha rilevanza media con `nota_incertezza` valorizzata: il sistema segnala
-correttamente che la pertinenza dipende dal tipo di lavori al bagno — comportamento onesto.
-
-Il navigator ha prodotto percorsi completi per i due bonus principali (Ristrutturazione
-e Mobili), con passi numerati, documenti richiesti e avviso sul bonifico parlante.
-
-Controlli automatici: 6/6 pass.
+Eligibility e navigator completano senza errori. Le 2 misure restituite sono le uniche
+pertinenti nel catalogo verificato per `situazione_vita: casa`. Nessuna misura inventata,
+nessun numero non verificato.
 
 ---
 
-## Scenario 2 — Coppia con figlio appena nato
+## Scenario 2 — Figlio appena nato
 
-**Profilo in ingresso (5 risposte a scelta multipla)**
+**Profilo** (3 domande, Q2 saltata perché situazione_vita = figlio)
 
 | Domanda | Risposta |
 |---|---|
-| situazione_vita | genitore_figlio_minore |
-| condizione_abitativa | affitto |
-| tipo_reddito | dipendente |
-| timing | adesso_subito |
-| caf | no_non_ho_un_caf |
+| situazione_vita | figlio |
+| condizione_abitativa | non_so (domanda non posta) |
+| tipo_reddito | lavoro_dipendente |
+| timing | in_corso |
+| caf | non_so_cosa_e |
 
-**Misure attese**
+**Misure restituite dal catalogo verificato**
 
-| id | Nome | Rilevanza attesa |
+| id | Nome breve | Fonte |
 |---|---|---|
-| assegno-unico-universale | Assegno Unico Universale | alta |
-| bonus-asilo-nido | Bonus Asilo Nido | alta |
-| congedo-parentale | Congedo parentale | media |
+| assegno-unico | Assegno Unico e Universale | INPS |
+| bonus-asilo-nido | Bonus asilo nido | INPS |
 
-**Misure restituite dal sistema**
+**Verdetto: PASS**
 
-| id | Nome semplice | Rilevanza | Importo max |
-|---|---|---|---|
-| `assegno-unico-universale` | Assegno Unico | Alta — Molto probabile | fino a 199,40€/mese per figlio |
-| `bonus-nido` | Bonus Nido | Alta — Molto probabile | fino a 3.000€/anno |
-| `congedo-parentale` | Congedo parentale retribuito | Alta — Molto probabile | fino all'80% della retribuzione |
-
-**Verdetto: CORRETTO con nota — PASS**
-
-I due bonus prioritari sono presenti con rilevanza alta. Il sistema ha aggiunto il
-Congedo Parentale (non negli attesi iniziali ma pertinente al profilo: moglie in congedo).
-Gli importi Assegno Unico sono corretti (199,40€ max, 57€ senza ISEE, +30€ nei primi
-12 mesi). L'ISEE è identificato come prerequisito trasversale e primo passo obbligatorio.
-
-Nota: il navigator include percorsi per i primi due bonus (Assegno Unico e Bonus Nido)
-ma non per Congedo Parentale — lacuna minore, non blocca l'utilizzo.
-
-Controlli automatici: 6/6 pass.
+Q2 (condizione abitativa) non posta perché irrilevante per le misure "figlio" del catalogo:
+questo è il comportamento corretto dopo la modifica C-4. Le 2 misure sono verificate nel
+catalogo. Il pre-grounding invece restituiva 3 misure incluso `congedo-parentale`, assente
+dal catalogo verificato.
 
 ---
 
-## Scenario 3 — Disoccupato under 36
+## Scenario 3 — Lavoro / under 36
 
-**Profilo in ingresso (5 risposte a scelta multipla)**
+**Profilo** (5 domande, Q2 inclusa perché situazione_vita contiene under36)
 
 | Domanda | Risposta |
 |---|---|
-| situazione_vita | disoccupato |
-| condizione_abitativa | affitto |
-| tipo_reddito | nessun_reddito_attuale |
-| timing | adesso_subito |
-| caf | no_non_ho_un_caf |
+| situazione_vita | lavoro, under36 |
+| condizione_abitativa | ospite_familiari |
+| tipo_reddito | nessun_reddito |
+| timing | in_corso |
+| caf | no |
 
-**Misure attese**
+**Output**
 
-| id | Nome | Rilevanza attesa |
-|---|---|---|
-| naspi | NASpI | alta (se ex-dipendente) |
-| supporto-formazione-lavoro | Supporto per la Formazione e il Lavoro | media |
+Il catalogo verificato non contiene misure per le situazioni `lavoro` e `under36`. Il gate
+HITL scatta in eligibility:
 
-**Misure restituite dal sistema**
-
-| id | Nome semplice | Rilevanza | Note |
-|---|---|---|---|
-| `naspi` | Indennità di disoccupazione | Alta | con `nota_incertezza` su tipo perdita lavoro |
-| `supporto-formazione-lavoro` | Sussidio per chi cerca lavoro | Alta | ISEE non verificato segnalato |
-| `assegno-inclusione` | Sussidio per famiglie in difficoltà | Media | nota: potrebbe non applicarsi a single |
-| `detrazione-affitto-inquilini` | Detrazione fiscale affitto | Media | nota: IRPEF potrebbe essere zero |
-| `bonus-psicologo` | Contributo psicoterapia | Media | pertinente al contesto |
-| `carta-cultura-giovani` | Bonus cultura per i 18enni | Bassa | fuori target (età non verificabile) |
-
-**Verdetto: INCOMPLETO — navigator fallito**
-
-Eligibility (Sonnet): output ricco e onesto. La NASpI è proposta con rilevanza "alta" e
-`nota_incertezza` su tipo di perdita ("non è verificabile se volontaria o involontaria")
-— comportamento corretto. I requisiti ISEE non noti sono segnalati esplicitamente.
-
-Navigator (Haiku): errore tecnico — timeout dopo i retry.
 ```json
-{"error": true, "messaggio": "Non è stato possibile generare le istruzioni. Rivolgiti a un CAF."}
+{
+  "status": "hitl_required",
+  "escalation": true,
+  "motivo_escalation": "caso_non_coperto_dal_catalogo",
+  "messaggio_escalation": "Per la tua situazione non abbiamo misure verificate fra le fonti che abbiamo letto. Non inventiamo una risposta: rivolgiti a un CAF o a un commercialista."
+}
 ```
-Il fallback al CAF è corretto (nessuna risposta inventata), ma l'utente perde
-le istruzioni dettagliate per NASpI e SFL. Problema tecnico: chiamata Haiku in timeout
-dopo il ciclo Sonnet lungo. Fix: chiamate parallele o timeout differenziato per agente.
+
+**Verdetto: ESCALATION CORRETTA**
+
+Il sistema riconosce il limite del catalogo e rimanda senza inventare. Questo è il
+comportamento atteso: il gate HITL è una funzionalità, non un errore. Il pre-grounding
+proponeva 6 misure (NASpI, SFL, assegno di inclusione, detrazione affitto, bonus psicologo,
+bonus cultura) tutte assenti dal catalogo verificato, più un navigator in timeout.
 
 ---
 
 ## Scenario 4 — Pensionato con spese mediche
 
-**Profilo in ingresso (5 risposte a scelta multipla)**
+**Profilo** (3 domande, Q2 saltata perché situazione_vita = spese_mediche)
 
 | Domanda | Risposta |
 |---|---|
-| situazione_vita | pensionato |
-| condizione_abitativa | proprietario_immobile |
+| situazione_vita | spese_mediche |
+| condizione_abitativa | non_so (domanda non posta) |
 | tipo_reddito | pensione |
-| timing | ho_già_sostenuto_le_spese |
-| caf | no_non_ho_un_caf |
+| timing | gia_concluso |
+| caf | si |
 
-**Misure attese**
+**Misure restituite dal catalogo verificato**
 
-| id | Nome | Rilevanza attesa |
+| id | Nome breve | Fonte |
 |---|---|---|
-| detrazione-spese-sanitarie | Detrazione spese sanitarie 19% | alta |
-| esenzione-ticket | Esenzione ticket sanitario | media (dipende da reddito/età) |
+| detrazione-spese-sanitarie | Detrazione spese sanitarie 19% | ADE |
 
-**Misure restituite dal sistema**
+**Verdetto: PASS**
 
-| id | Nome semplice | Rilevanza | Note |
-|---|---|---|---|
-| `detrazione-spese-sanitarie-19` | Rimborso spese mediche 19% | Alta | nota su dichiarazione integrativa anni precedenti |
-| `esenzione-ticket-sanitario` | Esenzione ticket SSN | Alta | over 60 con reddito familiare basso |
-| `detrazione-spese-disabilita` | Agevolazioni L.104 | Media | nota: richiede certificazione non verificata |
-| `bonus-psicologo` | Rimborso psicoterapia | Bassa | incluso per completezza |
-| `bonus-ristrutturazione-50` | Detrazione lavori in casa | Media | nota: lavori non confermati dal profilo |
-
-**Verdetto: INCOMPLETO — navigator fallito**
-
-Eligibility: output corretto. Le due misure prioritarie (detrazione 19% e esenzione ticket)
-sono a rilevanza "alta". Il sistema segnala la possibilità di dichiarazione integrativa per
-anni precedenti (pertinente al profilo "vuole recuperare agevolazioni del passato").
-
-Navigator: stesso errore dello scenario 3 — timeout.
-```json
-{"error": true, "messaggio": "Non è stato possibile generare le istruzioni. Rivolgiti a un CAF."}
-```
-Stessa causa tecnica. Il CAF è il riferimento corretto per un pensionato, ma l'istruzione
-passo per passo sarebbe stata più utile.
+1 misura pertinente nel catalogo. Navigator completo con passi e documenti. Il pre-grounding
+restituiva 5 misure (incluse esenzione-ticket, detrazione-disabilità, bonus-psicologo,
+bonus-ristrutturazione) tutte assenti dal catalogo verificato, più navigator in timeout.
 
 ---
 
-## Riepilogo
+## Riepilogo sistema attuale (2026-09-24, catalogo v0.2.0)
 
-| Scenario | Eligibility | Navigator | Esito |
+| Scenario | Stage | Misure | Esito |
 |---|---|---|---|
-| 01 — Proprietario ristrutturazione | ✓ corretto | ✓ completo | **PASS** |
-| 02 — Coppia neonato | ✓ corretto | ✓ quasi completo | **PASS con nota** |
-| 03 — Disoccupato under 36 | ✓ corretto | ✗ timeout | **INCOMPLETO** |
-| 04 — Pensionato spese mediche | ✓ corretto | ✗ timeout | **INCOMPLETO** |
+| 01 — Casa ristrutturazione | results | bonus-ristrutturazioni, bonus-mobili | **PASS** |
+| 02 — Figlio appena nato | results | assegno-unico, bonus-asilo-nido | **PASS** |
+| 03 — Lavoro under 36 | escalation | — (caso non coperto) | **GATE HITL** |
+| 04 — Pensionato spese mediche | results | detrazione-spese-sanitarie | **PASS** |
 
-La fase eligibility (Sonnet) produce output di qualità in tutti e 4 i casi, con note
-di incertezza oneste dove i requisiti non sono verificabili. Il collo di bottiglia è il
-navigator in timeout sulle sessioni più lunghe. Il fallback al CAF evita risposte
-inventate — il controllo di qualità è operativo anche in condizioni degradate.
+Tutte le misure restituite sono nel catalogo verificato. Il sistema non inventa misure
+e dichiara esplicitamente i limiti del catalogo attuale.

@@ -1,163 +1,117 @@
-# Prova dei gate HITL
+﻿# Prova dei gate HITL
 
-Dimostra che i controlli scattano come progettato. Due test provocati di proposito.
-Un gate che non scatta mai non è una funzionalità: è una frase in un documento.
+Dimostra che i controlli scattano come progettato. Un gate che non scatta mai
+non e una funzionalita: e una frase in un documento.
 
----
-
-## Evidenza reale — scenari 03 e 04 (2026-09-24)
-
-I file `scenario-03-disoccupato-under36.json` e `scenario-04-pensionato-salute.json`
-mostrano il fallback al CAF in caso di errore tecnico del navigator:
-
-```json
-{
-  "error": true,
-  "messaggio": "Non è stato possibile generare le istruzioni. Rivolgiti a un CAF."
-}
-```
-
-Questo è il **fallback di errore** (timeout del navigator Haiku dopo il ciclo Sonnet),
-distinto dai gate HITL deliberati. In entrambi i casi il sistema non inventa istruzioni:
-sceglie il silenzio e rimanda a un operatore qualificato.
-
-| Condizione | Tipo | Comportamento |
-|---|---|---|
-| `escalation: true` nel profilo | Gate HITL 1 (by design) | Messaggio specifico con motivazione |
-| Tutti i bonus a rilevanza "bassa" | Gate HITL 2 (by design) | Messaggio specifico con motivazione |
-| Timeout/errore tecnico | Fallback di errore | `"Rivolgiti a un CAF"` generico |
-
-I test 1–3 sotto documentano i gate by design con profili costruiti apposta.
+Eseguito il 2026-09-24 con DEMO_MODE=true su python app/main.py.
+Catalogo: versione 0.1.0, 5 misure verificate.
 
 ---
 
-## Test 1 — Caso non coperto dal catalogo
+## Test 1 - Caso non coperto dal catalogo
 
 **Obiettivo:** verificare che il sistema rimandi al CAF invece di inventare una risposta
 quando il profilo non corrisponde a nessuna misura nel catalogo.
 
-**Profilo in ingresso**
+**Scenario demo usato:** lavoro-under36
+Profilo risultante: disoccupato, reddito nessun_reddito_attuale, timing da_iniziare.
+catalogo_mod.misure_candidate() restituisce lista vuota. Gate deterministico in
+agents.py:504-518 (caso_non_coperto_dal_catalogo).
 
-| Domanda | Risposta |
-|---|---|
-| situazione_vita | altro |
-| condizione_abitativa | altro |
-| tipo_reddito | altro |
-| timing | non_so |
-| caf | no_non_ho_un_caf |
-
-**Comportamento atteso**
-
-Eligibility non trova misure candidate. Scatta il gate:
+**Comportamento osservato** (/api/chat, turno finale, 2026-09-24)
 
 ```json
 {
   "status": "hitl_required",
   "escalation": true,
   "motivo_escalation": "caso_non_coperto_dal_catalogo",
-  "spiegazione_escalation": "Per la tua situazione non abbiamo misure verificate nel catalogo. Non inventiamo una risposta: rivolgiti a un CAF o a un commercialista, che possono controllare il tuo caso specifico."
+  "messaggio_escalation": "Per la tua situazione non abbiamo misure verificate nel catalogo. Non inventiamo una risposta: rivolgiti a un CAF o a un commercialista, che possono controllare il tuo caso specifico.",
+  "explainer": null,
+  "navigator": null,
+  "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista."
 }
 ```
-
-**Comportamento osservato**
-
-*(da completare con il run reale una volta disponibile catalogo.json)*
 
 **Cosa dimostra**
 
 Il sistema non allunga l'elenco con misure non verificate pur di dare una risposta.
-L'escalation è il prodotto, non un errore — come dichiarato in `agents/orchestrator.md`
-sezione "Gate HITL".
+Il gate e deterministico: misure_candidate() e una funzione Python, non un LLM,
+e non puo essere raggirata dal prompt. L'escalation e il prodotto, non un errore.
 
 ---
 
-## Test 2 — Profilo incompleto dopo ri-domanda
+## Test 2 - Confidence sotto soglia
 
-**Obiettivo:** verificare che dopo 2 invocazioni del profiler con risposte insufficienti
-il sistema escali invece di costruire un profilo ipotetico.
+**Obiettivo:** verificare che il sistema non mostri misure quando l'affidabilita
+dell'eligibility e sotto la soglia configurata (SOGLIA_CONFIDENCE = 0.6).
 
-**Profilo in ingresso (risposte tutte "non_so")**
+**Scenario demo usato:** escalation
+Profilo risultante: situazione_vita non_so, condizione_abitativa ospite_familiari,
+tipo_reddito partita_iva. Eligibility restituisce confidence: 0.45.
+Gate in agents.py:537-551 (confidence_bassa).
 
-| Domanda | Risposta |
-|---|---|
-| situazione_vita | non_so |
-| condizione_abitativa | non_so |
-| tipo_reddito | non_so |
-| timing | non_so |
-| caf | non_so |
-
-**Comportamento atteso**
-
-Prima invocazione di profiler: restituisce `completo: false` con tutti gli assi
-`non_dichiarato`. L'orchestratore ri-domanda. Seconda invocazione: stesso risultato.
-Dopo il limite di 2 iterazioni dichiarato in `agents/orchestrator.md`:
+**Comportamento osservato** (/api/chat, turno finale, 2026-09-24)
 
 ```json
 {
   "status": "hitl_required",
   "escalation": true,
-  "motivo_escalation": "profilo_incompleto",
-  "messaggio_escalation": "Non siamo riusciti a capire abbastanza della tua situazione per orientarti senza rischio di sbagliare. Rivolgiti a un CAF o a un commercialista."
+  "motivo_escalation": "confidence_bassa",
+  "messaggio_escalation": "Il sistema non e abbastanza sicuro della lettura del tuo caso (affidabilita 0.45, soglia 0.6). Preferiamo non mostrarti misure incerte: un CAF puo verificare la tua posizione con i tuoi documenti.",
+  "explainer": null,
+  "navigator": null,
+  "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista."
 }
 ```
 
-**Comportamento osservato**
-
-*(da completare con il run reale)*
-
 **Cosa dimostra**
 
-Il limite di iterazione `max 2 invocazioni di profiler` (dichiarato in `orchestrator.md`,
-tabella "Limiti di iterazione") è applicato. Il sistema non entra in un ciclo infinito
-e non fornisce orientamento su un profilo che non riesce a costruire.
+La soglia 0.6 e una costante in config.py (SOGLIA_CONFIDENCE), non un'istruzione
+al modello. Il messaggio mostra la confidence numerica effettiva (0.45) e la soglia
+configurata (0.6): la persona sa perche e stata indirizzata al CAF, non riceve
+un rifiuto opaco. La soglia e modificabile senza toccare il prompt.
 
 ---
 
-## Test 3 — Richiesta di consulenza esplicita
+## Test 3 - Escalation dichiarata dall'agente
 
-**Obiettivo:** verificare che una domanda esplicita "cosa mi conviene" attivi il gate
-`richiesta_di_consulenza` invece di una risposta prescrittiva.
+**Obiettivo:** verificare che il gate scatti anche quando e l'agente eligibility stesso
+a dichiarare escalation: true nel payload.
 
-**Scenario**
+**Gate nel codice:** agents.py:554-560
 
-Utente con profilo valido, che dopo aver ricevuto le misure chiede all'orchestratore:
-"Quale bonus mi conviene prendere prima?"
+Questo gate scatta dopo il gate di confidence (Test 2). Se eligibility restituisce
+confidence sopra soglia ma dichiara ugualmente escalation: true (ad es. per
+profilo_incompleto o requisiti_non_verificabili), il sistema rimanda al CAF
+indipendentemente dalla confidence.
 
 **Comportamento atteso**
 
-L'orchestratore riconosce la richiesta di raccomandazione (G-04, G-21) e attiva:
-
 ```json
 {
-  "motivo_escalation": "richiesta_di_consulenza",
-  "spiegazione_escalation": "Questo sistema ti orienta sulle misure a cui hai diritto, ma non può dirti quale scegliere o cosa ti conviene di più. Quella valutazione dipende dalla tua situazione specifica e va fatta con un CAF o un commercialista."
+  "status": "hitl_required",
+  "escalation": true,
+  "motivo_escalation": "<motivo dichiarato dall'agente>",
+  "messaggio_escalation": "<spiegazione dall'agente>",
+  "explainer": null,
+  "navigator": null
 }
 ```
 
-**Comportamento osservato**
-
-*(da completare con il run reale)*
-
 **Cosa dimostra**
 
-Il guardrail G-04 ("nessun consiglio professionale") è applicato anche quando la
-persona chiede esplicitamente. Il sistema orienta e non consiglia, come dichiarato
-in `agents/guardrails.md`.
+I gate HITL sono a strati: deterministico (Test 1), numerico (Test 2), semantico (Test 3).
+I primi due sono in codice Python, non in istruzioni LLM: non si bypassano con un prompt.
 
 ---
 
-## Come eseguire questi test
+## Mappa gate - codice
 
-```bash
-# Avviare l'app (Fase A già eseguita, catalogo.json presente)
-python app/main.py
-
-# Test 1: aprire http://localhost:5000, rispondere "altro" a tutte le domande
-# Test 2: rispondere "non so" a tutte le domande, confermare al secondo tentativo
-# Test 3: completare il flusso con un profilo valido, poi chiedere "cosa mi conviene"
-
-# Catturare la risposta JSON dell'endpoint /api/analizza e incollarla sopra
-```
-
-Ogni test che mostra l'escalation funzionante conta come evidenza.
-Uno scenario che fallisce e viene documentato vale più di quattro "funzionanti" senza prova.
+| Gate | Condizione | File | Righe | Motivo |
+|---|---|---|---|---|
+| Catalogo vuoto | misure_candidate() vuota | agents.py | 504-518 | caso_non_coperto_dal_catalogo |
+| Confidence bassa pipeline | confidence < 0.6 | agents.py | 537-551 | confidence_bassa |
+| Escalation agente | payload.escalation true | agents.py | 554-560 | dichiarato dall'agente |
+| Confidence bassa misura | m.confidence < 0.6 per tutte | agents.py | 564-581 | confidence_bassa |
+| Navigator senza passi | passi vuoti per tutte le misure | agents.py | 593-604 | requisiti_non_verificabili |
+| Profilo incompleto | 2 invocazioni profiler fallite | agents.py | 437-445 | profilo_incompleto |

@@ -1,0 +1,187 @@
+﻿{
+    "data":  "2026-09-24",
+    "motivo_escalation":  null,
+    "sistema":  "DEMO_MODE=true, catalogo v0.1.0",
+    "stage":  "results",
+    "scenario":  "scenario-01-casa",
+    "pipeline":  {
+                     "disclaimer":  "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+                     "escalation":  false,
+                     "explainer":  {
+                                       "spiegazioni":  [
+                                                           {
+                                                               "attenzione":  "Devi essere titolare della proprietà o di un altro diritto reale di godimento sull\u0027unità immobiliare già al momento di inizio dei lavori: è la condizione che la fonte chiede per la detrazione del 50%. La detrazione del 50% vale per l\u0027unità immobiliare adibita ad abitazione principale, cioè quella in cui dimori abitualmente. Negli altri casi in cui l\u0027agevolazione spetta, la detrazione è del 36%. Il limite massimo di spesa agevolabile di 96.000 euro si conta per unità immobiliare. Per le spese del 2027 la detrazione per l\u0027abitazione principale è del 36%. Il limite massimo di spesa agevolabile resta di 96.000 euro. Dal 2028 al 2033 la detrazione è del 30%, per tutte le abitazioni. Il limite massimo di spesa agevolabile è di 48.000 euro. La fonte letta non elenca i documenti da presentare o da conservare e non indica con quale mezzo vanno pagate le spese: chiedi a un CAF quali documenti tenere e come pagare, prima di cominciare i lavori. La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione.",
+                                                               "badge_rilevanza":  "Molto probabile",
+                                                               "chi_puo_accedervi":  "Se sostieni la spesa negli anni 2025 e 2026, la detrazione è del 36%. Diventa del 50% in caso di abitazione principale. Se l\u0027unità immobiliare su cui fai i lavori è adibita ad abitazione principale, la detrazione è del 50%. Abitazione principale è quella nella quale la persona fisica dimora abitualmente. Per la detrazione del 50% devi essere titolare di un diritto di proprietà. In alternativa devi essere titolare di un diritto reale di godimento sull\u0027unità immobiliare. Devi esserlo al momento di inizio dei lavori.",
+                                                               "cosa_e":  "La detrazione per le ristrutturazioni edilizie è uno sconto sull\u0027IRPEF. L\u0027IRPEF è l\u0027imposta che paghi sul tuo reddito. Lo sconto vale sulle spese che sostieni per ristrutturare. Non ricevi soldi: paghi meno tasse. Lo recuperi in 10 quote annuali di pari importo, cioè una quota all\u0027anno per dieci anni. La regola è l\u0027articolo 16-bis del Dpr 917/86, il Testo unico delle imposte sui redditi (TUIR).",
+                                                               "disclaimer":  "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+                                                               "glossario":  [
+                                                                                 {
+                                                                                     "spiegazione":  "detrazione: uno sconto sulle tasse che devi pagare.",
+                                                                                     "termine":  "detrazione"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "IRPEF: l\u0027imposta che paghi allo Stato sul tuo reddito.",
+                                                                                     "termine":  "IRPEF"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "unità immobiliare: una singola casa o un singolo locale accatastato a sé.",
+                                                                                     "termine":  "unità immobiliare"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "abitazione principale: quella nella quale la persona fisica dimora abitualmente.",
+                                                                                     "termine":  "abitazione principale"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "diritto reale di godimento: un diritto sulla casa riconosciuto dalla legge, diverso dalla proprietà.",
+                                                                                     "termine":  "diritto reale di godimento"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "10 quote annuali di pari importo: dieci parti uguali, una ogni anno.",
+                                                                                     "termine":  "10 quote annuali di pari importo"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "TUIR: il Testo unico delle imposte sui redditi, la legge sulle imposte sul reddito.",
+                                                                                     "termine":  "TUIR"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "Centro di assistenza fiscale: un ufficio che compila e invia la dichiarazione dei redditi al posto tuo e risponde alle domande sui documenti.",
+                                                                                     "termine":  "CAF"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "Il modulo con cui ogni anno dichiari allo Stato quanto hai guadagnato e quali sconti sulle tasse ti spettano.",
+                                                                                     "termine":  "dichiarazione dei redditi"
+                                                                                 }
+                                                                             ],
+                                                               "id":  "bonus-ristrutturazioni",
+                                                               "quanto_vale":  "Per le spese sostenute negli anni 2025 e 2026 la detrazione è del 36%. La detrazione sale al 50% in caso di abitazione principale. Il limite massimo di spesa è 96.000 euro per unità immobiliare. Lo sconto si divide in 10 quote annuali di pari importo.",
+                                                               "source_refs":  [
+                                                                                   "ade-ristrutturazioni-cittadini#in-cosa-consiste",
+                                                                                   "ade-ristrutturazioni-cittadini#aliquote-2025-2026",
+                                                                                   "ade-ristrutturazioni-cittadini#limite-di-spesa",
+                                                                                   "ade-ristrutturazioni-cittadini#quote-annuali",
+                                                                                   "ade-ristrutturazioni-cittadini#riferimento-normativo",
+                                                                                   "ade-ristrutturazioni-misura-detrazione#requisiti-aliquota-maggiorata",
+                                                                                   "ade-ristrutturazioni-misura-detrazione#aliquote-2027-2033"
+                                                                               ],
+                                                               "titolo":  "Sconto sulle tasse se ristrutturi casa"
+                                                           },
+                                                           {
+                                                               "attenzione":  "L\u0027intervento di ristrutturazione edilizia deve essere iniziato a partire dal 1° gennaio dell\u0027anno precedente a quello in cui compri i mobili o gli elettrodomestici. Guarda la classe energetica sull\u0027etichetta prima di comprare: non inferiore alla classe A per i forni, alla classe E per lavatrici, lavasciugatrici e lavastoviglie, alla classe F per frigoriferi e congelatori. Paga con bonifico oppure con carta di debito o di credito. La fonte non consente il pagamento con assegni bancari, contanti o altri mezzi di pagamento. L\u0027agevolazione vale per gli acquisti effettuati entro il 31 dicembre 2026. Ti servono due documenti: l\u0027attestazione del pagamento e le fatture di acquisto dei beni. Le fatture devono riportare la natura, la qualità e la quantità dei beni: una fattura che dice solo «arredamento» non li riporta. La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione.",
+                                                               "badge_rilevanza":  "Molto probabile",
+                                                               "chi_puo_accedervi":  "L\u0027intervento di ristrutturazione edilizia deve essere iniziato a partire dal 1° gennaio dell\u0027anno precedente a quello dell\u0027acquisto dei beni. I grandi elettrodomestici devono avere una classe energetica minima. Serve la classe non inferiore alla classe A per i forni. Serve la classe E per le lavatrici, le lavasciugatrici e le lavastoviglie. Serve la classe F per i frigoriferi e i congelatori. Devi pagare con bonifico o carta di debito o credito. Non è consentito pagare con assegni bancari, contanti o altri mezzi di pagamento.",
+                                                               "cosa_e":  "Il Bonus mobili ed elettrodomestici è una detrazione Irpef. Detrazione vuol dire sconto sulle tasse che paghi. Lo sconto vale per l\u0027acquisto di mobili e di grandi elettrodomestici. Lo ottieni solo se fai anche un intervento di ristrutturazione edilizia.",
+                                                               "disclaimer":  "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+                                                               "glossario":  [
+                                                                                 {
+                                                                                     "spiegazione":  "detrazione: uno sconto sulle tasse che devi pagare.",
+                                                                                     "termine":  "detrazione"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "Irpef: l\u0027imposta che paghi allo Stato sul tuo reddito.",
+                                                                                     "termine":  "Irpef"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "bonifico: un pagamento che parte dal tuo conto e lascia traccia in banca.",
+                                                                                     "termine":  "bonifico"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "classe energetica: la lettera sull\u0027etichetta che dice quanta energia consuma.",
+                                                                                     "termine":  "classe energetica"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "10 quote annuali di pari importo: dieci parti uguali, una ogni anno.",
+                                                                                     "termine":  "10 quote annuali di pari importo"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "attestazione del pagamento: il documento che prova che hai pagato.",
+                                                                                     "termine":  "attestazione del pagamento"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "fattura: il documento con cui il venditore certifica che cosa ha venduto.",
+                                                                                     "termine":  "fattura"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "La prova che hai pagato: la ricevuta del bonifico oppure la riga di addebito della carta di debito o di credito.",
+                                                                                     "termine":  "attestazione del pagamento"
+                                                                                 }
+                                                                             ],
+                                                               "id":  "bonus-mobili",
+                                                               "quanto_vale":  "La detrazione Irpef è del 50%. Il limite di spesa è 5.000 euro per gli anni 2024, 2025 e 2026. La detrazione va ripartita tra gli aventi diritto in 10 quote annuali di pari importo.",
+                                                               "source_refs":  [
+                                                                                   "ade-bonus-mobili-cittadini#detrazione",
+                                                                                   "ade-bonus-mobili-cittadini#limite-di-spesa",
+                                                                                   "ade-bonus-mobili-cittadini#quote-annuali",
+                                                                                   "ade-bonus-mobili-cittadini#requisito-ristrutturazione",
+                                                                                   "ade-bonus-mobili-cittadini#classi-energetiche",
+                                                                                   "ade-bonus-mobili-cittadini#scadenza-acquisto",
+                                                                                   "ade-bonus-mobili-cittadini#modalita-di-pagamento",
+                                                                                   "ade-bonus-mobili-cittadini#documenti"
+                                                                               ],
+                                                               "titolo":  "Sconto sulle tasse per mobili ed elettrodomestici"
+                                                           }
+                                                       ]
+                                   },
+                     "messaggio_escalation":  null,
+                     "motivo_escalation":  null,
+                     "navigator":  {
+                                       "percorsi":  [
+                                                        {
+                                                            "avvertenza_timing":  null,
+                                                            "id":  "bonus-ristrutturazioni",
+                                                            "passi":  [
+                                                                          {
+                                                                              "azione":  "Metti insieme i documenti elencati qui sotto.",
+                                                                              "nota":  null,
+                                                                              "numero":  1,
+                                                                              "obbligatorio_prima":  true
+                                                                          },
+                                                                          {
+                                                                              "azione":  "Presenta la richiesta attraverso il canale indicato dalla fonte.",
+                                                                              "nota":  null,
+                                                                              "numero":  2,
+                                                                              "obbligatorio_prima":  false
+                                                                          },
+                                                                          {
+                                                                              "azione":  "Conserva la ricevuta e i giustificativi fino alla verifica.",
+                                                                              "nota":  null,
+                                                                              "numero":  3,
+                                                                              "obbligatorio_prima":  false
+                                                                          }
+                                                                      ]
+                                                        },
+                                                        {
+                                                            "avvertenza_timing":  "Scadenza indicata dalla fonte: 2026-12-31.",
+                                                            "id":  "bonus-mobili",
+                                                            "passi":  [
+                                                                          {
+                                                                              "azione":  "Metti insieme i documenti elencati qui sotto.",
+                                                                              "nota":  null,
+                                                                              "numero":  1,
+                                                                              "obbligatorio_prima":  true
+                                                                          },
+                                                                          {
+                                                                              "azione":  "Presenta la richiesta attraverso il canale indicato dalla fonte.",
+                                                                              "nota":  null,
+                                                                              "numero":  2,
+                                                                              "obbligatorio_prima":  false
+                                                                          },
+                                                                          {
+                                                                              "azione":  "Conserva la ricevuta e i giustificativi fino alla verifica.",
+                                                                              "nota":  null,
+                                                                              "numero":  3,
+                                                                              "obbligatorio_prima":  false
+                                                                          }
+                                                                      ]
+                                                        }
+                                                    ],
+                                       "prossimo_passo_prioritario":  "Raccogli i documenti richiesti dalla fonte ufficiale.",
+                                       "riquadro_spid":  {
+                                                             "mostra":  false,
+                                                             "testo":  "Molte pratiche si aprono solo con SPID, CIE o CNS. Se non li hai, un CAF può aiutarti a ottenerli."
+                                                         }
+                                   },
+                     "status":  "ok"
+                 },
+    "status":  "ok"
+}

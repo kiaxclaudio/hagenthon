@@ -1,0 +1,103 @@
+﻿{
+    "data":  "2026-09-24",
+    "motivo_escalation":  null,
+    "sistema":  "DEMO_MODE=true, catalogo v0.1.0",
+    "stage":  "results",
+    "scenario":  "scenario-04-spese-mediche",
+    "pipeline":  {
+                     "disclaimer":  "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+                     "escalation":  false,
+                     "explainer":  {
+                                       "spiegazioni":  [
+                                                           {
+                                                               "attenzione":  "Paga con versamento bancario o postale, o con un altro sistema tracciabile: la detrazione del 19% è fruibile soltanto a questa condizione. Il contante resta ammesso, senza perdere il diritto alla detrazione, solo per l\u0027acquisto di medicinali e di dispositivi medici e per le prestazioni sanitarie rese dalle strutture pubbliche o dalle strutture private accreditate al Servizio sanitario nazionale. Conserva i giustificativi delle spese fino al 31 dicembre del quinto anno successivo: è il tempo in cui l\u0027Agenzia delle entrate può effettuare un accertamento. Puoi ripartire la detrazione in quattro quote annuali costanti e di pari importo. Puoi farlo quando il loro ammontare complessivo annuo è superiore a 15.493,71 euro. La fonte letta non indica una scadenza entro cui accedere a questa detrazione. La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione.",
+                                                               "badge_rilevanza":  "Molto probabile",
+                                                               "chi_puo_accedervi":  "Devi pagare con versamento bancario o postale o altri sistemi tracciabili. La detrazione del 19% degli oneri indicati nell\u0027articolo 15 del Tuir è fruibile soltanto a questa condizione. Il versamento in contanti resta ammesso per l\u0027acquisto di medicinali e di dispositivi medici. Resta ammesso anche per tutte le prestazioni sanitarie rese dalle strutture pubbliche. Resta ammesso per le strutture private accreditate al Servizio sanitario nazionale. In questi casi non perdi il diritto alla detrazione. Devi conservare i giustificativi delle spese. Li conservi per tutto il tempo in cui l\u0027Agenzia delle entrate può effettuare un accertamento. Cioè fino al 31 dicembre del quinto anno successivo.",
+                                                               "cosa_e":  "Le spese sanitarie danno diritto a una detrazione dall\u0027Irpef. Detrazione vuol dire sconto sulle tasse che paghi. L\u0027Irpef è l\u0027imposta che paghi sul tuo reddito. Lo sconto non si calcola su tutta la spesa dell\u0027anno.",
+                                                               "disclaimer":  "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+                                                               "glossario":  [
+                                                                                 {
+                                                                                     "spiegazione":  "detrazione: uno sconto sulle tasse che devi pagare.",
+                                                                                     "termine":  "detrazione"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "Irpef: l\u0027imposta che paghi allo Stato sul tuo reddito.",
+                                                                                     "termine":  "Irpef"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "parte eccedente: la parte di spesa che supera una certa cifra.",
+                                                                                     "termine":  "parte eccedente"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "sistemi tracciabili: pagamenti che lasciano una traccia scritta, come bancomat o carta.",
+                                                                                     "termine":  "sistemi tracciabili"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "giustificativi delle spese: le ricevute e le fatture che provano la spesa.",
+                                                                                     "termine":  "giustificativi delle spese"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "accertamento: il controllo con cui l\u0027Agenzia delle entrate verifica la tua dichiarazione.",
+                                                                                     "termine":  "accertamento"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "Tuir: il Testo unico delle imposte sui redditi, la legge sulle imposte sul reddito.",
+                                                                                     "termine":  "Tuir"
+                                                                                 },
+                                                                                 {
+                                                                                     "spiegazione":  "Prodotti per la salute come occhiali da vista, apparecchi acustici, siringhe, misuratori di pressione.",
+                                                                                     "termine":  "dispositivi medici"
+                                                                                 }
+                                                                             ],
+                                                               "id":  "detrazione-spese-sanitarie",
+                                                               "quanto_vale":  "Puoi portare in detrazione dall\u0027Irpef il 19% delle spese sanitarie. Il 19% si calcola solo sulla parte eccedente l\u0027importo di 129,11 euro. Quindi i primi 129,11 euro di spesa dell\u0027anno restano fuori dal calcolo.",
+                                                               "source_refs":  [
+                                                                                   "ade-spese-sanitarie-aspetti-generali#detrazione-19-e-parte-eccedente",
+                                                                                   "ade-spese-sanitarie-aspetti-generali#pagamento-tracciabile",
+                                                                                   "ade-spese-sanitarie-aspetti-generali#eccezioni-contanti",
+                                                                                   "ade-spese-sanitarie-aspetti-generali#rateizzazione",
+                                                                                   "ade-spese-sanitarie-aspetti-generali#conservazione-documenti"
+                                                                               ],
+                                                               "titolo":  "Sconto sulle tasse per le spese mediche"
+                                                           }
+                                                       ]
+                                   },
+                     "messaggio_escalation":  null,
+                     "motivo_escalation":  null,
+                     "navigator":  {
+                                       "percorsi":  [
+                                                        {
+                                                            "avvertenza_timing":  null,
+                                                            "id":  "detrazione-spese-sanitarie",
+                                                            "passi":  [
+                                                                          {
+                                                                              "azione":  "Metti insieme i documenti elencati qui sotto.",
+                                                                              "nota":  null,
+                                                                              "numero":  1,
+                                                                              "obbligatorio_prima":  true
+                                                                          },
+                                                                          {
+                                                                              "azione":  "Presenta la richiesta attraverso il canale indicato dalla fonte.",
+                                                                              "nota":  null,
+                                                                              "numero":  2,
+                                                                              "obbligatorio_prima":  false
+                                                                          },
+                                                                          {
+                                                                              "azione":  "Conserva la ricevuta e i giustificativi fino alla verifica.",
+                                                                              "nota":  null,
+                                                                              "numero":  3,
+                                                                              "obbligatorio_prima":  false
+                                                                          }
+                                                                      ]
+                                                        }
+                                                    ],
+                                       "prossimo_passo_prioritario":  "Raccogli i documenti richiesti dalla fonte ufficiale.",
+                                       "riquadro_spid":  {
+                                                             "mostra":  false,
+                                                             "testo":  "Molte pratiche si aprono solo con SPID, CIE o CNS. Se non li hai, un CAF può aiutarti a ottenerli."
+                                                         }
+                                   },
+                     "status":  "ok"
+                 },
+    "status":  "ok"
+}

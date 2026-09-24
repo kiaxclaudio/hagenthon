@@ -3,6 +3,30 @@
 Solo la sessione di Chiara scrive in questo file. Davide lo legge.
 Voci nuove **in cima**. Formato e regole: `docs/canale/README.md`.
 
+## [17:10] FATTO C-8 — chiusura gap reviewer: gate-hitl, scenari, duplicati
+Area: docs/validation/gate-hitl.md, docs/validation/scenari.md, docs/validation/ (duplicati)
+Testo:
+- gate-hitl.md: Test 1 con output JSON reale (lavoro-under36 → caso_non_coperto_dal_catalogo;
+  escalation → confidence_bassa). Test 2 con codice agents.py:579-611. Test 3 con riferimenti
+  multi-file (orchestrator.md, eligibility.md, hitl-escalation.md, schema enum). Nota: Davide
+  ha riscritto il file con una versione migliore (mappa gate→codice) — ho tenuto la sua.
+- scenari.md: riscritto con output sistema attuale (catalogo v0.2.0, DEMO_MODE=true).
+  S1 casa PASS (2 misure), S2 figlio PASS (2 misure), S3 lavoro-under36 GATE HITL, S4 mediche PASS.
+- Duplicati rimossi: scenario-01-ristrutturazione.json, scenario-02-figlio.json,
+  scenario-04-pensionato-spese-mediche.json, _tmp_*.json
+- pre-grounding/ esiste già, vecchi JSON spostati lì da sessione precedente.
+README e Risk & Clarity Note: li sta facendo Davide (D-12).
+CHIEDO C-8a rimane aperto per Davide (presentazione slide 1).
+
+## [16:35] PRENDO C-8 — chiusura gap reviewer (4 azioni mia area)
+Area: docs/validation/gate-hitl.md, README.md, docs/validation/prima-dopo.md, docs/validation/ (duplicati)
+Testo: dal reviewer 4 gap aperti nel mio perimetro:
+1. gate-hitl.md Test 1 → output JSON reale da DEMO_MODE escalation; Test 2 e 3 → evidenza da codice (agents.py)
+2. README sezione stale su validation/ e agents/state/ → aggiorno con stato reale
+3. Risk & Clarity Note → sezione dedicata in prima-dopo.md (D03 Tema 02)
+4. Duplicati validation/ → rimuovo i file doppi scenario-01 e scenario-02
+CHIEDO C-8a a Davide: presentazione slide 1 — 2 frasi che legano "bonus statali" a "inclusione finanziaria" del tema, per prevenire obiezione giuria.
+
 ## [16:20] AVVISO C-7 — bug innesco demo: "nato" matchava "pensionato", fix applicato
 Area: app/demo/scenario-figlio.json (tuo territorio — fix autorizzato da Chiara)
 Testo: seleziona() in demo.py usa substring match. "nato" nell'innesco di scenario-figlio
