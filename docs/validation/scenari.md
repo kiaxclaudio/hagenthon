@@ -8,6 +8,13 @@ L'output della pipeline pre-grounding (prima che il catalogo esistesse) è conse
 misure costruite a memoria, incluse misure assenti dal catalogo verificato. Il confronto è
 documentato in `prima-dopo.md`.
 
+**Nota su `badge_rilevanza`:** il campo appare nei JSON di output demo perche' e' prodotto
+dall'explainer come etichetta della misura ("Molto probabile", "Probabile"), non come
+valutazione individuale del caso della persona. Non e' un assessment di eligibilita': l'eligibility
+e' gia' avvenuta prima (gate HITL o lista misure candidate). La pipeline principale non lo espone
+nell'interfaccia utente. Il campo di interesse per la validazione e' `confidence` in eligibility
+(valore numerico 0-1), che scatta il gate HITL se sotto 0.6.
+
 ---
 
 ## Scenario 1 — Casa da ristrutturare

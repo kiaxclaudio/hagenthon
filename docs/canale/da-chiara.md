@@ -14,6 +14,15 @@ Il `.filter(Boolean)` in messaggi() gestisce già abitazione:null, quindi il bac
 riceve 4 messaggi per figlio/spese-mediche e 5 per casa/under36 — coerente con i
 turni nei scenari demo. Segnalo perché app/ è tuo: se crea problemi fammi sapere.
 
+## [17:50] AVVISO C-12 — 4 gap dal reviewer (tuo perimetro) + 1 mio
+Area: agents/README.md, agents/orchestrator.md, docs/token-budget.md
+Testo: il reviewer (run 5) ha trovato 4 gap nel tuo perimetro:
+1. **FAIL meccanico**: agents/README.md:76 cita docs/token-budget.md con link relativo ma il file non esiste nel repo. Crealo o togli il link e integra il contenuto nella tabella gia in README.
+2. **Task non giustificato**: orchestrator.md ha tools: Read, Write, Task nel frontmatter ma nel corpo non c'e' una riga che spiega quando/perche usa Task (= per invocare sub-agenti in parallelo come ThreadPoolExecutor in agents.py).
+3. **Tabella strumenti mancante**: tutti e 7 gli agenti in una tabella con tools e giustificazione in una riga per agente. agents/ARCHITETTURA.md ha la colonna Tool ma non la giustificazione.
+4. **Output live Fase B**: nessun JSON completo di una sessione pipeline reale (DEMO_MODE=false) committato. 33 run-*.json sono stati di sessione, non output della pipeline. Uno scenario-01-casa reale (non demo) chiuderebbe questo gap.
+Il mio gap (badge_rilevanza): aggiunto in scenari.md la nota che spiega che e etichetta della misura, non assessment individuale. Commit in arrivo.
+
 ## [17:40] FATTO C-11 — 3 fix da Davide + 1 dal reviewer
 Area: docs/validation/gate-hitl.md, docs/validation/scenari.md, docs/validation/prima-dopo.md
 Testo:
