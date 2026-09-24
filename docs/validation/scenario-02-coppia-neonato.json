@@ -1,0 +1,153 @@
+{
+  "scenario": "Coppia con figlio appena nato, reddito medio-basso",
+  "data_test": "2026-09-24",
+  "profilo_input": {
+    "situazione_vita": "coppia_con_figli",
+    "situazione_abitativa": "affittuario",
+    "situazione_reddituale": "reddito_basso_medio",
+    "supporto_fiscale": "non_ho_mai_fatto_dichiarazione",
+    "timing": "ho_appena_avuto_un_figlio",
+    "note_libere": "Abbiamo avuto un bambino 2 mesi fa. Mia moglie è in congedo di maternità. Vorremmo iscriverlo all'asilo nido il prossimo anno."
+  },
+  "eligibility_output": {
+    "profilo_riassunto": "Coppia con neonato, un genitore in congedo di maternità, ISEE medio-basso, interessata a bonus per famiglie con figli piccoli",
+    "bonus": [
+      {
+        "id": "assegno-unico-universale",
+        "nome": "Assegno Unico e Universale per i figli a carico",
+        "nome_semplice": "Assegno Unico",
+        "categoria": "famiglia",
+        "rilevanza": "alta",
+        "badge_rilevanza": "Molto probabile",
+        "importo_massimo": "fino a 199,40€ al mese per figlio (con ISEE molto basso)",
+        "percentuale": "n/a",
+        "anni_recupero": "mensile fino ai 21 anni del figlio (con condizioni)",
+        "scadenza": "Domanda entro febbraio per avere i ratei da marzo; domande successive scalate dal mese di presentazione",
+        "requisito_principale": "Avere un figlio a carico sotto i 21 anni (no limite di età per figli disabili). Residenza in Italia.",
+        "cosa_e": "Un contributo mensile dello Stato per ogni figlio a carico. L'importo dipende dall'ISEE del nucleo familiare: più è basso l'ISEE, più alto è il contributo. Si riceve direttamente sul conto corrente ogni mese.",
+        "quanto_vale": "Con ISEE fino a 17.090€: 199,40€/mese per figlio. Con ISEE tra 17.090€ e 45.574€: importo decrescente. Senza ISEE o con ISEE oltre 45.574€: 57€/mese per figlio. Per i primi 12 mesi di vita del bambino c'è una maggiorazione di 30€/mese.",
+        "chi_puo_accedervi": "Tutti i genitori con figli a carico sotto i 21 anni, residenti in Italia. Non ci sono limiti di reddito: l'importo cambia ma il diritto è universale.",
+        "attenzione": "L'ISEE va rinnovato ogni anno (di solito entro febbraio) per mantenere l'importo aggiornato. Senza ISEE aggiornato si riceve il minimo (57€). L'ISEE si fa gratis al CAF.",
+        "nota_incertezza": null,
+        "glossario": [
+          {"termine": "ISEE", "spiegazione": "un calcolo della situazione economica del tuo nucleo familiare, serve per molti bonus legati al reddito"},
+          {"termine": "DSU", "spiegazione": "il modulo da compilare per ottenere l'ISEE, si fa al CAF o online sul sito INPS"}
+        ]
+      },
+      {
+        "id": "bonus-nido",
+        "nome": "Bonus per iscrizione agli asili nido",
+        "nome_semplice": "Bonus Nido",
+        "categoria": "famiglia",
+        "rilevanza": "alta",
+        "badge_rilevanza": "Molto probabile",
+        "importo_massimo": "fino a 3.000€/anno",
+        "percentuale": "n/a",
+        "anni_recupero": "annuale, per ogni anno di frequenza del nido fino ai 3 anni del bambino",
+        "scadenza": "Domanda entro il 31 dicembre dell'anno di riferimento",
+        "requisito_principale": "Figlio iscritto a un asilo nido pubblico o privato autorizzato, con ISEE del nucleo familiare",
+        "cosa_e": "Un rimborso parziale delle rette dell'asilo nido. Lo Stato ti rimborsa una parte di quello che paghi ogni mese per il nido, direttamente sul conto corrente. L'importo annuale dipende dal reddito ISEE della tua famiglia.",
+        "quanto_vale": "Con ISEE sotto 25.000€: 3.000€/anno (250€/mese). Con ISEE tra 25.000€ e 40.000€: 2.500€/anno (circa 208€/mese). Con ISEE sopra 40.000€ o senza ISEE: 1.500€/anno (125€/mese).",
+        "chi_puo_accedervi": "Genitori con figli fino a 3 anni iscritti a un asilo nido (pubblico o privato accreditato). La domanda si fa tramite INPS online.",
+        "attenzione": "Il rimborso arriva solo dopo aver presentato le ricevute delle rette pagate. Non è un anticipo: prima si paga il nido, poi si chiede il rimborso con le prove di pagamento.",
+        "nota_incertezza": "Il figlio è appena nato (2 mesi): il Bonus Nido si può richiedere dall'anno in cui il bambino inizia la frequenza del nido, non prima. Da pianificare per il prossimo anno.",
+        "glossario": [
+          {"terme": "nido accreditato", "spiegazione": "asilo nido privato autorizzato dalla Regione a ricevere il Bonus Nido INPS"}
+        ]
+      },
+      {
+        "id": "congedo-parentale",
+        "nome": "Indennità di congedo parentale",
+        "nome_semplice": "Congedo parentale retribuito",
+        "categoria": "lavoro",
+        "rilevanza": "alta",
+        "badge_rilevanza": "Molto probabile",
+        "importo_massimo": "fino a 80% della retribuzione per i primi mesi, poi 30%",
+        "percentuale": "80% (primo mese); 30% (mesi successivi fino a 6 mesi totali per genitore)",
+        "anni_recupero": "n/a",
+        "scadenza": "Utilizzabile entro i 12 anni di vita del bambino",
+        "requisito_principale": "Essere lavoratore dipendente con contratto in corso",
+        "cosa_e": "Un'indennità pagata dall'INPS quando ci si assenta dal lavoro per accudire il bambino. Il genitore che lavora può chiedere un periodo aggiuntivo di congedo (oltre la maternità/paternità obbligatoria), ricevendo parte dello stipendio.",
+        "quanto_vale": "Il primo mese di congedo parentale vale l'80% della retribuzione. Dal secondo mese in poi: 30% dello stipendio, fino a un massimo di 6 mesi per genitore (estendibili).",
+        "chi_puo_accedervi": "Entrambi i genitori lavoratori dipendenti, separatamente. Ogni genitore ha diritto ai propri mesi di congedo. Il congedo si può usare anche a ore.",
+        "attenzione": "La domanda va fatta tramite il datore di lavoro o direttamente all'INPS online prima di iniziare il congedo. Non è automatico: va richiesto.",
+        "nota_incertezza": null,
+        "glossario": [
+          {"termine": "congedo parentale", "spiegazione": "periodo facoltativo di assenza dal lavoro per accudire il figlio, diverso dalla maternità/paternità obbligatoria"}
+        ]
+      }
+    ],
+    "avvertenza": "Questi bonus sono indicativi in base alle informazioni fornite. Le condizioni specifiche, gli importi e le scadenze vanno verificati su agenziaentrate.gov.it o con un CAF prima di procedere."
+  },
+  "navigator_output": {
+    "messaggio_apertura": "Tre contributi importanti per la tua famiglia. La prima cosa da fare è l'ISEE: sblocca tutti gli altri.",
+    "percorsi": [
+      {
+        "id": "assegno-unico-universale",
+        "titolo": "Assegno Unico",
+        "tempo_stimato": "1-2 ore la prima volta (incluso ISEE)",
+        "difficolta": "medio",
+        "passi": [
+          {"numero": 1, "azione": "Ottenere l'ISEE aggiornato al CAF (gratuito)", "obbligatorio_prima": true, "nota": "Porta: CU dei due genitori, dichiarazione dei redditi se disponibile, dati del conto corrente. Il CAF compila la DSU (il modulo per l'ISEE) gratis."},
+          {"numero": 2, "azione": "Accedere a inps.it con SPID e cercare 'Assegno Unico'", "obbligatorio_prima": false, "nota": null},
+          {"numero": 3, "azione": "Compilare la domanda online inserendo il codice fiscale del figlio e l'IBAN del conto su cui ricevere i pagamenti", "obbligatorio_prima": false, "nota": "In alternativa, il CAF può fare la domanda per te."},
+          {"numero": 4, "azione": "Attendere la comunicazione INPS (di solito entro 30 giorni) e verificare l'importo assegnato", "obbligatorio_prima": false, "nota": null}
+        ],
+        "documenti_necessari": [
+          "SPID o PIN INPS (per accedere al sito INPS)",
+          "Codice fiscale del figlio (richiesto all'ospedale alla nascita)",
+          "ISEE aggiornato (ottenuto al CAF)",
+          "IBAN del conto corrente su cui ricevere i pagamenti",
+          "CU (Certificazione Unica) dei due genitori dell'anno precedente"
+        ],
+        "dove_andare": {
+          "da_solo_online": "inps.it → 'Prestazioni e servizi' → 'Assegno unico e universale per i figli a carico' → 'Fai domanda'",
+          "con_supporto": "CAF o patronato: possono fare sia l'ISEE che la domanda Assegno Unico. Consigliato per chi non ha SPID o non è pratico di siti INPS."
+        },
+        "spid_necessario": true,
+        "avvertenza_timing": "Se la domanda viene presentata entro febbraio, si ricevono le rate arretrate da marzo. Domande presentate dopo scalano dal mese successivo alla presentazione."
+      },
+      {
+        "id": "bonus-nido",
+        "titolo": "Bonus Nido",
+        "tempo_stimato": "20 minuti per la domanda + raccolta ricevute mensili",
+        "difficolta": "medio",
+        "passi": [
+          {"numero": 1, "azione": "Iscrivere il bambino a un asilo nido (pubblico o privato accreditato INPS)", "obbligatorio_prima": true, "nota": "Verificare che il nido privato sia accreditato per il Bonus Nido: chiederlo direttamente alla struttura."},
+          {"numero": 2, "azione": "Fare la domanda su inps.it dopo il primo pagamento della retta", "obbligatorio_prima": false, "nota": "La domanda si presenta ogni anno scolastico in cui il bambino frequenta."},
+          {"numero": 3, "azione": "Caricare le ricevute mensili delle rette sul portale INPS man mano che si pagano", "obbligatorio_prima": false, "nota": "Il rimborso arriva dopo il caricamento delle ricevute, non in anticipo."}
+        ],
+        "documenti_necessari": [
+          "ISEE aggiornato (stesso dell'Assegno Unico se già fatto)",
+          "Ricevute mensili di pagamento delle rette del nido",
+          "Codice fiscale del bambino",
+          "Codice fiscale e dati del nido (richiesti nella domanda INPS)"
+        ],
+        "dove_andare": {
+          "da_solo_online": "inps.it → 'Bonus asilo nido e forme di supporto presso la famiglia'",
+          "con_supporto": "CAF o patronato per la compilazione della domanda."
+        },
+        "spid_necessario": true,
+        "avvertenza_timing": "Il Bonus Nido si può richiedere dall'anno in cui il bambino inizia a frequentare il nido. Con un figlio di 2 mesi, pianificare per il prossimo anno scolastico."
+      }
+    ],
+    "riquadro_spid": {
+      "mostra": true,
+      "testo": "Non hai ancora lo SPID? Puoi attivarlo in pochi minuti presso uno sportello Poste Italiane, una banca abilitata o tramite app (es. PosteID, TIM ID). Ti serve un documento d'identità valido e il tuo numero di telefono. È gratuito."
+    },
+    "prossimo_passo_prioritario": "Vai al CAF questa settimana per fare l'ISEE: è gratuito, richiede 30-45 minuti e sblocca sia l'Assegno Unico (importo pieno) che il Bonus Nido (importo massimo se ISEE < 25.000€)."
+  },
+  "validazione": {
+    "esito": "pass",
+    "controlli": [
+      {"controllo": "eligibility restituisce JSON valido", "esito": "pass"},
+      {"controllo": "tutti gli id sono kebab-case e univoci", "esito": "pass"},
+      {"controllo": "navigator usa gli stessi id di eligibility", "esito": "pass"},
+      {"controllo": "importi e percentuali numericamente coerenti", "esito": "pass"},
+      {"controllo": "avvertenza CAF presente in eligibility", "esito": "pass"},
+      {"controllo": "riquadro_spid presente in navigator", "esito": "pass"}
+    ],
+    "bonus_attesi_trovati": true,
+    "note": "Entrambi i bonus attesi (Assegno Unico, Bonus Nido) presenti con rilevanza 'alta'. Aggiunto Congedo Parentale come bonus pertinente non ovvio, coerente con il profilo (genitore in congedo di maternità). Importi Assegno Unico corretti: 199,40€ massimo, 57€ minimo. Importi Bonus Nido corretti: 3.000€/25k ISEE, 2.500€/40k ISEE, 1.500€ oltre. Il navigator segnala correttamente che il Bonus Nido è da pianificare per il prossimo anno (figlio di 2 mesi). L'ISEE è identificato come prerequisito trasversale e primo passo obbligatorio."
+  }
+}

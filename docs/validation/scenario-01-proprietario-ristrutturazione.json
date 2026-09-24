@@ -1,0 +1,152 @@
+{
+  "scenario": "Proprietario di casa, lavoratore dipendente, ristrutturazione in corso",
+  "data_test": "2026-09-24",
+  "profilo_input": {
+    "situazione_vita": "lavoratore_dipendente",
+    "situazione_abitativa": "proprietario",
+    "situazione_reddituale": "reddito_medio",
+    "supporto_fiscale": "usa_caf",
+    "timing": "ho_gia_fatto_lavori",
+    "note_libere": "Sto ristrutturando il bagno e ho comprato anche nuovi mobili. Ho già pagato le fatture."
+  },
+  "eligibility_output": {
+    "profilo_riassunto": "Lavoratore dipendente proprietario di casa con ristrutturazione edilizia in corso o appena completata",
+    "bonus": [
+      {
+        "id": "bonus-ristrutturazione-50",
+        "nome": "Detrazione IRPEF per ristrutturazione edilizia",
+        "nome_semplice": "Bonus Ristrutturazione 50%",
+        "categoria": "casa",
+        "rilevanza": "alta",
+        "badge_rilevanza": "Molto probabile",
+        "importo_massimo": "fino a 96.000€ di spesa detraibile",
+        "percentuale": "50%",
+        "anni_recupero": "10 anni",
+        "scadenza": "31 dicembre 2026 (prorogabile)",
+        "requisito_principale": "Essere proprietario o titolare di altro diritto reale sull'immobile oggetto dei lavori",
+        "cosa_e": "Uno sconto sulle tasse che paghi ogni anno. Se hai ristrutturato casa, recuperi il 50% di quello che hai speso, suddiviso in 10 rate annuali uguali quando fai la dichiarazione dei redditi.",
+        "quanto_vale": "Se hai speso 20.000€ di lavori, recuperi 10.000€ totali: 1.000€ all'anno per 10 anni. Il tetto massimo di spesa su cui calcolare il 50% è 96.000€ per immobile.",
+        "chi_puo_accedervi": "Proprietari di casa o chi ha un diritto reale sull'immobile (es. usufrutto). Anche chi affitta può accedere se ha sostenuto le spese. L'immobile deve essere a uso residenziale.",
+        "attenzione": "I pagamenti devono essere stati fatti con bonifico bancario o postale 'parlante' (che riporta causale, codice fiscale del beneficiario e P.IVA dell'impresa). Pagamenti in contanti non sono detraibili.",
+        "nota_incertezza": null,
+        "glossario": [
+          {"termine": "detrazione IRPEF", "spiegazione": "uno sconto sulle tasse che paghi a fine anno"},
+          {"termine": "bonifico parlante", "spiegazione": "bonifico con causale specifica richiesta dall'Agenzia delle Entrate per i bonus edilizi"}
+        ]
+      },
+      {
+        "id": "ecobonus-50",
+        "nome": "Detrazione per riqualificazione energetica (Ecobonus)",
+        "nome_semplice": "Ecobonus",
+        "categoria": "energia",
+        "rilevanza": "media",
+        "badge_rilevanza": "Da verificare",
+        "importo_massimo": "dipende dal tipo di intervento",
+        "percentuale": "50% (interventi minori) o 65% (sostituzione caldaia, coibentazione, etc.)",
+        "anni_recupero": "10 anni",
+        "scadenza": "31 dicembre 2026",
+        "requisito_principale": "I lavori devono riguardare il miglioramento dell'efficienza energetica dell'immobile",
+        "cosa_e": "Uno sconto sulle tasse per chi fa lavori che fanno consumare meno energia alla propria casa: nuova caldaia, finestre più isolanti, pannelli solari termici, coibentazione del tetto o delle pareti.",
+        "quanto_vale": "Per una caldaia a condensazione da 5.000€: recuperi il 65%, cioè 3.250€ in 10 anni (325€/anno). Per le finestre: 50%, fino a un tetto che dipende dal tipo di infisso.",
+        "chi_puo_accedervi": "Proprietari, inquilini, familiari conviventi che hanno sostenuto le spese. L'immobile deve essere esistente (non nuova costruzione).",
+        "attenzione": "Per l'Ecobonus al 65% è obbligatorio trasmettere la documentazione all'ENEA entro 90 giorni dalla fine dei lavori. Senza questa trasmissione il bonus decade.",
+        "nota_incertezza": "Il tipo di intervento (bagno) potrebbe non rientrare nell'Ecobonus: dipende se sono stati sostituiti impianti o infissi. Da verificare con il tecnico.",
+        "glossario": [
+          {"termine": "ENEA", "spiegazione": "l'ente nazionale per l'energia a cui va trasmessa la documentazione degli interventi energetici"},
+          {"termine": "coibentazione", "spiegazione": "isolamento termico di pareti, tetti o pavimenti per ridurre la dispersione di calore"}
+        ]
+      },
+      {
+        "id": "bonus-mobili-50",
+        "nome": "Detrazione per acquisto mobili ed elettrodomestici",
+        "nome_semplice": "Bonus Mobili",
+        "categoria": "casa",
+        "rilevanza": "alta",
+        "badge_rilevanza": "Molto probabile",
+        "importo_massimo": "fino a 5.000€ di spesa detraibile",
+        "percentuale": "50%",
+        "anni_recupero": "10 anni",
+        "scadenza": "31 dicembre 2026",
+        "requisito_principale": "Aver usufruito del Bonus Ristrutturazione nello stesso anno o in uno dei due anni precedenti",
+        "cosa_e": "Se stai ristrutturando casa e compri mobili nuovi o grandi elettrodomestici (almeno classe A per forni, A per lavatrici e lavastoviglie), puoi detrarre il 50% della spesa fino a 5.000€.",
+        "quanto_vale": "Se hai speso 4.000€ di mobili, recuperi 2.000€ in 10 anni (200€/anno). Il tetto è 5.000€ per immobile, quindi il massimo recuperabile è 2.500€.",
+        "chi_puo_accedervi": "Chi ha già usufruito del Bonus Ristrutturazione per l'immobile dove vengono acquistati i mobili. I due bonus devono riguardare lo stesso immobile.",
+        "attenzione": "Il tetto di 5.000€ vale per unità immobiliare, non per persona. Se si ristruttura un solo immobile, il massimo detraibile è 5.000€ totali anche se più persone comprano mobili.",
+        "nota_incertezza": null,
+        "glossario": [
+          {"termine": "classe energetica A", "spiegazione": "classificazione che indica l'efficienza energetica di un elettrodomestico, richiesta per il Bonus Mobili"}
+        ]
+      }
+    ],
+    "avvertenza": "Questi bonus sono indicativi in base alle informazioni fornite. Le condizioni specifiche, gli importi e le scadenze vanno verificati su agenziaentrate.gov.it o con un CAF prima di procedere."
+  },
+  "navigator_output": {
+    "messaggio_apertura": "Hai tre bonus a portata di mano. Ecco cosa fare per recuperare i soldi che hai già speso, passo per passo.",
+    "percorsi": [
+      {
+        "id": "bonus-ristrutturazione-50",
+        "titolo": "Bonus Ristrutturazione 50%",
+        "tempo_stimato": "30 minuti di raccolta documenti, poi il CAF fa il resto",
+        "difficolta": "medio",
+        "passi": [
+          {"numero": 1, "azione": "Raccogliere tutte le fatture dei lavori e le ricevute dei bonifici 'parlanti' usati per pagarle", "obbligatorio_prima": true, "nota": "I bonifici ordinari non bastano: deve essere un bonifico con causale specifica. Controlla che sulle ricevute sia scritto 'bonifico per detrazioni fiscali' o simile."},
+          {"numero": 2, "azione": "Salvare le fatture in ordine (data, importo, P.IVA dell'impresa)", "obbligatorio_prima": false, "nota": null},
+          {"numero": 3, "azione": "Portare tutto al CAF quando fai il 730 (tra aprile e settembre)", "obbligatorio_prima": false, "nota": "Il CAF compila la sezione ristrutturazioni del 730. Porta anche il codice fiscale dell'impresa che ha fatto i lavori."},
+          {"numero": 4, "azione": "Ricevere lo sconto fiscale nella busta paga di luglio (se dipendente con 730 precompilato)", "obbligatorio_prima": false, "nota": null}
+        ],
+        "documenti_necessari": [
+          "Fatture dei lavori di ristrutturazione (con P.IVA impresa)",
+          "Ricevute dei bonifici parlanti usati per il pagamento",
+          "Planimetria dell'immobile (se richiesta dal CAF)",
+          "Codice fiscale del contribuente"
+        ],
+        "dove_andare": {
+          "da_solo_online": "730 precompilato su agenziaentrate.gov.it (con SPID) — sezione 'Oneri detraibili > Spese per interventi di recupero del patrimonio edilizio'",
+          "con_supporto": "CAF o commercialista per la compilazione del 730. Consigliato per chi non ha mai usato il 730 precompilato."
+        },
+        "spid_necessario": false,
+        "avvertenza_timing": "Se i lavori non sono ancora terminati, la detrazione si calcola sulle spese già pagate nell'anno fiscale, non sull'intero preventivo."
+      },
+      {
+        "id": "bonus-mobili-50",
+        "titolo": "Bonus Mobili 50%",
+        "tempo_stimato": "15 minuti di raccolta documenti aggiuntivi",
+        "difficolta": "facile",
+        "passi": [
+          {"numero": 1, "azione": "Raccogliere le ricevute di acquisto dei mobili o elettrodomestici (scontrino o fattura)", "obbligatorio_prima": true, "nota": null},
+          {"numero": 2, "azione": "Verificare che il pagamento sia stato fatto con carta di credito, carta di debito o bonifico (non contanti)", "obbligatorio_prima": true, "nota": "Il pagamento in contanti esclude il bonus."},
+          {"numero": 3, "azione": "Portare questi documenti insieme a quelli del Bonus Ristrutturazione al CAF", "obbligatorio_prima": false, "nota": "I due bonus si dichiarano insieme nello stesso 730."}
+        ],
+        "documenti_necessari": [
+          "Scontrini o fatture di acquisto mobili/elettrodomestici",
+          "Ricevuta del pagamento (estratto conto carta o bonifico)",
+          "Scheda tecnica dell'elettrodomestico con classe energetica (se applicabile)"
+        ],
+        "dove_andare": {
+          "da_solo_online": "730 precompilato su agenziaentrate.gov.it — sezione 'Acquisto mobili ed elettrodomestici'",
+          "con_supporto": "CAF: si gestisce insieme al Bonus Ristrutturazione, nessun appuntamento separato."
+        },
+        "spid_necessario": false,
+        "avvertenza_timing": null
+      }
+    ],
+    "riquadro_spid": {
+      "mostra": true,
+      "testo": "Non hai ancora lo SPID? Puoi attivarlo in pochi minuti presso uno sportello Poste Italiane, una banca abilitata o tramite app (es. PosteID, TIM ID). Ti serve un documento d'identità valido e il tuo numero di telefono. È gratuito."
+    },
+    "prossimo_passo_prioritario": "Raccogli subito tutte le fatture e le ricevute dei bonifici dei lavori: sono il documento più importante e senza di esse non puoi accedere a nessuno dei tre bonus."
+  },
+  "validazione": {
+    "esito": "pass",
+    "controlli": [
+      {"controllo": "eligibility restituisce JSON valido", "esito": "pass"},
+      {"controllo": "tutti gli id sono kebab-case e univoci", "esito": "pass"},
+      {"controllo": "navigator usa gli stessi id di eligibility", "esito": "pass"},
+      {"controllo": "importi e percentuali numericamente coerenti", "esito": "pass"},
+      {"controllo": "avvertenza CAF presente in eligibility", "esito": "pass"},
+      {"controllo": "riquadro_spid presente in navigator", "esito": "pass"}
+    ],
+    "bonus_attesi_trovati": true,
+    "note": "Tutti e 3 i bonus attesi (Ristrutturazione, Ecobonus, Mobili) sono presenti. Il Bonus Ristrutturazione e il Bonus Mobili hanno rilevanza 'alta' coerente con il profilo (proprietario con lavori già pagati tramite bonifico). L'Ecobonus ha rilevanza 'media' perché la pertinenza dipende dal tipo specifico di lavori al bagno, correttamente segnalato in nota_incertezza. I navigator_id corrispondono agli eligibility_id. Il tetto del Bonus Mobili (5.000€ dal 2024) è corretto."
+  }
+}

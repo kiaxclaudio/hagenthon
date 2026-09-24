@@ -1,0 +1,206 @@
+{
+  "scenario": "scenario-03-disoccupato-under36",
+  "descrizione": "Disoccupato under 36 in cerca di lavoro",
+  "timestamp": "2026-09-24T13:23:57.877409",
+  "profilo_input": {
+    "situazione_vita": "Ho perso il lavoro o sto cercando occupazione",
+    "situazione_abitativa": "Sono in affitto",
+    "situazione_reddituale": "No, sono disoccupato o in cerca di lavoro",
+    "supporto_fiscale": "No, faccio tutto da solo",
+    "timing": "Devo ancora iniziare, sto raccogliendo informazioni",
+    "note_libere": "Under 36",
+    "escalation": false,
+    "motivo_escalation": null
+  },
+  "bonus_attesi": [
+    "Naspi",
+    "Supporto Formazione Lavoro"
+  ],
+  "bonus_trovati": [
+    "Indennità di disoccupazione",
+    "Sussidio per chi cerca lavoro e si forma",
+    "Sussidio per famiglie in difficoltà economica",
+    "Detrazione fiscale sull'affitto",
+    "Contributo per sedute di psicoterapia",
+    "Bonus cultura per i 18enni"
+  ],
+  "match_attesi": [],
+  "eligibility_output": {
+    "profilo_riassunto": "Persona under 36, disoccupata o in cerca di lavoro, in affitto, che gestisce autonomamente la propria situazione fiscale",
+    "bonus": [
+      {
+        "id": "naspi",
+        "nome": "NASpI – Nuova Assicurazione Sociale per l'Impiego",
+        "nome_semplice": "Indennità di disoccupazione",
+        "categoria": "lavoro",
+        "rilevanza": "alta",
+        "badge_rilevanza": "Molto probabile",
+        "importo_massimo": "fino a 1.550,42€ mensili (massimale 2024)",
+        "percentuale": "75% della retribuzione media mensile con riduzione del 3% dal 5° mese",
+        "anni_recupero": "durata pari alla metà delle settimane contributive negli ultimi 4 anni",
+        "scadenza": "domanda entro 68 giorni dalla perdita del lavoro",
+        "requisito_principale": "Aver perso involontariamente il lavoro con almeno 13 settimane di contributi negli ultimi 4 anni",
+        "cosa_e": "È un'indennità mensile erogata dall'INPS a chi perde il lavoro in modo involontario, come licenziamento o fine contratto. Non spetta a chi si dimette volontariamente, salvo giusta causa. L'importo si riduce del 3% ogni mese a partire dal quinto.",
+        "quanto_vale": "Se guadagnavi 1.500€ al mese, la NASpI iniziale è circa 1.125€ al mese, che scende progressivamente. Con 52 settimane di contributi, dura circa 6 mesi.",
+        "chi_puo_accedervi": "Lavoratori dipendenti che hanno perso il lavoro involontariamente, con almeno 13 settimane di contributi negli ultimi 4 anni e 30 giorni di lavoro effettivo nell'ultimo anno.",
+        "attenzione": "La domanda va presentata entro 68 giorni dalla cessazione del rapporto di lavoro: i giorni di ritardo vengono sottratti dalla durata del sussidio.",
+        "nota_incertezza": "Non è verificabile se la perdita del lavoro sia stata volontaria o involontaria, né quante settimane contributive siano disponibili. Entrambi i fattori sono determinanti per l'accesso.",
+        "glossario": [
+          {
+            "termine": "Settimane contributive",
+            "spiegazione": "Le settimane in cui hai lavorato e versato contributi all'INPS"
+          },
+          {
+            "termine": "INPS",
+            "spiegazione": "Istituto Nazionale della Previdenza Sociale, l'ente che gestisce pensioni e ammortizzatori sociali"
+          }
+        ]
+      },
+      {
+        "id": "supporto-formazione-lavoro",
+        "nome": "Supporto per la Formazione e il Lavoro (SFL)",
+        "nome_semplice": "Sussidio per chi cerca lavoro e si forma",
+        "categoria": "lavoro",
+        "rilevanza": "alta",
+        "badge_rilevanza": "Molto probabile",
+        "importo_massimo": "500€ mensili",
+        "percentuale": "importo fisso",
+        "anni_recupero": "fino a 12 mesi non rinnovabili",
+        "scadenza": "senza scadenza definita",
+        "requisito_principale": "ISEE sotto 6.000€, età 18-59 anni, adesione a percorso di formazione o politiche attive",
+        "cosa_e": "È un sussidio mensile di 500€ per chi ha un reddito molto basso e partecipa a corsi di formazione o è preso in carico dai centri per l'impiego. Ha sostituito parte del Reddito di Cittadinanza dal 2024.",
+        "quanto_vale": "500€ al mese per un massimo di 12 mesi, mentre partecipi a un percorso di formazione o ricerca attiva di lavoro.",
+        "chi_puo_accedervi": "Persone tra 18 e 59 anni con ISEE familiare sotto 6.000€, non occupate, che aderiscono a un percorso attivo presso un centro per l'impiego o ente di formazione.",
+        "attenzione": "Richiede partecipazione attiva a corsi o percorsi di ricollocazione: se non si rispettano gli impegni, il sussidio viene sospeso.",
+        "nota_incertezza": "Non è disponibile l'ISEE dell'utente: se superiore a 6.000€, questa misura non è accessibile. Verificare il proprio ISEE prima di fare domanda.",
+        "glossario": [
+          {
+            "termine": "ISEE",
+            "spiegazione": "Indicatore della situazione economica del tuo nucleo familiare, usato per accedere a molte agevolazioni pubbliche"
+          },
+          {
+            "termine": "Politiche attive",
+            "spiegazione": "Attività di formazione, tirocinio o orientamento al lavoro promosse dallo Stato"
+          }
+        ]
+      },
+      {
+        "id": "assegno-inclusione",
+        "nome": "Assegno di Inclusione (ADI)",
+        "nome_semplice": "Sussidio per famiglie in difficoltà economica",
+        "categoria": "lavoro",
+        "rilevanza": "media",
+        "badge_rilevanza": "Da verificare",
+        "importo_massimo": "fino a 500€ mensili più integrazione affitto fino a 280€ mensili",
+        "percentuale": "importo fisso con quota aggiuntiva per chi è in affitto",
+        "anni_recupero": "fino a 18 mesi rinnovabili",
+        "scadenza": "senza scadenza definita",
+        "requisito_principale": "ISEE sotto 9.360€ e nucleo familiare con minori, over 60, disabili o persone in carico ai servizi sociali",
+        "cosa_e": "È il sussidio principale per famiglie in condizioni di povertà. Prevede una quota aggiuntiva per chi paga l'affitto. Chi è in affitto riceve fino a 280€ al mese in più rispetto alla quota base.",
+        "quanto_vale": "Una persona in affitto avente diritto potrebbe ricevere fino a 500€ più 280€ di integrazione affitto, per circa 780€ al mese per 18 mesi rinnovabili.",
+        "chi_puo_accedervi": "Nuclei familiari con ISEE sotto 9.360€ che includono almeno un minore, un over 60, una persona con disabilità o una persona seguita dai servizi sociali.",
+        "attenzione": "Se sei single senza figli, senza disabilità e sotto i 60 anni, non puoi accedere all'ADI. In quel caso si valuta il Supporto per la Formazione e il Lavoro.",
+        "nota_incertezza": "Non è chiara la composizione del nucleo familiare. Se l'utente è single under 36 senza figli né disabilità, questa misura non è applicabile.",
+        "glossario": [
+          {
+            "termine": "Nucleo familiare",
+            "spiegazione": "Le persone che vivono insieme considerate un'unica unità economica ai fini ISEE"
+          },
+          {
+            "termine": "Integrazione affitto",
+            "spiegazione": "Quota aggiuntiva dell'ADI riservata a chi vive in affitto anziché in casa di proprietà"
+          }
+        ]
+      },
+      {
+        "id": "detrazione-affitto-inquilini",
+        "nome": "Detrazione IRPEF per canone di locazione",
+        "nome_semplice": "Detrazione fiscale sull'affitto",
+        "categoria": "casa",
+        "rilevanza": "media",
+        "badge_rilevanza": "Da verificare",
+        "importo_massimo": "fino a 991,60€ di detrazione annua",
+        "percentuale": "importo fisso decrescente in base al reddito",
+        "anni_recupero": "annuale",
+        "scadenza": "annuale, da indicare nella dichiarazione dei redditi",
+        "requisito_principale": "Contratto di locazione regolarmente registrato come abitazione principale e reddito complessivo sotto 30.987€",
+        "cosa_e": "Se hai un contratto d'affitto regolare per la tua abitazione principale, puoi detrarre dalla dichiarazione dei redditi una quota delle spese sostenute. L'importo varia in base al reddito e al tipo di contratto.",
+        "quanto_vale": "Con reddito sotto 15.493€ la detrazione è di 991,60€. Con reddito tra 15.493€ e 30.987€ la detrazione è di 495,80€. Con reddito oltre 30.987€ non spetta nulla.",
+        "chi_puo_accedervi": "Chi ha la residenza nell'abitazione affittata, con contratto registrato, e un reddito complessivo sotto 30.987€.",
+        "attenzione": "Essendo disoccupato potresti avere poca o nessuna IRPEF da detrarre: la detrazione è utile solo se hai un reddito imponibile su cui pagare l'imposta.",
+        "nota_incertezza": "Se il reddito dell'anno è molto basso o assente, la detrazione potrebbe non essere fruibile per mancanza di IRPEF sufficiente. Da valutare al momento della dichiarazione dei redditi.",
+        "glossario": [
+          {
+            "termine": "Detrazione IRPEF",
+            "spiegazione": "Una riduzione dell'imposta sul reddito che devi pagare, non un rimborso diretto in denaro"
+          },
+          {
+            "termine": "Abitazione principale",
+            "spiegazione": "La casa in cui risiedi e dimori abitualmente, risultante dai registri anagrafici"
+          }
+        ]
+      },
+      {
+        "id": "bonus-psicologo",
+        "nome": "Bonus Psicologo",
+        "nome_semplice": "Contributo per sedute di psicoterapia",
+        "categoria": "salute",
+        "rilevanza": "media",
+        "badge_rilevanza": "Da verificare",
+        "importo_massimo": "fino a 1.500€",
+        "percentuale": "contributo diretto, non detrazione",
+        "anni_recupero": "una tantum annuale",
+        "scadenza": "bando annuale INPS: verificare apertura sul sito INPS",
+        "requisito_principale": "ISEE sotto 50.000€ e stato di disagio psicologico",
+        "cosa_e": "È un contributo economico dello Stato per coprire il costo delle sedute di psicoterapia con professionisti iscritti all'albo. Viene erogato tramite bando INPS con graduatoria. La disoccupazione è una delle situazioni riconosciute.",
+        "quanto_vale": "Fino a 1.500€ con ISEE sotto 15.000€; fino a 1.000€ con ISEE tra 15.000€ e 30.000€; fino a 500€ con ISEE tra 30.000€ e 50.000€.",
+        "chi_puo_accedervi": "Residenti in Italia con ISEE sotto 50.000€ che necessitano di supporto psicologico, inclusi i disoccupati in situazione di disagio.",
+        "attenzione": "Il bando è annuale e i fondi sono limitati: si accede tramite graduatoria INPS. Chi ha ISEE più basso ha priorità.",
+        "nota_incertezza": "Verificare sul sito INPS se il bando per l'anno in corso è aperto e quali siano le scadenze. Non è noto l'ISEE dell'utente.",
+        "glossario": [
+          {
+            "termine": "Bando INPS",
+            "spiegazione": "Procedura pubblica con cui l'INPS raccoglie le domande e assegna il contributo in base a una graduatoria"
+          },
+          {
+            "termine": "Una tantum",
+            "spiegazione": "Beneficio erogato una sola volta, non rinnovabile"
+          }
+        ]
+      },
+      {
+        "id": "carta-cultura-giovani",
+        "nome": "Carta Cultura Giovani e Carta del Merito",
+        "nome_semplice": "Bonus cultura per i 18enni",
+        "categoria": "giovani",
+        "rilevanza": "bassa",
+        "badge_rilevanza": "Possibile",
+        "importo_massimo": "fino a 1.000€ totali (500€ Carta Cultura più 500€ Carta del Merito)",
+        "percentuale": "importo fisso",
+        "anni_recupero": "una tantum",
+        "scadenza": "da verificare annualmente sul sito ufficiale",
+        "requisito_principale": "Avere esattamente 18 anni nell'anno di riferimento; ISEE sotto 35.000€ per la Carta Cultura",
+        "cosa_e": "Due bonus separati per i neomaggiorenni: la Carta Cultura è per chi ha ISEE sotto 35.000€, la Carta del Merito per chi ha preso 100 alla maturità. Si usano per libri, musica, cinema, teatro e corsi.",
+        "quanto_vale": "Fino a 1.000€ da spendere in cultura se si ha diritto a entrambe le carte.",
+        "chi_puo_accedervi": "Chi compie 18 anni nell'anno in corso. La Carta Cultura richiede ISEE sotto 35.000€; la Carta del Merito richiede diploma con voto 100.",
+        "attenzione": "Sono riservate esclusivamente ai 18enni dell'anno in corso. Se hai già compiuto 19 anni o più, non puoi più richiederle.",
+        "nota_incertezza": "Non è specificata l'età esatta dell'utente. Sappiamo solo che è under 36: se ha già superato i 18 anni questa misura non è accessibile.",
+        "glossario": [
+          {
+            "termine": "Carta Cultura Giovani",
+            "spiegazione": "Bonus da 500€ per i 18enni con ISEE basso, da usare per acquisti culturali"
+          },
+          {
+            "termine": "Carta del Merito",
+            "spiegazione": "Bonus aggiuntivo da 500€ per i 18enni che hanno preso 100 alla maturità"
+          }
+        ]
+      }
+    ],
+    "avvertenza": "Questi bonus sono indicativi in base alle informazioni fornite. Le condizioni specifiche, gli importi e le scadenze vanno verificati su agenziaentrate.gov.it o con un CAF prima di procedere."
+  },
+  "navigator_output": {
+    "error": true,
+    "messaggio": "Non è stato possibile generare le istruzioni. Rivolgiti a un CAF."
+  }
+}
