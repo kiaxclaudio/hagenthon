@@ -1,14 +1,16 @@
 {
-  "profilo_id": "99e0cdcb",
-  "creato_il": "2025-01-16T10:00:00Z",
+  "profilo_id": "c8fcf8e3",
+  "creato_il": "2025-01-15T10:30:00Z",
   "situazioni_vita": [
     "under36"
   ],
   "condizione_abitativa": "affittuario",
   "tipo_reddito": "lavoro_dipendente",
-  "timing": "da_iniziare",
+  "timing": "non_so",
   "caf": "no",
   "termini_non_noti": [],
-  "completo": true,
-  "risposte_mancanti": []
+  "completo": false,
+  "risposte_mancanti": [
+    "timing"
+  ]
 }

@@ -388,7 +388,12 @@ REGOLE_CONDIZIONALI = {
         "profilo contraddice davvero un requisito obbligatorio "
         "('requisito_non_soddisfatto') o quando la misura non risponde a "
         "nessuna delle situazioni di vita dichiarate "
-        "('situazione_non_pertinente')."
+        "('situazione_non_pertinente').\n"
+        "11. 'situazione_non_pertinente' e' un confronto fra due liste, non un "
+        "giudizio: vale solo se NESSUNA delle "
+        "'situazioni_vita_collegate' della misura compare in "
+        "'situazioni_vita' del profilo. Se la situazione combacia, la misura "
+        "si valuta sui requisiti."
     ),
     'navigator': (
         "\n\nRegole condizionali di navigator, da verificare prima di "
@@ -402,7 +407,42 @@ REGOLE_CONDIZIONALI = {
         "2. Ogni passo richiede 'ordine' (progressivo da 1), 'azione', 'dove' "
         "(enum) e 'source_refs' (almeno uno).\n"
         "3. 'primo_passo_concreto' e' il primo passo di QUESTA misura, non una "
-        "priorita' fra misure diverse."
+        "priorita' fra misure diverse.\n"
+        "4. 'difficolta' (dell'intero percorso) e 'autonomia' (del singolo "
+        "passo) sono campi diversi con enum diversi: non scambiare i valori "
+        "dell'uno con quelli dell'altro.\n"
+        "5. Al massimo sei passi, e ogni 'azione' e' una frase sola. Non e' un "
+        "risparmio di spazio: un elenco di dodici passi con tre righe l'uno "
+        "non si segue, e una persona che non capisce il passo due non arriva "
+        "al passo tre."
+    ),
+}
+
+
+# L'ultima riga del contesto e' quella che pesa di piu'. Una regola su un
+# singolo campo, sepolta in fondo a ventimila caratteri di prompt di sistema,
+# viene ignorata: misurato, quattro volte su cinque. Gli stessi caratteri messi
+# in coda al messaggio - cioe' l'ultima cosa che il modello legge prima di
+# rispondere - reggono. Qui stanno solo gli errori osservati davvero, uno per
+# riga: non e' un secondo prompt, e' l'errata corrige del primo.
+PROMEMORIA_FINALE = {
+    'navigator': (
+        "\n\nPrima di rispondere, tre controlli sui campi che si sbagliano "
+        "piu' spesso:\n"
+        "- 'difficolta' e' dell'intero percorso e ammette SOLO 'facile', "
+        "'medio' o 'richiede_professionista'. I valori 'da_soli', "
+        "'con_assistenza' e 'serve_professionista' appartengono ad "
+        "'autonomia', che e' un campo del singolo passo: non scambiarli.\n"
+        "- 'passi' non puo' essere vuoto.\n"
+        "- nessun campo valorizzato a null: se non lo sai e' facoltativo, "
+        "omettilo."
+    ),
+    'eligibility': (
+        "\n\nPrima di rispondere, due controlli:\n"
+        "- 'disclaimer' va copiato dallo schema carattere per carattere.\n"
+        "- 'corrispondenze_profilo' usa gli identificativi delle domande "
+        "('situazione_vita', 'condizione_abitativa', 'tipo_reddito', "
+        "'timing', 'caf'), non i nomi dei campi del profilo."
     ),
 }
 
@@ -424,13 +464,11 @@ def esegui_agente(agente: str, contenuto_utente: Any, *, valida: bool = True) ->
            if _schema_compatto(agente) else '')
         + REGOLE_CONDIZIONALI.get(agente, '')
     )
-    if isinstance(contenuto_utente, str):
-        messaggi = [{'role': 'user', 'content': contenuto_utente}]
-    else:
-        messaggi = [{
-            'role': 'user',
-            'content': json.dumps(contenuto_utente, ensure_ascii=False),
-        }]
+    corpo = (
+        contenuto_utente if isinstance(contenuto_utente, str)
+        else json.dumps(contenuto_utente, ensure_ascii=False)
+    )
+    messaggi = [{'role': 'user', 'content': corpo + PROMEMORIA_FINALE.get(agente, '')}]
 
     for giro in range(MAX_RICHIESTE_SCHEMA + 1):
         try:
@@ -1283,3 +1321,273 @@ def _serve_spid(esito: dict) -> bool:
             if 'spid_cie_cns' in (passo.get('documenti_necessari') or []):
                 return True
     return False
+
+
+# --------------------------------------------------------------------------
+# Questionario deterministico (Fase B, passo 0)
+# --------------------------------------------------------------------------
+
+# Le cinque domande non le genera il modello: stanno qui, fisse, nell'ordine
+# della specifica, con le etichette copiate alla lettera dalla tabella di
+# agents/subagents/profiler.md. Il motivo non e' il risparmio di token, anche
+# se il risparmio c'e' (quattro invocazioni in meno per sessione): una domanda
+# riformulata a ogni sessione e' un difetto di prodotto. Chi usa questo
+# servizio sta gia' affrontando un problema, e un questionario che cambia
+# parole a ogni giro lo disorienta, salta la domanda che regge tutto e non e'
+# riproducibile in collaudo.
+#
+# Al modello resta il lavoro che e' suo: il profiler normalizza le risposte
+# sulla tassonomia chiusa e produce il profilo. Qui si sceglie fra opzioni
+# gia' scritte, e questo un dizionario lo fa meglio di un LLM.
+
+QUESTIONARIO: tuple[dict, ...] = (
+    {
+        'id': 'situazione_vita',
+        'testo': 'Cosa sta succedendo nella tua vita in questo momento?',
+        'nota': 'Puoi indicare piú di una cosa.',
+        'multipla': True,
+        'opzioni': (
+            ('casa', 'Sto per comprare o ristrutturare casa',
+             ('casa', 'ristruttur', 'immobile', 'abitazione')),
+            ('figlio', 'Ho avuto o aspetto un figlio',
+             ('figlio', 'figli', 'bambin', 'nato', 'nascita')),
+            ('lavoro', 'Ho perso il lavoro o sto cercando occupazione',
+             ('lavoro', 'disoccupat', 'licenziat', 'occupazione')),
+            ('spese_mediche', 'Ho avuto spese mediche importanti',
+             ('medic', 'salute', 'sanitar', 'ospedale')),
+            ('auto', 'Voglio acquistare un’auto nuova',
+             ('auto', 'macchina', 'veicolo')),
+            ('under36', 'Ho meno di 36 anni e voglio sapere a cosa ho diritto',
+             ('under36', 'under 36', '36 anni', 'giovane')),
+            ('non_so', 'Non so da dove partire, mostrami tutto',
+             ('non so', 'non lo so', 'mostrami tutto', 'boh')),
+        ),
+    },
+    {
+        'id': 'condizione_abitativa',
+        'testo': 'Riguardo alla casa in cui vivi:',
+        # Condizionale, come prescrive profiler.md: chiederla a chi ha parlato
+        # di figli o di spese mediche vuol dire chiedere un dato che non entra
+        # in nessuna misura del catalogo.
+        'solo_se': ('casa', 'under36'),
+        'opzioni': (
+            ('proprietario', 'Sono proprietario dell’immobile',
+             ('propriet', 'é mia', 'di mia propriet')),
+            ('affittuario', 'Sono in affitto', ('affitt', 'inquilin')),
+            ('ospite_familiari', 'Vivo in una casa di un familiare',
+             ('familiar', 'ospite', 'genitor')),
+            ('non_so', 'Non lo so con certezza', ('non so', 'non lo so', 'boh')),
+        ),
+    },
+    {
+        'id': 'tipo_reddito',
+        'testo': 'Hai un reddito in questo momento?',
+        'opzioni': (
+            ('lavoro_dipendente', 'Sì, lavoro come dipendente',
+             ('dipendent', 'assunt', 'stipendio')),
+            ('pensione', 'Sì, sono in pensione', ('pension',)),
+            ('partita_iva', 'Sì, ho la partita IVA',
+             ('partita iva', 'p.iva', 'piva', 'autonom', 'libero profession')),
+            ('nessun_reddito',
+             'No: sono disoccupato, oppure a carico di un familiare',
+             ('nessun reddito', 'disoccupat', 'a carico', 'non lavoro')),
+            ('non_so', 'Non lo so', ('non so', 'non lo so', 'boh')),
+        ),
+    },
+    {
+        'id': 'caf',
+        'testo': 'Hai già qualcuno che ti aiuta con le tasse e la burocrazia?',
+        'opzioni': (
+            ('si', 'Sì, ho un commercialista oppure vado al CAF',
+             ('commercialista', 'vado al caf', 'ho un caf', 'patronato')),
+            ('no', 'No, faccio tutto da solo',
+             ('faccio tutto da solo', 'da solo', 'da sola', 'nessuno')),
+            ('non_so_cosa_e', 'Non so cos’è un CAF',
+             ('non so cos', 'che cos’è un caf', 'cosa e un caf', 'cos\'e un caf')),
+        ),
+    },
+    {
+        'id': 'timing',
+        'testo': 'A che punto sei con quello che vuoi fare?',
+        # Condizionale come la precedente, e per lo stesso motivo. 'A che punto
+        # sei' presuppone che ci sia un prima e un dopo: vale per dei lavori o
+        # per l'acquisto di un'auto. Non vale per un figlio gia' nato, per una
+        # spesa medica gia' sostenuta o per chi ha appena detto che non sa da
+        # dove partire: a quella persona la domanda arriva come una domanda
+        # senza senso, e un sistema che fa domande senza senso perde la fiducia
+        # di chi lo sta usando per la prima volta.
+        'solo_se': ('casa', 'auto'),
+        'opzioni': (
+            ('da_iniziare', 'Devo ancora iniziare, sto raccogliendo informazioni',
+             ('ancora', 'devo iniziare', 'non ho iniziato', 'raccogliendo')),
+            ('in_corso', 'Ho già iniziato: lavori, pratiche o acquisti in corso',
+             ('in corso', 'già iniziat', 'gia iniziat', 'sto facendo')),
+            ('gia_concluso',
+             'Ho già finito, voglio recuperare agevolazioni del passato',
+             ('finito', 'concluso', 'passato', 'recuperare')),
+            ('non_so', 'Non lo so', ('non so', 'non lo so', 'boh')),
+        ),
+    },
+)
+
+# Glossario imposto dalla specifica: chi non sa che cosa sia un CAF riceve la
+# spiegazione subito, prima di proseguire, non alla fine.
+SPIEGAZIONE_CAF = (
+    'Il CAF, Centro di Assistenza Fiscale, è uno sportello dove dei '
+    'professionisti ti aiutano con la dichiarazione dei redditi, i bonus e le '
+    'pratiche. Lo trovi nei patronati, nei sindacati e in molti comuni.'
+)
+
+SALUTO = (
+    'Ciao. Ti faccio cinque domande per capire quali aiuti pubblici riguardano '
+    'la tua situazione. Nessuna richiede documenti, e a ognuna puoi rispondere '
+    '"non lo so".'
+)
+
+
+def domanda_da_porre(risposte: dict) -> dict | None:
+    """Prima domanda del questionario ancora senza risposta, o None se finito.
+
+    Salta la domanda condizionale quando la specifica dice di saltarla: una
+    domanda che non cambia nessuna risposta e' tempo tolto alla persona.
+    """
+    situazioni = set(risposte.get('situazione_vita') or [])
+    for domanda in QUESTIONARIO:
+        if domanda['id'] in risposte:
+            continue
+        vincolo = domanda.get('solo_se')
+        if vincolo and not situazioni.intersection(vincolo):
+            continue
+        return domanda
+    return None
+
+
+def domande_previste(risposte: dict) -> list[str]:
+    """Le domande che questo percorso porra' davvero, condizionali comprese.
+
+    Serve al contatore dell'interfaccia: promettere cinque domande e farne
+    quattro e' una piccola bugia, e a un servizio pubblico le piccole bugie si
+    pagano tutte. Finche' la situazione di vita non e' nota le condizionali non
+    sono decidibili, e si dichiara il numero massimo.
+    """
+    situazioni = set(risposte.get('situazione_vita') or [])
+    if not situazioni:
+        return [d['id'] for d in QUESTIONARIO]
+    return [
+        d['id'] for d in QUESTIONARIO
+        if not d.get('solo_se') or situazioni.intersection(d['solo_se'])
+    ]
+
+
+def testo_domanda(domanda: dict) -> str:
+    """La domanda come la legge la persona: testo, opzioni numerate, nota."""
+    righe = [domanda['testo']]
+    righe += [
+        f'{i}. {etichetta}'
+        for i, (_, etichetta, _) in enumerate(domanda['opzioni'], start=1)
+    ]
+    if domanda.get('nota'):
+        righe.append(domanda['nota'])
+    return '\n'.join(righe)
+
+
+def opzioni_domanda(domanda: dict) -> list[dict]:
+    """Le opzioni in forma strutturata, per chi disegna dei bottoni."""
+    return [
+        {'valore': valore, 'etichetta': etichetta}
+        for valore, etichetta, _ in domanda['opzioni']
+    ]
+
+
+def _riconosci(domanda: dict, testo: str) -> list[str]:
+    """Valori della tassonomia riconosciuti nella risposta, senza modello.
+
+    Tre modi, in quest'ordine: il numero dell'opzione, il valore o l'etichetta
+    per intero, una parola chiave. Nessuna inferenza: cio' che non corrisponde
+    non produce un valore, produce una ri-domanda.
+    """
+    pulito = ' '.join(str(testo or '').lower().split()).strip(' .')
+    if not pulito:
+        return []
+    trovati: list[str] = []
+    for indice, (valore, etichetta, parole) in enumerate(domanda['opzioni'], start=1):
+        # Il numero vale solo se e' tutta la risposta: in "ho 36 anni" non c'e'
+        # l'opzione 3.
+        esatti = {str(indice), f'{indice})', valore, valore.replace('_', ' '),
+                  etichetta.lower()}
+        if pulito in esatti:
+            trovati.append(valore)
+            continue
+        if etichetta.lower() in pulito or any(p in pulito for p in parole):
+            trovati.append(valore)
+    ordinati = [v for v, _, _ in domanda['opzioni'] if v in trovati]
+    if not domanda.get('multipla'):
+        return ordinati[:1]
+    # 'non_so' vuol dire "mostrami tutto": accanto a una scelta precisa e' rumore.
+    if len(ordinati) > 1 and 'non_so' in ordinati:
+        ordinati = [v for v in ordinati if v != 'non_so']
+    return ordinati
+
+
+def avanza_questionario(risposte: dict, messaggio_utente: str | None) -> dict:
+    """Un turno di questionario, senza nessuna chiamata al modello.
+
+    Restituisce sempre la stessa forma: che cosa dire alla persona, quali
+    opzioni mostrarle, le risposte raccolte finora e se il questionario e'
+    finito. Chi chiama non deve sapere com'e' fatto il questionario.
+    """
+    risposte = dict(risposte or {})
+    premessa: list[str] = []
+    in_attesa = domanda_da_porre(risposte)
+
+    if messaggio_utente is not None and in_attesa is not None:
+        riconosciuti = _riconosci(in_attesa, messaggio_utente)
+        if riconosciuti:
+            risposte[in_attesa['id']] = (
+                riconosciuti if in_attesa.get('multipla') else riconosciuti[0]
+            )
+            if in_attesa['id'] == 'caf' and riconosciuti[0] == 'non_so_cosa_e':
+                premessa.append(SPIEGAZIONE_CAF)
+            in_attesa = domanda_da_porre(risposte)
+        else:
+            # Non si indovina: si ripete la domanda. Registrare qui un valore a
+            # caso significherebbe orientare una persona su un profilo falso.
+            premessa.append(
+                'Non sono sicuro di aver capito: scegli una delle opzioni qui '
+                'sotto, con il numero o con le tue parole.'
+            )
+
+    previste = domande_previste(risposte)
+    if in_attesa is None:
+        return {
+            'testo': '\n\n'.join(premessa + [
+                'Ho raccolto le tue risposte. Sto controllando il catalogo verificato.'
+            ]),
+            'opzioni': [],
+            'domanda_id': None,
+            'numero_domanda': len(previste),
+            'totale_domande': len(previste),
+            'risposte': risposte,
+            'completo': True,
+        }
+
+    if messaggio_utente is None:
+        premessa.insert(0, SALUTO)
+    return {
+        'testo': '\n\n'.join(premessa + [testo_domanda(in_attesa)]),
+        'opzioni': opzioni_domanda(in_attesa),
+        'domanda_id': in_attesa['id'],
+        # Posizione reale nel percorso di questa persona, non in un percorso
+        # ideale di cinque domande che quasi nessuno fa per intero.
+        'numero_domanda': (previste.index(in_attesa['id']) + 1
+                           if in_attesa['id'] in previste else len(previste)),
+        'totale_domande': len(previste),
+        'risposte': risposte,
+        'completo': False,
+    }
+
+
+def domande_poste(risposte: dict) -> list[str]:
+    """Le domande mostrate davvero: distingue 'non chiesto' da 'non risposto'."""
+    poste = [d['id'] for d in QUESTIONARIO if d['id'] in risposte]
+    return poste or ['situazione_vita']

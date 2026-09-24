@@ -12,7 +12,13 @@ from flask import Flask, jsonify, render_template, request
 
 import catalogo as catalogo_mod
 import demo
-from agents import call_orchestrator, esegui_profilazione, run_full_pipeline, vista_interfaccia
+from agents import (
+    avanza_questionario,
+    domande_poste,
+    esegui_profilazione,
+    run_full_pipeline,
+    vista_interfaccia,
+)
 from config import DEMO_MODE, MODELLI_PER_TIER, TIER_PER_AGENTE
 from session import (
     add_message,
@@ -31,7 +37,10 @@ app = Flask(__name__)
 # avvio (le sessioni non sopravvivono al riavvio, ed e' accettabile qui).
 app.secret_key = os.getenv('FLASK_SECRET_KEY') or secrets.token_hex(32)
 
-DOMANDE_POSTE = ['situazione_vita', 'condizione_abitativa', 'tipo_reddito', 'timing', 'caf']
+# Risposte raccolte per sessione. Non sono stato di agente - il profilo, quello
+# si', sta in agents/state/profilo.json (E3) - sono le caselle del questionario
+# in attesa di essere normalizzate dal profiler.
+_risposte_sessione: dict[str, dict] = {}
 
 
 @app.route('/')
@@ -62,48 +71,47 @@ def chat():
 
     session_id, _ = get_or_create_session(session_id)
 
-    if not messaggio_utente:
-        return jsonify({
-            'session_id': session_id,
-            'message': 'Scrivi o scegli una risposta per continuare.',
-            'stage': 'chat',
-            'status': 'ok',
-            'pipeline': None,
-        }), 200
-
-    add_message(session_id, 'user', messaggio_utente)
+    # Un messaggio vuoto non e' un errore: e' l'apertura della sessione, ed e'
+    # il momento in cui va posta la PRIMA domanda. Rispondere "scrivi qualcosa"
+    # qui era il modo in cui la domanda su cui si regge tutto il resto -
+    # la situazione di vita - spariva dal percorso.
+    raccolte = _risposte_sessione.get(session_id, {})
+    if messaggio_utente:
+        add_message(session_id, 'user', messaggio_utente)
 
     try:
-        # Passo 1: l'orchestratore conduce la conversazione (haiku).
-        esito_chat = call_orchestrator(conversazione(session_id))
-        if esito_chat.get('status') != 'ok':
-            return jsonify(_risposta_degradata(
-                session_id, esito_chat['text'], esito_chat.get('motivo_tecnico', 'modello'),
-            )), 200
-
-        testo = esito_chat['text']
-        add_message(session_id, 'assistant', testo)
+        # Passo 1: il questionario. Cinque domande fisse, nell'ordine della
+        # specifica, con le etichette di agents/subagents/profiler.md. Nessuna
+        # chiamata al modello: una domanda generata a ogni sessione cambia
+        # parole, salta un passo e non e' riproducibile in collaudo.
+        turno = avanza_questionario(raccolte, messaggio_utente or None)
+        _risposte_sessione[session_id] = turno['risposte']
+        add_message(session_id, 'assistant', turno['testo'])
 
         risposta = {
             'session_id': session_id,
-            'message': testo,
+            'message': turno['testo'],
             'stage': 'chat',
             'status': 'ok',
             'pipeline': None,
             'disclaimer': disclaimer(),
+            # Le opzioni viaggiano anche strutturate: chi disegna l'interfaccia
+            # fa dei bottoni invece di far digitare a mano una persona che ha
+            # gia' abbastanza da fare.
+            'domanda_id': turno['domanda_id'],
+            'opzioni': turno['opzioni'],
+            # Il contatore riflette le domande previste per QUESTO percorso:
+            # una condizionale che non si pone non si conta.
+            'numero_domanda': turno['numero_domanda'],
+            'totale_domande': turno['totale_domande'],
         }
 
-        if not esito_chat.get('risposte'):
+        if not turno['completo']:
             return jsonify(risposta), 200
-
-        # Il JSON con cui l'orchestratore chiude il questionario non si mostra.
-        risposta['message'] = (
-            'Ho raccolto le tue risposte. Sto controllando il catalogo verificato.'
-        )
 
         # Passo 2: profiler normalizza le risposte sulla tassonomia chiusa.
         profilo, escalation = esegui_profilazione(
-            session_id, esito_chat['risposte'], DOMANDE_POSTE
+            session_id, turno['risposte'], domande_poste(turno['risposte'])
         )
         if escalation is not None:
             save_stage(session_id, 'pipeline', escalation)

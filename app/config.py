@@ -61,7 +61,11 @@ MAX_TOKEN_PER_AGENTE: dict[str, int] = {
     'orchestrator': 600,
     'profiler': 700,
     'eligibility': 2500,
-    'navigator': 2500,
+    # Il navigator produce l'oggetto piu' lungo della Fase B (passi, documenti,
+    # glossario, riquadro): misurato fra 1.600 e 2.600 token. Sotto i 4.000 la
+    # risposta si tronca a meta' JSON, e una risposta troncata non costa un
+    # campo: costa un'altra chiamata intera.
+    'navigator': 4000,
 }
 
 MAX_TOKEN_DEFAULT = 2000
