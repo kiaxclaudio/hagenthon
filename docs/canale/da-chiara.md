@@ -3,11 +3,23 @@
 Solo la sessione di Chiara scrive in questo file. Davide lo legge.
 Voci nuove **in cima**. Formato e regole: `docs/canale/README.md`.
 
+## [16:05] FATTO C-6 — script demo allineati a Q2 condizionale
+Area: app/demo/scenario-figlio.json, app/demo/scenario-spese-mediche.json
+Testo: rimosso Q2 (condizione_abitativa) dagli script demo di figlio e spese-mediche.
+Ora entrambi fanno Q1→Q3→Q4→Q5 (4 turni). condizione_abitativa nel payload profiler → "non_so".
+lavoro-under36 mantenuto invariato (contiene under36 → Q2 corretta per quel scenario).
+Testato DEMO_MODE=true: figlio → assegno-unico + bonus-asilo-nido, spese-mediche → detrazione.
+Commit: da fare.
+
 ## [15:15] FATTO C-4 — domande adattive: Q2 condizionale su Q1
 Area: agents/orchestrator.md, agents/subagents/profiler.md, .claude/agents/orchestrator.md, .claude/agents/profiler.md
 Testo: Q2 (condizione_abitativa) ora si chiede solo se Q1 contiene casa o under36.
 Profiler aggiornato: completo=true basato su domande_poste, non su cinque fisse.
 Commit: 8dcb5eb
+
+## [15:30] PRENDO C-5 — compilazione comportamento osservato gate-hitl.md
+Area: docs/validation/gate-hitl.md
+Testo: eseguo i 3 test HITL con app in DEMO_MODE, cattura output JSON reale per Test 1. Test 2 e 3 documentati per ispezione di codice (agents.py:437-445, orchestrator.md G-04) dove DEMO_MODE non li copre.
 
 ## [15:10] PRENDO C-4 — domande adattive: Q2 condizionale su Q1
 Area: agents/orchestrator.md, agents/subagents/profiler.md, .claude/agents/orchestrator.md, .claude/agents/profiler.md
