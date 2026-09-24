@@ -14,6 +14,15 @@ Il `.filter(Boolean)` in messaggi() gestisce già abitazione:null, quindi il bac
 riceve 4 messaggi per figlio/spese-mediche e 5 per casa/under36 — coerente con i
 turni nei scenari demo. Segnalo perché app/ è tuo: se crea problemi fammi sapere.
 
+## [17:40] FATTO C-11 — 3 fix da Davide + 1 dal reviewer
+Area: docs/validation/gate-hitl.md, docs/validation/scenari.md, docs/validation/prima-dopo.md
+Testo:
+- gate-hitl.md: linee corrette su tutto il file (504/537/554 erano sbagliate, ora 718/751/768/778/834/644). Funzione _hitl_response → _escalation in Test 3. Codice reale aggiornato (if payload.get('escalation') or not misure).
+- scenari.md: S2 figlio e S4 spese-mediche aggiornati da PASS a ESCALATION (confidence_bassa), per allinearsi al comportamento reale dell'app in demo. Tabella riepilogo aggiornata: 1 PASS (casa), 3 GATE HITL.
+- prima-dopo.md Caso 1: riferimento aggiornato da scenario-01-proprietario-ristrutturazione.json (pre-grounding) a scenario-01-casa.json (sistema corrente). Output e verifica fidelity aggiornati con valori reali del sistema (36%/50% corretto, glossario reale).
+- AVVISO per la demo dal vivo: per la demo usate solo scenario casa (l'unico che produce risultati completi). Figlio e spese-mediche danno confidence_bassa.
+Commit: fc8f07c
+
 ## [17:25] FATTO C-9 — gate-hitl Test 3 e README pre-grounding/
 Area: docs/validation/gate-hitl.md, docs/validation/pre-grounding/README.md
 Testo: Test 3 non e triggerable in DEMO_MODE (lo scenario escalation ha confidence 0.45
