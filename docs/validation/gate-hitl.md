@@ -16,7 +16,7 @@ quando il profilo non corrisponde a nessuna misura nel catalogo.
 **Scenario demo usato:** lavoro-under36
 Profilo risultante: disoccupato, reddito nessun_reddito_attuale, timing da_iniziare.
 catalogo_mod.misure_candidate() restituisce lista vuota. Gate deterministico in
-agents.py:504-518 (caso_non_coperto_dal_catalogo).
+agents.py:718-732 (caso_non_coperto_dal_catalogo).
 
 **Comportamento osservato** (/api/chat, turno finale, 2026-09-24)
 
@@ -48,7 +48,7 @@ dell'eligibility e sotto la soglia configurata (SOGLIA_CONFIDENCE = 0.6).
 **Scenario demo usato:** escalation
 Profilo risultante: situazione_vita non_so, condizione_abitativa ospite_familiari,
 tipo_reddito partita_iva. Eligibility restituisce confidence: 0.45.
-Gate in agents.py:537-551 (confidence_bassa).
+Gate in agents.py:751-765 (confidence_bassa).
 
 **Comportamento osservato** (/api/chat, turno finale, 2026-09-24)
 
@@ -78,12 +78,12 @@ un rifiuto opaco. La soglia e modificabile senza toccare il prompt.
 **Obiettivo:** verificare che il gate scatti anche quando e l'agente eligibility stesso
 a dichiarare escalation: true nel payload.
 
-**Gate nel codice:** agents.py:554-560
+**Gate nel codice:** agents.py:768-774
 
 Questo gate scatta dopo il gate di confidence (Test 2). Se eligibility restituisce
-confidence sopra soglia ma dichiara ugualmente escalation: true (ad es. per
-profilo_incompleto o requisiti_non_verificabili), il sistema rimanda al CAF
-indipendentemente dalla confidence.
+confidence sopra soglia ma dichiara ugualmente escalation: true oppure non trova
+misure pertinenti dopo il filtro, il sistema rimanda al CAF indipendentemente
+dalla confidence.
 
 **Comportamento osservato - verifica per ispezione del codice (2026-09-24)**
 
@@ -92,15 +92,16 @@ ha confidence 0.45 e scatta il gate di Test 2 prima di arrivare a questo punto.
 In modalita live (DEMO_MODE=false), il gate scatterebbe quando eligibility dichiara
 `escalation: true` con confidence sopra soglia (es. profilo ambiguo su misure non verificate).
 
-Codice verificato in agents.py:554-560:
+Codice verificato in agents.py:768-774:
 
 ```python
-if payload.get("escalation"):
-    return _hitl_response(
-        motivo="escalation_agente",
-        messaggio=payload.get("messaggio_escalation", ""),
-        misure=misure_pertinenti,
+if payload.get("escalation") or not misure:
+    motivo = payload.get("motivo_escalation") or "caso_non_coperto_dal_catalogo"
+    messaggio = payload.get("spiegazione_escalation") or (
+        "Per la tua situazione non emergono misure con requisiti verificabili "
+        "da qui. Un CAF o un commercialista possono valutare il tuo caso."
     )
+    return _escalation(motivo, messaggio, eligibility=uscita_eligibility)
 ```
 
 La struttura dell'output e identica a quella dei Test 1 e 2:
@@ -109,8 +110,8 @@ La struttura dell'output e identica a quella dei Test 1 e 2:
 {
   "status": "hitl_required",
   "escalation": true,
-  "motivo_escalation": "escalation_agente",
-  "messaggio_escalation": "<testo prodotto dall'agente eligibility>",
+  "motivo_escalation": "<motivo dal payload agente o caso_non_coperto_dal_catalogo>",
+  "messaggio_escalation": "<spiegazione dal payload agente>",
   "explainer": null,
   "navigator": null
 }
@@ -129,9 +130,9 @@ l'agente puo dichiarare direttamente che il caso supera la sua competenza.
 
 | Gate | Condizione | File | Righe | Motivo |
 |---|---|---|---|---|
-| Catalogo vuoto | misure_candidate() vuota | agents.py | 504-518 | caso_non_coperto_dal_catalogo |
-| Confidence bassa pipeline | confidence < 0.6 | agents.py | 537-551 | confidence_bassa |
-| Escalation agente | payload.escalation true | agents.py | 554-560 | dichiarato dall'agente |
-| Confidence bassa misura | m.confidence < 0.6 per tutte | agents.py | 564-581 | confidence_bassa |
-| Navigator senza passi | passi vuoti per tutte le misure | agents.py | 593-604 | requisiti_non_verificabili |
-| Profilo incompleto | 2 invocazioni profiler fallite | agents.py | 437-445 | profilo_incompleto |
+| Profilo incompleto | 2 invocazioni profiler fallite | agents.py | 644-652 | profilo_incompleto |
+| Catalogo vuoto | misure_candidate() vuota | agents.py | 718-732 | caso_non_coperto_dal_catalogo |
+| Confidence bassa pipeline | confidence < 0.6 | agents.py | 751-765 | confidence_bassa |
+| Escalation agente | payload.escalation true o misure vuote | agents.py | 768-774 | dichiarato dall'agente |
+| Confidence bassa misura | m.confidence < 0.6 per tutte | agents.py | 778-795 | confidence_bassa |
+| Navigator senza passi | passi vuoti per tutte le misure | agents.py | 834-842 | requisiti_non_verificabili |

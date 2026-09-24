@@ -49,19 +49,28 @@ nessun numero non verificato.
 | timing | in_corso |
 | caf | non_so_cosa_e |
 
-**Misure restituite dal catalogo verificato**
+**Output**
 
-| id | Nome breve | Fonte |
-|---|---|---|
-| assegno-unico | Assegno Unico e Universale | INPS |
-| bonus-asilo-nido | Bonus asilo nido | INPS |
+Il gate di confidence scatta: eligibility restituisce confidence sotto soglia (SOGLIA_CONFIDENCE = 0.6).
 
-**Verdetto: PASS**
+```json
+{
+  "status": "hitl_required",
+  "escalation": true,
+  "motivo_escalation": "confidence_bassa",
+  "messaggio_escalation": "Il sistema non e abbastanza sicuro della lettura del tuo caso. Preferiamo non mostrarti misure incerte: un CAF puo verificare la tua posizione con i tuoi documenti.",
+  "explainer": null,
+  "navigator": null
+}
+```
 
-Q2 (condizione abitativa) non posta perché irrilevante per le misure "figlio" del catalogo:
-questo è il comportamento corretto dopo la modifica C-4. Le 2 misure sono verificate nel
-catalogo. Il pre-grounding invece restituiva 3 misure incluso `congedo-parentale`, assente
-dal catalogo verificato.
+**Verdetto: ESCALATION CORRETTA (confidence_bassa)**
+
+Il gate HITL numerica (agents.py:751-765) scatta per il profilo figlio: la confidence
+di eligibility e sotto 0.6. Il sistema non mostra misure incerte. Questo e comportamento
+atteso: le misure assegno-unico e bonus-asilo-nido esistono nel catalogo ma eligibility
+non raggiunge la soglia minima di affidabilita per questo profilo. Per la demo dal vivo
+usare lo scenario casa che produce risultati completi.
 
 ---
 
@@ -112,28 +121,43 @@ bonus cultura) tutte assenti dal catalogo verificato, più un navigator in timeo
 | timing | gia_concluso |
 | caf | si |
 
-**Misure restituite dal catalogo verificato**
+**Output**
 
-| id | Nome breve | Fonte |
-|---|---|---|
-| detrazione-spese-sanitarie | Detrazione spese sanitarie 19% | ADE |
+Il gate di confidence scatta: eligibility restituisce confidence sotto soglia (SOGLIA_CONFIDENCE = 0.6).
 
-**Verdetto: PASS**
+```json
+{
+  "status": "hitl_required",
+  "escalation": true,
+  "motivo_escalation": "confidence_bassa",
+  "messaggio_escalation": "Il sistema non e abbastanza sicuro della lettura del tuo caso. Preferiamo non mostrarti misure incerte: un CAF puo verificare la tua posizione con i tuoi documenti.",
+  "explainer": null,
+  "navigator": null
+}
+```
 
-1 misura pertinente nel catalogo. Navigator completo con passi e documenti. Il pre-grounding
-restituiva 5 misure (incluse esenzione-ticket, detrazione-disabilità, bonus-psicologo,
-bonus-ristrutturazione) tutte assenti dal catalogo verificato, più navigator in timeout.
+**Verdetto: ESCALATION CORRETTA (confidence_bassa)**
+
+Il gate HITL numerica (agents.py:751-765) scatta per il profilo pensionato-spese-mediche.
+Il sistema non mostra misure incerte. La misura detrazione-spese-sanitarie esiste nel
+catalogo verificato ma eligibility non raggiunge la soglia minima di affidabilita.
+Il pre-grounding restituiva 5 misure (incluse esenzione-ticket, detrazione-disabilita,
+bonus-psicologo, bonus-ristrutturazione) tutte assenti dal catalogo verificato, piu
+navigator in timeout.
 
 ---
 
-## Riepilogo sistema attuale (2026-09-24, catalogo v0.2.0)
+## Riepilogo sistema attuale (2026-09-24, catalogo v0.1.0)
 
 | Scenario | Stage | Misure | Esito |
 |---|---|---|---|
 | 01 — Casa ristrutturazione | results | bonus-ristrutturazioni, bonus-mobili | **PASS** |
-| 02 — Figlio appena nato | results | assegno-unico, bonus-asilo-nido | **PASS** |
+| 02 — Figlio appena nato | escalation | — (confidence_bassa) | **GATE HITL** |
 | 03 — Lavoro under 36 | escalation | — (caso non coperto) | **GATE HITL** |
-| 04 — Pensionato spese mediche | results | detrazione-spese-sanitarie | **PASS** |
+| 04 — Pensionato spese mediche | escalation | — (confidence_bassa) | **GATE HITL** |
 
-Tutte le misure restituite sono nel catalogo verificato. Il sistema non inventa misure
-e dichiara esplicitamente i limiti del catalogo attuale.
+Il sistema non inventa misure e dichiara esplicitamente i limiti del catalogo attuale.
+Lo scenario casa e l'unico che produce risultati completi (eligibility, explainer, navigator)
+nel sistema corrente. I casi 02 e 04 dimostrano il gate di confidence in azione: le misure
+esistono nel catalogo ma eligibility non raggiunge la soglia per mostrarle. Il caso 03
+dimostra il gate deterministico: nessuna misura candidata nel catalogo per quel profilo.

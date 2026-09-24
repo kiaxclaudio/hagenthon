@@ -20,41 +20,40 @@ Output di sistema: prodotto dalla pipeline reale il 2026-09-24 (JSON in `docs/va
 >
 > "Da ripartire in 10 quote annuali di pari importo"
 
-**Output reale del sistema** *(da `scenario-01-proprietario-ristrutturazione.json`, eligibility_output)*
+**Output reale del sistema** *(da `scenario-01-casa.json`, explainer_output, 2026-09-24)*
 
 > **cosa_e:**
-> "Uno sconto sulle tasse che paghi ogni anno. Se hai ristrutturato casa, recuperi il 50% di quello che hai speso, suddiviso in 10 rate annuali uguali quando fai la dichiarazione dei redditi."
+> "La detrazione per le ristrutturazioni edilizie e uno sconto sull'IRPEF. L'IRPEF e l'imposta che paghi sul tuo reddito. Lo sconto vale sulle spese che sostieni per ristrutturare. Non ricevi soldi: paghi meno tasse. Lo recuperi in 10 quote annuali di pari importo, cioe una quota all'anno per dieci anni."
 >
 > **quanto_vale:**
-> "Se hai speso 20.000€ di lavori, recuperi 10.000€ totali: 1.000€ all'anno per 10 anni. Il tetto massimo di spesa su cui calcolare il 50% è 96.000€ per immobile."
+> "Per le spese sostenute negli anni 2025 e 2026 la detrazione e del 36%. La detrazione sale al 50% in caso di abitazione principale. Il limite massimo di spesa e 96.000 euro per unita immobiliare. Lo sconto si divide in 10 quote annuali di pari importo."
 >
 > **chi_puo_accedervi:**
-> "Proprietari di casa o chi ha un diritto reale sull'immobile (es. usufrutto). Anche chi affitta può accedere se ha sostenuto le spese. L'immobile deve essere a uso residenziale."
+> "Per la detrazione del 50% devi essere titolare di un diritto di proprieta. In alternativa devi essere titolare di un diritto reale di godimento sull'unita immobiliare. Devi esserlo al momento di inizio dei lavori."
 >
-> **attenzione:**
-> "I pagamenti devono essere stati fatti con bonifico bancario o postale 'parlante' (che riporta causale, codice fiscale del beneficiario e P.IVA dell'impresa). Pagamenti in contanti non sono detraibili."
->
-> **Glossario generato automaticamente:**
-> - *detrazione IRPEF* → "uno sconto sulle tasse che paghi a fine anno"
-> - *bonifico parlante* → "bonifico con causale specifica richiesta dall'Agenzia delle Entrate per i bonus edilizi"
+> **Glossario generato automaticamente (selezione):**
+> - *detrazione* → "uno sconto sulle tasse che devi pagare"
+> - *IRPEF* → "l'imposta che paghi allo Stato sul tuo reddito"
+> - *abitazione principale* → "quella nella quale la persona fisica dimora abitualmente"
+> - *diritto reale di godimento* → "un diritto sulla casa riconosciuto dalla legge, diverso dalla proprieta"
 
 **Cosa riesce a fare la persona dopo**
 
 | Prima (testo ADE) | Dopo (output sistema) |
 |---|---|
-| Sa che esiste una "detrazione del 50% con limite 96.000€" | Sa che recupererà 1.000€/anno per 10 anni su 20.000€ di lavori |
-| Legge "diritto reale di godimento" | Sa che "anche chi affitta può accedere" |
-| Non sa cosa fare con "articolo 16-bis del Tuir" | Ha passi concreti: raccogliere fatture, portare al CAF, ricevere lo sconto in busta paga |
-| Non sa che il bonifico deve essere "parlante" | Sa controllare la causale delle ricevute prima di andare al CAF |
+| Legge "detrazione del 36% ovvero del 50% in caso di abitazione principale" | Sa che la sua casa come abitazione principale vale il 50%, altrimenti 36% |
+| Legge "diritto reale di godimento sull'unita immobiliare" | Sa cosa significa e che deve averlo al momento dell'inizio dei lavori |
+| Legge "10 quote annuali di pari importo" | Sa che lo sconto si prende in 10 rate uguali, una per anno di dichiarazione |
+| Non sa dove trovare il tetto di spesa | Sa che il limite e 96.000 euro per unita immobiliare |
 
-**Verifica fidelty**
+**Verifica fidelity**
 
 | Valore originale | Valore restituito | Esito |
 |---|---|---|
-| "50% per abitazione principale" | "50%" (profilo proprietario + abitazione principale) | ✅ corretto |
-| "96.000 euro" | "96.000€ per immobile" | ✅ identico |
-| "10 quote annuali" | "10 rate annuali uguali" | ✅ significato invariato |
-| "bonifico parlante" | presente in `attenzione` con spiegazione | ✅ conservato e spiegato |
+| "36% (ovvero del 50% in caso di abitazione principale)" | "36%... sale al 50% in caso di abitazione principale" | corretto — distinzione conservata |
+| "96.000 euro per unita immobiliare" | "96.000 euro per unita immobiliare" | identico alla virgola |
+| "10 quote annuali di pari importo" | "10 quote annuali di pari importo" | identico |
+| "diritto reale di godimento" | presente in chi_puo_accedervi con spiegazione in glossario | conservato e tradotto |
 
 Verdetto: **approvato**.
 
