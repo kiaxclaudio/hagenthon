@@ -77,7 +77,8 @@ TUTTE.forEach(b => {
 
 document.getElementById('s1-next').addEventListener('click', e => {
   if (e.currentTarget.getAttribute('aria-disabled') === 'true') return;
-  mostra('s2');
+  const needsS2 = profilo.situazione.some(s => s === 'casa' || s === 'under36');
+  mostra(needsS2 ? 's2' : 's3');
 });
 
 const TINTE = {casa: 'casa', figlio: 'figli', spese_mediche: 'salute',

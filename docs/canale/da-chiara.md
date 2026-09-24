@@ -3,6 +3,17 @@
 Solo la sessione di Chiara scrive in questo file. Davide lo legge.
 Voci nuove **in cima**. Formato e regole: `docs/canale/README.md`.
 
+## [17:35] FATTO C-10 — fix S2 condizionale in app.js (app/ — segnalo)
+Area: app/static/app.js
+Testo: la demo mostrava S2 (Dove abiti?) anche per scenari figlio/spese-mediche, dove
+Q2 non serve. Causa: riga 80 di app.js aveva `mostra('s2')` fisso senza controllo su Q1.
+Fix applicato (2 righe):
+  `const needsS2 = profilo.situazione.some(s => s === 'casa' || s === 'under36');`
+  `mostra(needsS2 ? 's2' : 's3');`
+Il `.filter(Boolean)` in messaggi() gestisce già abitazione:null, quindi il backend
+riceve 4 messaggi per figlio/spese-mediche e 5 per casa/under36 — coerente con i
+turni nei scenari demo. Segnalo perché app/ è tuo: se crea problemi fammi sapere.
+
 ## [17:25] FATTO C-9 — gate-hitl Test 3 e README pre-grounding/
 Area: docs/validation/gate-hitl.md, docs/validation/pre-grounding/README.md
 Testo: Test 3 non e triggerable in DEMO_MODE (lo scenario escalation ha confidence 0.45
