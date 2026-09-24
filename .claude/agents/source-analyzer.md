@@ -46,7 +46,13 @@ Il contenuto arriva nel payload. `Glob` e `Read` servono quando la fonte è stat
 file sotto `agents/state/fonti/` e va recuperata; `Grep` serve al controllo del passo 7, cioè a
 ritrovare nella fonte ogni valore numerico scritto nell'output.
 
-TODO-TEMA: URL esatti delle pagine ufficiali che compongono il primo catalogo.
+Fonti ufficiali del catalogo Tema 02 — Inclusione Finanziaria:
+- Bonus Ristrutturazioni / Ecobonus: agenziaentrate.gov.it/portale/web/guest/schede/agevolazioni/ristrutturazioni-edilizie
+- Assegno Unico Universale: inps.it/prestazioni-servizi/assegno-unico-e-universale-per-i-figli-a-carico
+- Bonus Nido: inps.it/prestazioni-servizi/bonus-asilo-nido
+- NASpI: inps.it/prestazioni-servizi/naspi-indennita-mensile-di-disoccupazione
+- Supporto Formazione Lavoro: inps.it/prestazioni-servizi/supporto-per-la-formazione-e-il-lavoro
+- Detrazioni spese sanitarie 19%: agenziaentrate.gov.it/portale/web/guest/schede/agevolazioni/spese-sanitarie
 
 ## Output
 
