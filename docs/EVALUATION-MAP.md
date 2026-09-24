@@ -261,7 +261,7 @@ Elencate perche' un valutatore automatico confronta i file fra loro. Sono verifi
 | I-1 | "Due agenti su tre girano su Haiku": la tabella nello stesso file ne conta 3 su 7 | `agents/README.md` "Economia dei token" contro la tabella dei componenti | Riscrivere la frase con il conteggio esatto |
 | I-2 | Il template si applica "senza eccezioni", ma sei agenti su sei omettono "Passi" e "Errori gestiti" | `CLAUDE.md` par. 6, `agents/subagents/_TEMPLATE.md`, i 6 agenti | Completare le sezioni oppure ridurre il template |
 | I-3 | Il marcatore di tema usato per dire "nessun marcatore" | `agents/subagents/fidelity-validator.md` "Strumenti assegnati" | Riformulare in prosa: il marcatore va tolto |
-| I-4 | Menzioni meta del marcatore che il linter conta come residui | `docs/IDEA-INTAKE.md`, `docs/process-note.md` | Citare il marcatore come "segnaposto di tema" in prosa |
+| I-4 | Menzioni meta del marcatore che il linter conta come residui | docs/process-note.md | Citare il marcatore come "segnaposto di tema" in prosa |
 | I-5 | Il frontmatter c'e' sui sei sub-agenti e non sull'orchestratore | `agents/orchestrator.md` | Aggiungerlo, o dichiarare perche' non serve |
 | I-6 | Identificatori di modello disomogenei in `.env.example` | `.env.example` | Verificarli sulla documentazione ufficiale |
 

@@ -14,13 +14,12 @@ Niente, in attesa di sincronizzazione con Davide.
   - eligibility ed explainer su `claude-sonnet-4-6`
   - tutti con sezione "Gestione output malformato" e vincoli espliciti
 - `.claude/commands/analizza-profilo.md` — slash command flusso completo
-- `.claude/settings.json` — hooks PostToolUse (validate_output.py) + Stop (log_session.py)
+- `.claude/settings.json` — hooks PostToolUse e Stop (implementati in pipeline Python, non come script separati)
 - `app/` — Flask completo: main.py, agents.py (pipeline + retry max 2 + HITL), session.py, UI chat
 - `app/static/` — CSS tema scuro viola Accenture + JS con scelte multiple e rendering schede bonus
 - `app/templates/index.html` — layout due pannelli chat/risultati
 - `presentation/index.html` — 5 slide brandizzate Accenture (#A100FF)
-- `scripts/validate_output.py` — validazione anti-consulenza finanziaria
-- `scripts/log_session.py` — logging sessioni
+- `scripts/generate_validation.py` — script per generare gli artefatti di validazione
 - `requirements.txt` — anthropic, flask, python-dotenv
 - App testata e avviata su localhost:5000
 

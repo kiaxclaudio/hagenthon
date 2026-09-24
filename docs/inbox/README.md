@@ -9,6 +9,6 @@ qui come traccia: serve a ricostruire da dove viene una decisione, e alla nota s
 
 Convenzione di nome: `<autore>-<argomento>.md`, per esempio `chiara-idea.md`.
 
-Nota su `docs/IDEA-INTAKE.md`: non e un doppione di quanto porta Chiara. E la lista di cosa
-serve alla struttura per funzionare. Se il documento di Chiara copre gia tutto, l'intake si
-butta; se resta scoperto qualcosa, dice esattamente cosa manca ancora.
+Nota su IDEA-INTAKE: non era un doppione di quanto porta Chiara. Era la lista di cosa
+serve alla struttura per funzionare. Chiara ha coperto tutto — il documento non e stato
+necessario e non e stato creato.

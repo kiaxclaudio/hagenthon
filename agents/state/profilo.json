@@ -1,16 +1,14 @@
 {
-  "profilo_id": "c8fcf8e3",
-  "creato_il": "2025-01-15T10:30:00Z",
+  "profilo_id": "profilo-demo-escalation",
+  "creato_il": "2026-01-15T09:00:00+00:00",
   "situazioni_vita": [
-    "under36"
+    "non_so"
   ],
-  "condizione_abitativa": "affittuario",
-  "tipo_reddito": "lavoro_dipendente",
-  "timing": "non_so",
-  "caf": "no",
+  "condizione_abitativa": "ospite_familiari",
+  "tipo_reddito": "partita_iva",
+  "timing": "gia_concluso",
+  "caf": "non_so_cosa_e",
   "termini_non_noti": [],
-  "completo": false,
-  "risposte_mancanti": [
-    "timing"
-  ]
+  "completo": true,
+  "risposte_mancanti": []
 }

@@ -41,7 +41,7 @@ Prima cosa, sempre: il linter dice in trenta secondi quali voci meccaniche sono 
 |---|---|---|
 | PF-04 | Nessun marcatore `TODO-TEMA:` residuo in nessun file | Controllo "marcatori residui" del linter: deve essere OK |
 | PF-05 | Nessun marcatore `TODO` residuo in nessun file | Stesso controllo: il linter distingue i due tipi e stampa file e riga |
-| PF-06 | Le tre menzioni meta del marcatore (`docs/IDEA-INTAKE.md`, `docs/process-note.md`, `agents/subagents/fidelity-validator.md`) sono state riscritte in prosa | Il linter non le segnala piu'. **Non** aggiungerle a `FILE_META`: `presentation/index.html` contiene segnaposto veri e verrebbero nascosti |
+| PF-06 | Le tre menzioni meta del marcatore (docs/process-note.md, `agents/subagents/fidelity-validator.md`) sono state riscritte in prosa | Il linter non le segnala piu'. **Non** aggiungerle a `FILE_META`: `presentation/index.html` contiene segnaposto veri e verrebbero nascosti |
 | PF-07 | Nessun link relativo rotto nei file `.md` | Controllo "link relativi" del linter: OK |
 | PF-08 | Ogni file citato fra backtick nei `.md` esiste | Controllo "riferimenti fra backtick" del linter: OK |
 | PF-09 | Il `README.md` non contiene piu' frasi segnaposto: titolo, problema, soluzione, setup e validazione sono scritti | Lettura diretta del file dall'alto in basso, una volta sola, ad alta voce |

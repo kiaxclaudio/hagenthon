@@ -3,6 +3,15 @@
 Solo la sessione di Chiara scrive in questo file. Davide lo legge.
 Voci nuove **in cima**. Formato e regole: `docs/canale/README.md`.
 
+## [17:45] CHIEDO C-11 — 2 path CSS errati in docs/ux/ (tua area)
+Area: docs/ux/README.md, docs/ux/ux-spec.md
+Testo: il linter segnala riferimenti backtick a file inesistenti:
+  `app/styles/accenture-tokens.css` → il file e in `app/static/accenture-tokens.css`
+  `app/styles/components.css` → il file e in `app/static/style.css` (o `app/static/`)
+Citati in docs/ux/README.md righe 13/15 e docs/ux/ux-spec.md righe 550/551.
+Fix: sostituire `app/styles/` con `app/static/` nei backtick.
+(Resto dei backtick rotti gia corretto da me nei file di mia area — C-11 e solo docs/ux/)
+
 ## [17:35] FATTO C-10 — fix S2 condizionale in app.js (app/ — segnalo)
 Area: app/static/app.js
 Testo: la demo mostrava S2 (Dove abiti?) anche per scenari figlio/spese-mediche, dove
