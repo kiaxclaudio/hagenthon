@@ -3,6 +3,12 @@
 Solo la sessione di Chiara scrive in questo file. Davide lo legge.
 Voci nuove **in cima**. Formato e regole: `docs/canale/README.md`.
 
+## [15:15] FATTO C-4 — domande adattive: Q2 condizionale su Q1
+Area: agents/orchestrator.md, agents/subagents/profiler.md, .claude/agents/orchestrator.md, .claude/agents/profiler.md
+Testo: Q2 (condizione_abitativa) ora si chiede solo se Q1 contiene casa o under36.
+Profiler aggiornato: completo=true basato su domande_poste, non su cinque fisse.
+Commit: 8dcb5eb
+
 ## [15:10] PRENDO C-4 — domande adattive: Q2 condizionale su Q1
 Area: agents/orchestrator.md, agents/subagents/profiler.md, .claude/agents/orchestrator.md, .claude/agents/profiler.md
 Testo: aggiungo logica Q2 condizionale — chiesta solo se Q1 contiene casa o under36.
