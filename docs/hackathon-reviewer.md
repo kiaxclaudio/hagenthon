@@ -86,7 +86,7 @@ Cerca evidenza di:
 - Guardrail numerati e citabili nei file agente
 - Coerenza tra file (stesso id bonus attraverso tutti gli agenti, stessi nomi)
 - Assenza di sovrapposizioni tra agenti
-- Segnaposti TODO non risolti (contali: sono un segnale di allarme)
+- Segnaposti non risolti (contali: sono un segnale di allarme)
 
 ### Criterio 03 — Robustezza (15%)
 Cerca evidenza di:
@@ -228,7 +228,7 @@ Ordinate per impatto sul punteggio finale (prima le più urgenti):
 
 ## Note linter
 
-[Incoerenze meccaniche trovate tra file: conteggi discordanti, segnaposti TODO non risolti, frontmatter mancante, ecc.]
+[Incoerenze meccaniche trovate tra file: conteggi discordanti, segnaposti non risolti, frontmatter mancante, ecc.]
 ```
 
 Sii diretto: se qualcosa non esiste, dì "non esiste". Se è un segnaposto, dì "è un segnaposto". Non scrivere "sembra" o "probabilmente": o lo vedi o non lo vedi.
