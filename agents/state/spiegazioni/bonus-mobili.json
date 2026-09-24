@@ -1,0 +1,75 @@
+{
+  "status": "ok",
+  "confidence": 0.85,
+  "source_refs": [
+    "ade-bonus-mobili-cittadini#detrazione",
+    "ade-bonus-mobili-cittadini#limite-di-spesa",
+    "ade-bonus-mobili-cittadini#quote-annuali",
+    "ade-bonus-mobili-cittadini#requisito-ristrutturazione",
+    "ade-bonus-mobili-cittadini#classi-energetiche",
+    "ade-bonus-mobili-cittadini#scadenza-acquisto",
+    "ade-bonus-mobili-cittadini#modalita-di-pagamento",
+    "ade-bonus-mobili-cittadini#documenti"
+  ],
+  "payload": {
+    "misura_id": "bonus-mobili",
+    "titolo_semplice": "Sconto sulle tasse per mobili ed elettrodomestici",
+    "cosa_e": "Il Bonus mobili ed elettrodomestici è una detrazione Irpef. Detrazione vuol dire sconto sulle tasse che paghi. Lo sconto vale per l'acquisto di mobili e di grandi elettrodomestici. Lo ottieni solo se fai anche un intervento di ristrutturazione edilizia.",
+    "quanto_vale": "La detrazione Irpef è del 50%. Il limite di spesa è 5.000 euro per gli anni 2024, 2025 e 2026. La detrazione va ripartita tra gli aventi diritto in 10 quote annuali di pari importo.",
+    "a_chi_spetta": [
+      "L'intervento di ristrutturazione edilizia deve essere iniziato a partire dal 1° gennaio dell'anno precedente a quello dell'acquisto dei beni.",
+      "I grandi elettrodomestici devono avere una classe energetica minima. Serve la classe non inferiore alla classe A per i forni. Serve la classe E per le lavatrici, le lavasciugatrici e le lavastoviglie. Serve la classe F per i frigoriferi e i congelatori.",
+      "Devi pagare con bonifico o carta di debito o credito. Non è consentito pagare con assegni bancari, contanti o altri mezzi di pagamento."
+    ],
+    "attenzione": [
+      "L'agevolazione vale per gli acquisti effettuati entro il 31 dicembre 2026.",
+      "Ti servono due documenti: l'attestazione del pagamento e le fatture di acquisto dei beni.",
+      "Le fatture devono riportare la natura, la qualità e la quantità dei beni.",
+      "La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione."
+    ],
+    "glossario": [
+      {
+        "termine": "detrazione",
+        "spiegazione_semplice": "detrazione: uno sconto sulle tasse che devi pagare."
+      },
+      {
+        "termine": "Irpef",
+        "spiegazione_semplice": "Irpef: l'imposta che paghi allo Stato sul tuo reddito."
+      },
+      {
+        "termine": "bonifico",
+        "spiegazione_semplice": "bonifico: un pagamento che parte dal tuo conto e lascia traccia in banca."
+      },
+      {
+        "termine": "classe energetica",
+        "spiegazione_semplice": "classe energetica: la lettera sull'etichetta che dice quanta energia consuma."
+      },
+      {
+        "termine": "10 quote annuali di pari importo",
+        "spiegazione_semplice": "10 quote annuali di pari importo: dieci parti uguali, una ogni anno."
+      },
+      {
+        "termine": "attestazione del pagamento",
+        "spiegazione_semplice": "attestazione del pagamento: il documento che prova che hai pagato.",
+        "tipo_documento_collegato": "altro"
+      },
+      {
+        "termine": "fattura",
+        "spiegazione_semplice": "fattura: il documento con cui il venditore certifica che cosa ha venduto.",
+        "tipo_documento_collegato": "fattura"
+      }
+    ],
+    "iterazione": 1,
+    "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+    "source_refs": [
+      "ade-bonus-mobili-cittadini#detrazione",
+      "ade-bonus-mobili-cittadini#limite-di-spesa",
+      "ade-bonus-mobili-cittadini#quote-annuali",
+      "ade-bonus-mobili-cittadini#requisito-ristrutturazione",
+      "ade-bonus-mobili-cittadini#classi-energetiche",
+      "ade-bonus-mobili-cittadini#scadenza-acquisto",
+      "ade-bonus-mobili-cittadini#modalita-di-pagamento",
+      "ade-bonus-mobili-cittadini#documenti"
+    ]
+  }
+}

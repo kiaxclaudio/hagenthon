@@ -1,0 +1,22 @@
+{
+  "status": "degraded",
+  "confidence": 0.35,
+  "source_refs": [
+    "ade-detrazioni-canoni-locazione-tabella#riga-3-inquilini-20-30-anni"
+  ],
+  "payload": {
+    "fonte_id": "ade-detrazioni-canoni-locazione-tabella",
+    "data_consultazione": "2026-09-24",
+    "misure": [],
+    "misure_non_interpretabili": [
+      {
+        "nome_presunto": "Detrazione per canoni di locazione - inquilini di età compresa tra i 20 e 30 anni",
+        "motivo": "testo_ambiguo",
+        "porzione_fonte": "\"Inquilini di età compresa tra i 20 e 30 anni che utilizzano l'immobile come abitazione principale\" ... \"Maggiore valore tra 20% canone annuo e importo forfettario di 991,60 euro (fino a un massimo di 2000 euro) per reddito complessivo fino a 15.493,71 euro.\" ... \"L'agevolazione spetta per i primi 4 anni di durata del contratto nel limite del compimento dei 31 anni\"",
+        "source_refs": [
+          "ade-detrazioni-canoni-locazione-tabella#riga-3-inquilini-20-30-anni"
+        ]
+      }
+    ]
+  }
+}

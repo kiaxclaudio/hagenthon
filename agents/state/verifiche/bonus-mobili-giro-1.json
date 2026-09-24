@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "confidence": 0.9,
+  "source_refs": [
+    "ade-bonus-mobili-cittadini#detrazione",
+    "ade-bonus-mobili-cittadini#quote-annuali",
+    "ade-bonus-mobili-cittadini#requisito-ristrutturazione"
+  ],
+  "payload": {
+    "misura_id": "bonus-mobili",
+    "verdict": "approved",
+    "iterazione": 1,
+    "inventario_completato": true,
+    "divergenze": [],
+    "esito_misura": "pubblicabile"
+  }
+}

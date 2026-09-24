@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "confidence": 0.72,
+  "source_refs": [
+    "inps-cs-bonus-asilo-nido-2026#par-domanda",
+    "inps-cs-bonus-asilo-nido-2026#par-importo",
+    "inps-cs-bonus-asilo-nido-2026#par-strutture"
+  ],
+  "payload": {
+    "misura_id": "bonus-asilo-nido",
+    "verdict": "approved",
+    "iterazione": 2,
+    "inventario_completato": true,
+    "divergenze": [],
+    "esito_misura": "pubblicabile"
+  }
+}

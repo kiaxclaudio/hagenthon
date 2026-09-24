@@ -1,0 +1,71 @@
+{
+  "status": "ok",
+  "confidence": 0.85,
+  "source_refs": [
+    "ade-ristrutturazioni-cittadini#in-cosa-consiste",
+    "ade-ristrutturazioni-cittadini#aliquote-2025-2026",
+    "ade-ristrutturazioni-cittadini#limite-di-spesa",
+    "ade-ristrutturazioni-cittadini#quote-annuali",
+    "ade-ristrutturazioni-cittadini#riferimento-normativo",
+    "ade-ristrutturazioni-misura-detrazione#requisiti-aliquota-maggiorata",
+    "ade-ristrutturazioni-misura-detrazione#aliquote-2027-2033"
+  ],
+  "payload": {
+    "misura_id": "bonus-ristrutturazioni",
+    "titolo_semplice": "Sconto sulle tasse se ristrutturi casa",
+    "cosa_e": "La detrazione per le ristrutturazioni edilizie è uno sconto sull'IRPEF. L'IRPEF è l'imposta che paghi sul tuo reddito. Lo sconto vale sulle spese che sostieni per ristrutturare. Non ricevi soldi: paghi meno tasse. Lo recuperi in 10 quote annuali di pari importo, cioè una quota all'anno per dieci anni. La regola è l'articolo 16-bis del Dpr 917/86, il Testo unico delle imposte sui redditi (TUIR).",
+    "quanto_vale": "Per le spese sostenute negli anni 2025 e 2026 la detrazione è del 36%. La detrazione sale al 50% in caso di abitazione principale. Il limite massimo di spesa è 96.000 euro per unità immobiliare. Lo sconto si divide in 10 quote annuali di pari importo.",
+    "a_chi_spetta": [
+      "Se sostieni la spesa negli anni 2025 e 2026, la detrazione è del 36%. Diventa del 50% in caso di abitazione principale.",
+      "Se l'unità immobiliare su cui fai i lavori è adibita ad abitazione principale, la detrazione è del 50%. Abitazione principale è quella nella quale la persona fisica dimora abitualmente.",
+      "Per la detrazione del 50% devi essere titolare di un diritto di proprietà. In alternativa devi essere titolare di un diritto reale di godimento sull'unità immobiliare. Devi esserlo al momento di inizio dei lavori."
+    ],
+    "attenzione": [
+      "Per le spese del 2027 la detrazione per l'abitazione principale è del 36%. Il limite massimo di spesa agevolabile resta di 96.000 euro.",
+      "Dal 2028 al 2033 la detrazione è del 30%, per tutte le abitazioni. Il limite massimo di spesa agevolabile è di 48.000 euro.",
+      "La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione.",
+      "La fonte letta non elenca i documenti da presentare o da conservare."
+    ],
+    "glossario": [
+      {
+        "termine": "detrazione",
+        "spiegazione_semplice": "detrazione: uno sconto sulle tasse che devi pagare."
+      },
+      {
+        "termine": "IRPEF",
+        "spiegazione_semplice": "IRPEF: l'imposta che paghi allo Stato sul tuo reddito."
+      },
+      {
+        "termine": "unità immobiliare",
+        "spiegazione_semplice": "unità immobiliare: una singola casa o un singolo locale accatastato a sé."
+      },
+      {
+        "termine": "abitazione principale",
+        "spiegazione_semplice": "abitazione principale: quella nella quale la persona fisica dimora abitualmente."
+      },
+      {
+        "termine": "diritto reale di godimento",
+        "spiegazione_semplice": "diritto reale di godimento: un diritto sulla casa riconosciuto dalla legge, diverso dalla proprietà."
+      },
+      {
+        "termine": "10 quote annuali di pari importo",
+        "spiegazione_semplice": "10 quote annuali di pari importo: dieci parti uguali, una ogni anno."
+      },
+      {
+        "termine": "TUIR",
+        "spiegazione_semplice": "TUIR: il Testo unico delle imposte sui redditi, la legge sulle imposte sul reddito."
+      }
+    ],
+    "iterazione": 2,
+    "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+    "source_refs": [
+      "ade-ristrutturazioni-cittadini#in-cosa-consiste",
+      "ade-ristrutturazioni-cittadini#aliquote-2025-2026",
+      "ade-ristrutturazioni-cittadini#limite-di-spesa",
+      "ade-ristrutturazioni-cittadini#quote-annuali",
+      "ade-ristrutturazioni-cittadini#riferimento-normativo",
+      "ade-ristrutturazioni-misura-detrazione#requisiti-aliquota-maggiorata",
+      "ade-ristrutturazioni-misura-detrazione#aliquote-2027-2033"
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "status": "ok",
+  "confidence": 0.72,
+  "source_refs": [
+    "inps-cs-bonus-asilo-nido-2026#par-domanda",
+    "inps-cs-bonus-asilo-nido-2026#par-importo",
+    "inps-cs-bonus-asilo-nido-2026#par-strutture"
+  ],
+  "payload": {
+    "misura_id": "bonus-asilo-nido",
+    "verdict": "rejected",
+    "iterazione": 1,
+    "inventario_completato": true,
+    "divergenze": [
+      {
+        "tipo": "numero_cambiato",
+        "categoria_dato": "scadenza",
+        "gravita": "bloccante",
+        "campo": "/requisiti/3/descrizione_fonte",
+        "testo_originale": "caricando i relativi documenti di spesa entro il 30 aprile dell'anno successivo a quello a cui si riferiscono le mensilità",
+        "testo_semplificato": "Devi caricare i documenti di spesa entro il 30 aprile 2027.",
+        "descrizione": "D-04 alterazione di data. L'anno 2027 non compare nella fonte: il termine è mobile e legato all'anno delle mensilità richieste, fissarlo a una data sola fa perdere il termine a chi chiede mensilità di un altro anno."
+      }
+    ],
+    "esito_misura": "da_riscrivere"
+  }
+}

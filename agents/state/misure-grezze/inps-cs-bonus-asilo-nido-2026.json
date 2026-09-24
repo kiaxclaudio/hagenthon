@@ -1,0 +1,122 @@
+{
+  "status": "ok",
+  "confidence": 0.8,
+  "source_refs": [
+    "inps-cs-bonus-asilo-nido-2026#par-importo"
+  ],
+  "payload": {
+    "fonte_id": "inps-cs-bonus-asilo-nido-2026",
+    "data_consultazione": "2026-09-24",
+    "misure": [
+      {
+        "misura_id": "bonus-asilo-nido",
+        "nome": "Bonus Asilo Nido",
+        "tipo": "contributo",
+        "descrizione_fonte": "Dal 2026, per richiedere il beneficio basta trasmettere una sola domanda che sarà valida fino all'agosto dell'anno in cui il bambino compie 3 anni. Dal punto di vista economico, il beneficio può arrivare fino a 3.600 euro annui, calcolato in base all'ISEE per specifiche prestazioni familiari e per l'inclusione neutralizzato dagli importi erogati per l'Assegno Unico e Universale. La domanda deve essere presentata dal genitore che sostiene la spesa della retta, esclusivamente online tramite il portale INPS - utilizzando SPID, CIE o CNS - oppure tramite patronato.",
+        "anno_riferimento": 2026,
+        "beneficio": {
+          "forma": "importo_massimo",
+          "tetto_massimo_euro": 3600,
+          "base_tetto": "annui",
+          "testo_fonte": "Dal punto di vista economico, il beneficio può arrivare fino a 3.600 euro annui, calcolato in base all'ISEE per specifiche prestazioni familiari e per l'inclusione neutralizzato dagli importi erogati per l'Assegno Unico e Universale.",
+          "source_refs": [
+            "inps-cs-bonus-asilo-nido-2026#par-importo"
+          ]
+        },
+        "requisiti": [
+          {
+            "requisito_id": "genitore-che-sostiene-la-retta",
+            "tipo_requisito": "nucleo_familiare",
+            "descrizione_fonte": "La domanda deve essere presentata dal genitore che sostiene la spesa della retta, esclusivamente online tramite il portale INPS - utilizzando SPID, CIE o CNS - oppure tramite patronato",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-domanda"
+            ]
+          },
+          {
+            "requisito_id": "struttura-abilitata",
+            "tipo_requisito": "altro",
+            "descrizione_fonte": "Il Bonus è riconosciuto solo per nidi e strutture abilitate a erogare servizi educativi per bambini da 0 a 3 anni: quindi nidi, micronidi, sezioni primavera, spazi gioco e servizi educativi in contesti domiciliari",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-strutture"
+            ]
+          },
+          {
+            "requisito_id": "isee-prestazioni-familiari",
+            "tipo_requisito": "isee",
+            "descrizione_fonte": "calcolato in base all'ISEE per specifiche prestazioni familiari e per l'inclusione neutralizzato dagli importi erogati per l'Assegno Unico e Universale",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-importo"
+            ]
+          },
+          {
+            "requisito_id": "documenti-di-spesa",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "Ogni anno sarà possibile scegliere le mensilità per le quali si intende richiedere il contributo, caricando i relativi documenti di spesa entro il 30 aprile dell'anno successivo a quello a cui si riferiscono le mensilità",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-domanda"
+            ]
+          }
+        ],
+        "scadenza": {
+          "tipo_scadenza": "non_determinata",
+          "conseguenza_mancato_rispetto": "Se la struttura non risulta abilitata, il contributo non verrà riconosciuto",
+          "source_refs": [
+            "inps-cs-bonus-asilo-nido-2026#par-domanda",
+            "inps-cs-bonus-asilo-nido-2026#par-strutture"
+          ]
+        },
+        "recupero": {
+          "anni_pregressi_recuperabili": 0,
+          "descrizione_fonte": "\"Ogni anno sarà possibile scegliere le mensilità per le quali si intende richiedere il contributo, caricando i relativi documenti di spesa entro il 30 aprile dell'anno successivo a quello a cui si riferiscono le mensilità\". La fonte letta non dichiara per quanti anni pregressi la misura sia recuperabile: il valore 0 è imposto dal contratto, che non ammette l'assenza del campo, e il dato è dichiarato in dati_mancanti.",
+          "source_refs": [
+            "inps-cs-bonus-asilo-nido-2026#par-domanda"
+          ]
+        },
+        "documenti_richiesti": [
+          {
+            "tipo_documento": "spid_cie_cns",
+            "nome": "SPID, CIE o CNS",
+            "obbligatorio": true,
+            "dove_si_ottiene": "portale_inps",
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-domanda"
+            ]
+          },
+          {
+            "tipo_documento": "altro",
+            "nome": "documenti di spesa",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-domanda"
+            ]
+          }
+        ],
+        "canali_accesso": [
+          "portale_inps",
+          "altro"
+        ],
+        "situazioni_vita_collegate": [
+          "figlio"
+        ],
+        "timing_compatibile": [
+          "da_iniziare",
+          "in_corso"
+        ],
+        "dati_mancanti": [
+          "importo",
+          "scadenza"
+        ],
+        "source_refs": [
+          "inps-cs-bonus-asilo-nido-2026#par-domanda",
+          "inps-cs-bonus-asilo-nido-2026#par-importo",
+          "inps-cs-bonus-asilo-nido-2026#par-strutture"
+        ]
+      }
+    ],
+    "misure_non_interpretabili": []
+  }
+}

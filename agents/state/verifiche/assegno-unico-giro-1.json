@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "confidence": 0.75,
+  "source_refs": [
+    "inps-circolare-7-2026-auu#par-1",
+    "inps-circolare-7-2026-auu#par-2",
+    "inps-circolare-7-2026-auu-allegato-1#tabella-valori-mensili-2026"
+  ],
+  "payload": {
+    "misura_id": "assegno-unico",
+    "verdict": "approved",
+    "iterazione": 1,
+    "inventario_completato": true,
+    "divergenze": [],
+    "esito_misura": "pubblicabile"
+  }
+}

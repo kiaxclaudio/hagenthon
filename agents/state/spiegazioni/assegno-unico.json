@@ -1,0 +1,72 @@
+{
+  "status": "ok",
+  "confidence": 0.85,
+  "source_refs": [
+    "inps-circolare-7-2026-auu#par-1",
+    "inps-circolare-7-2026-auu#par-2",
+    "inps-circolare-7-2026-auu-allegato-1#tabella-valori-mensili-2026"
+  ],
+  "payload": {
+    "misura_id": "assegno-unico",
+    "titolo_semplice": "Assegno mensile per i figli a carico",
+    "cosa_e": "L'Assegno Unico e Universale per i figli a carico (AUU) è una somma di denaro. L'INPS te la paga ogni mese per i figli a carico. La regola è il decreto legislativo 29 dicembre 2021, n. 230, e successive modificazioni. L'AUU è erogato d'ufficio, in continuità, per chi ha già beneficiato della misura. D'ufficio vuol dire che l'INPS lo paga da solo, senza che tu chieda di nuovo.",
+    "quanto_vale": "L'importo mensile dipende dall'ISEE. Per ciascun figlio minorenne l'assegno è di 203,8 euro al mese con ISEE fino a 17.468,51 euro. È di 58,3 euro al mese con ISEE oltre 46.582,71 euro. I valori sono quelli della tabella dell'Allegato n. 1 alla circolare INPS n. 7 del 30 gennaio 2026. Per il 2026 sono stati aggiornati con una variazione calcolata dall'ISTAT pari a +1,4%.",
+    "a_chi_spetta": [
+      "Se vuoi un importo dell'AUU superiore al valore minimo, la tua DSU per l'anno 2026 deve essere correttamente attestata.",
+      "Se non hai l'ISEE, dal mese di marzo 2026 l'importo dell'AUU è calcolato al minimo. Il riferimento sono gli importi minimi previsti dalla normativa.",
+      "Se hai già una domanda in stato \"accolta\", per l'anno 2026 non devi presentare una nuova domanda. Vale salvo che la domanda non sia decaduta, revocata, rinunciata o respinta.",
+      "Devi comunicare le variazioni da inserire nel modello di domanda. Per esempio l'inserimento di una nuova scheda nel caso di nascita di un nuovo figlio. Oppure l'aggiornamento della scheda dei figli al raggiungimento della maggiore età. Serve per continuare a percepire l'AUU per i figli maggiorenni.",
+      "Per ciascun figlio di età inferiore a un anno l'importo dell'AUU è incrementato nella misura del 50%. L'aumento vale fino al compimento del primo anno di vita del bambino.",
+      "Se il tuo nucleo familiare ha almeno tre figli, c'è un altro aumento del 50%. Vale per ciascun figlio nella fascia di età da uno a tre anni. Serve un ISEE, neutralizzato ai fini AUU, pari o inferiore alla fascia massima. La fascia massima ISEE è 46.582,71 euro per l'anno 2026.",
+      "Se il tuo nucleo familiare ha almeno quattro figli a carico, c'è una maggiorazione forfettaria pari a 150 euro."
+    ],
+    "attenzione": [
+      "Dal mese di marzo 2026, in assenza dell'ISEE, l'AUU è calcolato con riferimento agli importi minimi previsti dalla normativa.",
+      "Puoi presentare la nuova Dichiarazione Sostitutiva Unica (DSU) entro il 30 giugno 2026. In quel caso gli importi già erogati per l'anno 2026 sono adeguati. L'adeguamento decorre dal mese di marzo 2026. Ricevi anche i relativi arretrati.",
+      "La fonte letta non dice per quanti anni indietro puoi ancora recuperare l'AUU."
+    ],
+    "glossario": [
+      {
+        "termine": "AUU",
+        "spiegazione_semplice": "AUU: la sigla di Assegno Unico e Universale per i figli a carico."
+      },
+      {
+        "termine": "ISEE",
+        "spiegazione_semplice": "ISEE: l'indicatore della situazione economica della tua famiglia.",
+        "tipo_documento_collegato": "isee"
+      },
+      {
+        "termine": "DSU",
+        "spiegazione_semplice": "DSU: la Dichiarazione Sostitutiva Unica, il modulo con cui ottieni l'ISEE.",
+        "tipo_documento_collegato": "altro"
+      },
+      {
+        "termine": "INPS",
+        "spiegazione_semplice": "INPS: l'ente pubblico che paga pensioni, assegni e sussidi."
+      },
+      {
+        "termine": "erogato d'ufficio",
+        "spiegazione_semplice": "erogato d'ufficio: pagato dall'ente senza che tu debba presentare una nuova domanda."
+      },
+      {
+        "termine": "decaduta",
+        "spiegazione_semplice": "decaduta: una domanda che ha perso validità e non produce più effetti."
+      },
+      {
+        "termine": "maggiorazione forfettaria",
+        "spiegazione_semplice": "maggiorazione forfettaria: una somma in più di importo fisso, uguale per tutti."
+      },
+      {
+        "termine": "arretrati",
+        "spiegazione_semplice": "arretrati: le somme di mesi passati che ti vengono pagate dopo."
+      }
+    ],
+    "iterazione": 1,
+    "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+    "source_refs": [
+      "inps-circolare-7-2026-auu#par-1",
+      "inps-circolare-7-2026-auu#par-2",
+      "inps-circolare-7-2026-auu-allegato-1#tabella-valori-mensili-2026"
+    ]
+  }
+}

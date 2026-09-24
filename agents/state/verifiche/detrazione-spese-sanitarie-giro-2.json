@@ -1,0 +1,16 @@
+{
+  "status": "ok",
+  "confidence": 0.88,
+  "source_refs": [
+    "ade-spese-sanitarie-aspetti-generali#detrazione-19-e-parte-eccedente",
+    "ade-spese-sanitarie-aspetti-generali#pagamento-tracciabile"
+  ],
+  "payload": {
+    "misura_id": "detrazione-spese-sanitarie",
+    "verdict": "approved",
+    "iterazione": 2,
+    "inventario_completato": true,
+    "divergenze": [],
+    "esito_misura": "pubblicabile"
+  }
+}

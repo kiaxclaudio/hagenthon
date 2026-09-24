@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "confidence": 0.88,
+  "source_refs": [
+    "ade-ristrutturazioni-cittadini#in-cosa-consiste",
+    "ade-ristrutturazioni-cittadini#riferimento-normativo",
+    "ade-ristrutturazioni-misura-detrazione#riferimento-normativo"
+  ],
+  "payload": {
+    "misura_id": "bonus-ristrutturazioni",
+    "verdict": "approved",
+    "iterazione": 2,
+    "inventario_completato": true,
+    "divergenze": [],
+    "esito_misura": "pubblicabile"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "status": "ok",
+  "confidence": 0.9,
+  "source_refs": [
+    "ade-spese-sanitarie-aspetti-generali#detrazione-19-e-parte-eccedente"
+  ],
+  "payload": {
+    "fonte_id": "ade-spese-sanitarie-aspetti-generali",
+    "data_consultazione": "2026-09-24",
+    "misure": [
+      {
+        "misura_id": "detrazione-spese-sanitarie",
+        "nome": "Spese sanitarie",
+        "tipo": "detrazione",
+        "descrizione_fonte": "È possibile portare in detrazione dall'Irpef il 19% delle spese sanitarie per la parte eccedente l'importo di 129,11 euro. La detrazione del 19% degli oneri indicati nell'articolo 15 del Tuir è fruibile soltanto se il pagamento è effettuato con versamento bancario o postale o altri sistemi tracciabili.",
+        "anno_riferimento": 2026,
+        "beneficio": {
+          "forma": "percentuale",
+          "percentuale": 19,
+          "testo_fonte": "È possibile portare in detrazione dall'Irpef il 19% delle spese sanitarie per la parte eccedente l'importo di 129,11 euro.",
+          "source_refs": [
+            "ade-spese-sanitarie-aspetti-generali#detrazione-19-e-parte-eccedente"
+          ]
+        },
+        "requisiti": [
+          {
+            "requisito_id": "pagamento-tracciabile",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "la detrazione del 19% degli oneri indicati nell'articolo 15 del Tuir è fruibile soltanto se il pagamento è effettuato con versamento bancario o postale o altri sistemi tracciabili",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-spese-sanitarie-aspetti-generali#pagamento-tracciabile"
+            ]
+          },
+          {
+            "requisito_id": "eccezione-contanti",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "il versamento in contanti continua a essere ammesso, senza perdere il diritto alla detrazione, per l'acquisto di medicinali e di dispositivi medici e per pagare tutte le prestazioni sanitarie rese dalle strutture pubbliche o dalle strutture private accreditate al Servizio sanitario nazionale",
+            "obbligatorio": false,
+            "source_refs": [
+              "ade-spese-sanitarie-aspetti-generali#eccezioni-contanti"
+            ]
+          },
+          {
+            "requisito_id": "conservazione-giustificativi",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "I giustificativi delle spese devono essere conservati per tutto il tempo in cui l'Agenzia delle entrate può effettuare un accertamento (31 dicembre del quinto anno successivo)",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-spese-sanitarie-aspetti-generali#conservazione-documenti"
+            ]
+          }
+        ],
+        "scadenza": {
+          "tipo_scadenza": "non_determinata",
+          "source_refs": [
+            "ade-spese-sanitarie-aspetti-generali#detrazione-19-e-parte-eccedente"
+          ]
+        },
+        "recupero": {
+          "anni_pregressi_recuperabili": 0,
+          "descrizione_fonte": "\"È possibile ripartire la detrazione...in quattro quote annuali costanti e di pari importo quando il loro ammontare complessivo annuo...è superiore a 15.493,71 euro\". La fonte letta non dichiara per quanti anni pregressi la misura sia recuperabile: il valore 0 è imposto dal contratto, che non ammette l'assenza del campo, e il dato è dichiarato in dati_mancanti.",
+          "source_refs": [
+            "ade-spese-sanitarie-aspetti-generali#rateizzazione"
+          ]
+        },
+        "documenti_richiesti": [
+          {
+            "tipo_documento": "altro",
+            "nome": "I giustificativi delle spese",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-spese-sanitarie-aspetti-generali#conservazione-documenti"
+            ]
+          }
+        ],
+        "canali_accesso": [
+          "dichiarazione_redditi"
+        ],
+        "situazioni_vita_collegate": [
+          "spese_mediche"
+        ],
+        "timing_compatibile": [
+          "da_iniziare",
+          "in_corso"
+        ],
+        "dati_mancanti": [
+          "scadenza",
+          "recupero"
+        ],
+        "source_refs": [
+          "ade-spese-sanitarie-aspetti-generali#detrazione-19-e-parte-eccedente",
+          "ade-spese-sanitarie-aspetti-generali#pagamento-tracciabile"
+        ]
+      }
+    ],
+    "misure_non_interpretabili": []
+  }
+}

@@ -1,0 +1,342 @@
+{
+  "traccia_id": "fase-a-2026-09-24",
+  "eseguito_il": "2026-09-24T15:10:00+02:00",
+  "pipeline": "fonti ufficiali -> source-analyzer -> explainer -> fidelity-validator -> catalogo.json",
+  "modalita_esecuzione": {
+    "tipo": "esecuzione manuale della pipeline",
+    "dichiarazione": "I tre ruoli della Fase A (source-analyzer, explainer, fidelity-validator) sono stati eseguiti a mano seguendo alla lettera le istruzioni di agents/subagents/*.md e le skill agents/skills/plain-language.md e agents/skills/fidelity-diff-taxonomy.md. Non ci sono state chiamate API ai sottoagenti: gli artefatti sono veri, il meccanismo di invocazione no. La distinzione e' dichiarata qui e in agents/state/README.md.",
+    "data": "2026-09-24"
+  },
+  "limiti_applicati": {
+    "giri_explainer_validator_per_misura": 2,
+    "oltre_il_limite": "la misura non entra nel catalogo ed esce hitl_required",
+    "soglia_confidence_per_pubblicare": 0.6,
+    "regola_di_verdetto": "una sola divergenza bloccante -> rejected; due o piu' major -> rejected; in dubbio si respinge"
+  },
+  "fonti_consultate": [
+    {
+      "fonte_id": "ade-ristrutturazioni-cittadini",
+      "ente": "agenzia_entrate",
+      "url_fonte": "https://www.agenziaentrate.gov.it/portale/schede/agevolazioni/detrristredil36/schinfodetrristredil36-cittadini",
+      "data_consultazione": "2026-09-24",
+      "estratto": "fonti/ade-ristrutturazioni-cittadini.txt"
+    },
+    {
+      "fonte_id": "ade-ristrutturazioni-misura-detrazione",
+      "ente": "agenzia_entrate",
+      "url_fonte": "https://www.agenziaentrate.gov.it/portale/la-misura-della-detrazione-limiti-detraibilita",
+      "data_consultazione": "2026-09-24",
+      "estratto": "fonti/ade-ristrutturazioni-misura-detrazione.txt"
+    },
+    {
+      "fonte_id": "ade-bonus-mobili-cittadini",
+      "ente": "agenzia_entrate",
+      "url_fonte": "https://www.agenziaentrate.gov.it/portale/bonus-mobili/infogen-bonus-mobili-cittadini",
+      "data_consultazione": "2026-09-24",
+      "estratto": "fonti/ade-bonus-mobili-cittadini.txt"
+    },
+    {
+      "fonte_id": "ade-spese-sanitarie-aspetti-generali",
+      "ente": "agenzia_entrate",
+      "url_fonte": "https://www.agenziaentrate.gov.it/portale/aspetti-generali",
+      "data_consultazione": "2026-09-24",
+      "estratto": "fonti/ade-spese-sanitarie-aspetti-generali.txt"
+    },
+    {
+      "fonte_id": "inps-circolare-7-2026-auu",
+      "ente": "inps",
+      "url_fonte": "https://www.inps.it/content/dam/inps-site/it/scorporati/circolari-e-messaggi/2026/01/Circolare_15152/Allegati/16548_Circolare-numero-7-del-30-01-2026.pdf",
+      "data_consultazione": "2026-09-24",
+      "estratto": "fonti/inps-circolare-7-2026-auu.txt"
+    },
+    {
+      "fonte_id": "inps-circolare-7-2026-auu-allegato-1",
+      "ente": "inps",
+      "url_fonte": "https://www.inps.it/content/dam/inps-site/it/scorporati/circolari-e-messaggi/2026/01/Circolare_15152/Allegati/16549_Circolare-numero-7-del-30-01-2026_Allegato-n-1.pdf",
+      "data_consultazione": "2026-09-24",
+      "estratto": "fonti/inps-circolare-7-2026-auu-allegato-1.txt"
+    },
+    {
+      "fonte_id": "inps-cs-bonus-asilo-nido-2026",
+      "ente": "inps",
+      "url_fonte": "https://www.inps.it/content/dam/inps-site/it/scorporati/comunicati-stampa/2026/03/Allegati/4065_CS-BONUS-ASILI-NIDO.pdf",
+      "data_consultazione": "2026-09-24",
+      "estratto": "fonti/inps-cs-bonus-asilo-nido-2026.txt"
+    },
+    {
+      "fonte_id": "ade-detrazioni-canoni-locazione-tabella",
+      "ente": "agenzia_entrate",
+      "url_fonte": "https://www.agenziaentrate.gov.it/portale/documents/20143/5629825/Detrazioni+per+canoni+di+locazione_tabella_aggiornata.pdf/f76fe2b8-ecab-9d12-1986-752885a8b95a",
+      "data_consultazione": "2026-09-24",
+      "estratto": "fonti/ade-detrazioni-canoni-locazione-tabella.txt"
+    }
+  ],
+  "conteggi": {
+    "fonti": 8,
+    "misure_lavorate": 6,
+    "misure_pubblicate": 5,
+    "misure_escluse": 1,
+    "giri_di_verifica_eseguiti": 8,
+    "divergenze_bloccanti_trovate": 4,
+    "divergenze_non_bloccanti": 0
+  },
+  "misure": [
+    {
+      "misura_id": "bonus-ristrutturazioni",
+      "nome": "Ristrutturazioni edilizie",
+      "fonti": [
+        "ade-ristrutturazioni-cittadini",
+        "ade-ristrutturazioni-misura-detrazione"
+      ],
+      "file_misura_grezza": "misure-grezze/ade-ristrutturazioni-cittadini.json",
+      "file_spiegazione": "spiegazioni/bonus-ristrutturazioni.json",
+      "giri": [
+        {
+          "iterazione": 1,
+          "agente": "fidelity-validator",
+          "verdict": "rejected",
+          "inventario_completato": true,
+          "confidence": 0.88,
+          "divergenze": [
+            {
+              "tipo": "omissione",
+              "categoria_dato": "importo_o_tetto",
+              "gravita": "bloccante",
+              "campo": "/beneficio/base_tetto",
+              "testo_originale": "Su un massimo di 96.000 euro per unità immobiliare",
+              "testo_semplificato": "Il limite massimo di spesa è 96.000 euro.",
+              "descrizione": "D-01 omissione. Sparisce la base del tetto, «per unità immobiliare»: chi ristruttura due unità immobiliari crede di avere un tetto unico di 96.000 euro e presenta una spesa destinata a essere ridimensionata."
+            },
+            {
+              "tipo": "omissione",
+              "categoria_dato": "scadenza",
+              "gravita": "bloccante",
+              "campo": "/scadenza/conseguenza_mancato_rispetto",
+              "testo_originale": "dal 2028 al 2033 \"detrazione del 30%, con limite massimo di spesa agevolabile di 48.000 euro, per tutte le abitazioni\"",
+              "testo_semplificato": "assente",
+              "descrizione": "D-01 omissione. La riduzione dell'aliquota dopo il 2026 non compare in nessun blocco: chi rimanda i lavori non sa che la stessa spesa varrà meno, e la finestra temporale della misura sparisce."
+            }
+          ],
+          "esito_misura": "da_riscrivere",
+          "nota": "Due omissioni bloccanti: la base del tetto e la finestra temporale dopo il 2026.",
+          "file": "verifiche/bonus-ristrutturazioni-giro-1.json"
+        },
+        {
+          "iterazione": 2,
+          "agente": "fidelity-validator",
+          "verdict": "approved",
+          "inventario_completato": true,
+          "confidence": 0.88,
+          "divergenze": [],
+          "esito_misura": "pubblicabile",
+          "nota": "Corretti i soli due punti contestati: aggiunto «per unità immobiliare» in quanto_vale e aggiunte due voci in attenzione con le aliquote 2027 e 2028-2033. Nessuna divergenza nuova.",
+          "file": "verifiche/bonus-ristrutturazioni-giro-2.json"
+        }
+      ],
+      "iterazioni_totali": 2,
+      "verdetto_finale": "approvata",
+      "confidence_finale": 0.88,
+      "nota_sulla_confidence": "Confronto agevole: la fonte quantifica tutto ciò che afferma."
+    },
+    {
+      "misura_id": "bonus-mobili",
+      "nome": "Bonus mobili ed elettrodomestici",
+      "fonti": [
+        "ade-bonus-mobili-cittadini"
+      ],
+      "file_misura_grezza": "misure-grezze/ade-bonus-mobili-cittadini.json",
+      "file_spiegazione": "spiegazioni/bonus-mobili.json",
+      "giri": [
+        {
+          "iterazione": 1,
+          "agente": "fidelity-validator",
+          "verdict": "approved",
+          "inventario_completato": true,
+          "confidence": 0.9,
+          "divergenze": [],
+          "esito_misura": "pubblicabile",
+          "nota": "Inventario di 18 unità di significato, tutte ritrovate. Nessuna divergenza.",
+          "file": "verifiche/bonus-mobili-giro-1.json"
+        }
+      ],
+      "iterazioni_totali": 1,
+      "verdetto_finale": "approvata",
+      "confidence_finale": 0.9,
+      "nota_sulla_confidence": "Fonte esplicita su percentuale, tetto, rate, classi energetiche e pagamenti."
+    },
+    {
+      "misura_id": "detrazione-spese-sanitarie",
+      "nome": "Spese sanitarie",
+      "fonti": [
+        "ade-spese-sanitarie-aspetti-generali"
+      ],
+      "file_misura_grezza": "misure-grezze/ade-spese-sanitarie-aspetti-generali.json",
+      "file_spiegazione": "spiegazioni/detrazione-spese-sanitarie.json",
+      "giri": [
+        {
+          "iterazione": 1,
+          "agente": "fidelity-validator",
+          "verdict": "rejected",
+          "inventario_completato": true,
+          "confidence": 0.88,
+          "divergenze": [
+            {
+              "tipo": "slittamento_senso",
+              "categoria_dato": "importo_o_tetto",
+              "gravita": "bloccante",
+              "campo": "/beneficio/testo_fonte",
+              "testo_originale": "il 19% delle spese sanitarie per la parte eccedente l'importo di 129,11 euro",
+              "testo_semplificato": "Puoi portare in detrazione dall'Irpef il 19% delle spese sanitarie che superano 129,11 euro.",
+              "descrizione": "D-06 perdita di condizione. «per la parte eccedente» sparisce e il 19% sembra calcolarsi sull'intera spesa: la persona si aspetta uno sconto più grande di quello che riceverà, perché i primi 129,11 euro restano fuori dal calcolo."
+            }
+          ],
+          "esito_misura": "da_riscrivere",
+          "nota": "La condizione che regge l'intero calcolo del beneficio era sparita.",
+          "file": "verifiche/detrazione-spese-sanitarie-giro-1.json"
+        },
+        {
+          "iterazione": 2,
+          "agente": "fidelity-validator",
+          "verdict": "approved",
+          "inventario_completato": true,
+          "confidence": 0.88,
+          "divergenze": [],
+          "esito_misura": "pubblicabile",
+          "nota": "Riscritta la sola frase contestata di quanto_vale, con «solo sulla parte eccedente». Le altre frasi sono rimaste identiche parola per parola.",
+          "file": "verifiche/detrazione-spese-sanitarie-giro-2.json"
+        }
+      ],
+      "iterazioni_totali": 2,
+      "verdetto_finale": "approvata",
+      "confidence_finale": 0.88,
+      "nota_sulla_confidence": "Fonte chiara; l'unica ambiguità residua è l'assenza di una scadenza dichiarata."
+    },
+    {
+      "misura_id": "assegno-unico",
+      "nome": "Assegno Unico e Universale per i figli a carico (AUU)",
+      "fonti": [
+        "inps-circolare-7-2026-auu",
+        "inps-circolare-7-2026-auu-allegato-1"
+      ],
+      "file_misura_grezza": "misure-grezze/inps-circolare-7-2026-auu.json",
+      "file_spiegazione": "spiegazioni/assegno-unico.json",
+      "giri": [
+        {
+          "iterazione": 1,
+          "agente": "fidelity-validator",
+          "verdict": "approved",
+          "inventario_completato": true,
+          "confidence": 0.75,
+          "divergenze": [],
+          "esito_misura": "pubblicabile",
+          "nota": "Inventario di 26 unità di significato, tutte ritrovate, riferimenti normativi compresi.",
+          "file": "verifiche/assegno-unico-giro-1.json"
+        }
+      ],
+      "iterazioni_totali": 1,
+      "verdetto_finale": "approvata",
+      "confidence_finale": 0.75,
+      "nota_sulla_confidence": "Confidence abbassata: gli importi 203,8 e 58,3 vengono da un PDF tabellare la cui estrazione restituisce le colonne, non le righe. L'abbinamento riga-importo è una ricostruzione, documentata in testa a fonti/inps-circolare-7-2026-auu-allegato-1.txt. La soglia 46.582,71 è confermata due volte, anche nel testo della circolare."
+    },
+    {
+      "misura_id": "bonus-asilo-nido",
+      "nome": "Bonus Asilo Nido",
+      "fonti": [
+        "inps-cs-bonus-asilo-nido-2026"
+      ],
+      "file_misura_grezza": "misure-grezze/inps-cs-bonus-asilo-nido-2026.json",
+      "file_spiegazione": "spiegazioni/bonus-asilo-nido.json",
+      "giri": [
+        {
+          "iterazione": 1,
+          "agente": "fidelity-validator",
+          "verdict": "rejected",
+          "inventario_completato": true,
+          "confidence": 0.72,
+          "divergenze": [
+            {
+              "tipo": "numero_cambiato",
+              "categoria_dato": "scadenza",
+              "gravita": "bloccante",
+              "campo": "/requisiti/3/descrizione_fonte",
+              "testo_originale": "caricando i relativi documenti di spesa entro il 30 aprile dell'anno successivo a quello a cui si riferiscono le mensilità",
+              "testo_semplificato": "Devi caricare i documenti di spesa entro il 30 aprile 2027.",
+              "descrizione": "D-04 alterazione di data. L'anno 2027 non compare nella fonte: il termine è mobile e legato all'anno delle mensilità richieste, fissarlo a una data sola fa perdere il termine a chi chiede mensilità di un altro anno."
+            }
+          ],
+          "esito_misura": "da_riscrivere",
+          "nota": "Una data derivata dal ragionamento e non presente nella fonte.",
+          "file": "verifiche/bonus-asilo-nido-giro-1.json"
+        },
+        {
+          "iterazione": 2,
+          "agente": "fidelity-validator",
+          "verdict": "approved",
+          "inventario_completato": true,
+          "confidence": 0.72,
+          "divergenze": [],
+          "esito_misura": "pubblicabile",
+          "nota": "Ripristinata la formula della fonte, «entro il 30 aprile dell'anno successivo a quello a cui si riferiscono le mensilità». Verificato con grep che la stringa 2027 non compare nella fonte.",
+          "file": "verifiche/bonus-asilo-nido-giro-2.json"
+        }
+      ],
+      "iterazioni_totali": 2,
+      "verdetto_finale": "approvata",
+      "confidence_finale": 0.72,
+      "nota_sulla_confidence": "Confidence abbassata: la fonte è un comunicato stampa, quantifica il tetto (3.600 euro annui) ma non le fasce ISEE, dichiarate in dati_mancanti."
+    }
+  ],
+  "misure_escluse": [
+    {
+      "misura_id": "detrazione-canoni-locazione-giovani",
+      "nome": "Detrazione per canoni di locazione - inquilini di età compresa tra i 20 e 30 anni",
+      "fonte": "ade-detrazioni-canoni-locazione-tabella",
+      "motivo": "fonte_non_interpretabile",
+      "fermata_al_passo": "source-analyzer (non ha mai raggiunto l'explainer)",
+      "spiegazione": "La stessa riga della tabella delimita l'età in due modi incompatibili: «Inquilini di età compresa tra i 20 e 30 anni» e «L'agevolazione spetta per i primi 4 anni di durata del contratto nel limite del compimento dei 31 anni». Il perimetro anagrafico è un requisito, quindi un dato sempre bloccante: chi ha 30 anni compiuti non può sapere dalla fonte se rientra. Il documento, inoltre, non porta una data di pubblicazione, quindi non è databile (G-24). Non si sceglie la lettura più probabile: si dichiara il problema e si passa a una persona (G-01).",
+      "motivo_tecnico_source_analyzer": "testo_ambiguo",
+      "file": "misure-grezze/ade-detrazioni-canoni-locazione-tabella.json",
+      "status_del_passo": "degraded",
+      "effetto": "lo scenario «ricerca lavoro under 36» resta senza misura a catalogo: è un buco dichiarato, non nascosto"
+    }
+  ],
+  "note_di_esecuzione": [
+    {
+      "tema": "conflitto fra fonti sul Bonus Asilo Nido",
+      "nota": "Una pagina INPS non datata, raggiunta in ricerca, riporta ancora un importo massimo annuo di 3.000 euro. Il comunicato stampa del 31 marzo 2026, datato, riporta «fino a 3.600 euro annui». Nel catalogo è entrato 3.600 perché la fonte è datata e riferita al 2026; il conflitto resta dichiarato qui invece di sparire."
+    },
+    {
+      "tema": "portale INPS non leggibile in HTML",
+      "nota": "Le schede servizio e le notizie su inps.it restituiscono solo la struttura di navigazione: il contenuto è costruito lato client. Le misure INPS sono state prese dai PDF ufficiali (circolare e comunicato stampa), che sono citabili e restano stabili nel tempo."
+    },
+    {
+      "tema": "attrito di contratto: recupero.anni_pregressi_recuperabili",
+      "nota": "Il campo è obbligatorio e intero, e lo schema dichiara che 0 significa «la fonte esclude il recupero». Nessuna delle fonti lette dice nulla sul recupero di anni pregressi. Per non affermare il falso, il valore resta 0 ma «recupero» è elencato in dati_mancanti e la descrizione_fonte lo dichiara. Da valutare: ammettere null o un valore «non_determinato» nel contratto."
+    },
+    {
+      "tema": "attrito di contratto: canali_accesso con minItems 1",
+      "nota": "Le pagine dell'Agenzia delle Entrate lette non nominano un canale. Il valore «dichiarazione_redditi» è stato usato perché la fonte dice «detrazione dall'IRPEF», ma il contratto costringe comunque a scegliere: minItems 1 su un campo che la fonte può non avere."
+    },
+    {
+      "tema": "attrito di contratto: tipo_scadenza non copre i termini mobili",
+      "nota": "Il Bonus Asilo Nido ha un termine ricorrente, «entro il 30 aprile dell'anno successivo a quello a cui si riferiscono le mensilità». L'enum ha data_fissa, fine_anno_imposta, entro_giorni_da_evento, a_sportello_fino_esaurimento, nessuna, non_determinata: nessuno lo esprime. Si è usato non_determinata con «scadenza» in dati_mancanti, e il termine è conservato per esteso nel requisito documenti-di-spesa, così la persona lo legge comunque."
+    },
+    {
+      "tema": "dati non reperiti",
+      "nota": "Non sono entrati nel catalogo: i documenti richiesti per la detrazione sulle ristrutturazioni (la pagina letta non li elenca), gli importi per fascia ISEE del Bonus Asilo Nido, la scadenza della detrazione per spese sanitarie, gli anni pregressi recuperabili di tutte e cinque le misure. Ognuno è dichiarato in dati_mancanti sulla misura e ripetuto in lingua semplice nel blocco attenzione della spiegazione."
+    }
+  ],
+  "validazione_schema": {
+    "strumento": "jsonschema 4.26.0 (Draft202012Validator) con referencing.Registry sui file di agents/schemas/",
+    "format_checker": "attivo; rfc3339-validator installato, quindi date e date-time sono asseriti davvero",
+    "script": "valida_stato.py",
+    "esito": {
+      "catalogo.json": "valido",
+      "misure-grezze/*.json (6) contro source-analyzer.output.json": "validi",
+      "spiegazioni/*.json (5) contro explainer.output.json": "validi",
+      "verifiche/*.json (8) contro fidelity-validator.output.json": "validi",
+      "errori_totali": 0
+    },
+    "controllo_negativo": "Sul catalogo integro sono state provate nove mutazioni: date-time non valido, data non valida, verdict diverso da approved, confidence sotto 0.6, frase di consulenza in quanto_vale, disclaimer accorciato, iterazioni a 3, motivo di esclusione fuori enum, beneficio senza source_refs, tetto senza base_tetto. Tutte respinte dallo schema: la validazione non passa a vuoto."
+  }
+}

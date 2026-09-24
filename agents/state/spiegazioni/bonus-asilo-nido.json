@@ -1,0 +1,69 @@
+{
+  "status": "ok",
+  "confidence": 0.85,
+  "source_refs": [
+    "inps-cs-bonus-asilo-nido-2026#par-domanda",
+    "inps-cs-bonus-asilo-nido-2026#par-importo",
+    "inps-cs-bonus-asilo-nido-2026#par-strutture"
+  ],
+  "payload": {
+    "misura_id": "bonus-asilo-nido",
+    "titolo_semplice": "Contributo per la retta dell'asilo nido",
+    "cosa_e": "Il Bonus Asilo Nido è un contributo dell'INPS. Serve a pagare la retta dell'asilo nido. Dal 2026 basta trasmettere una sola domanda. La domanda sarà valida fino all'agosto dell'anno in cui il bambino compie 3 anni.",
+    "quanto_vale": "Il beneficio può arrivare fino a 3.600 euro annui. L'importo è calcolato in base all'ISEE per specifiche prestazioni familiari e per l'inclusione. Questo ISEE è neutralizzato dagli importi erogati per l'Assegno Unico e Universale. La fonte letta non riporta gli importi delle singole fasce di ISEE.",
+    "a_chi_spetta": [
+      "La domanda deve essere presentata dal genitore che sostiene la spesa della retta. La presenti esclusivamente online tramite il portale INPS, con SPID, CIE o CNS. In alternativa la presenti tramite patronato.",
+      "Il Bonus è riconosciuto solo per nidi e strutture abilitate. Sono le strutture abilitate a erogare servizi educativi per bambini da 0 a 3 anni. Cioè nidi, micronidi, sezioni primavera, spazi gioco e servizi educativi in contesti domiciliari.",
+      "L'importo è calcolato in base all'ISEE per specifiche prestazioni familiari e per l'inclusione. Questo ISEE è neutralizzato dagli importi erogati per l'Assegno Unico e Universale.",
+      "Ogni anno scegli le mensilità per le quali chiedi il contributo. Devi caricare i relativi documenti di spesa entro il 30 aprile dell'anno successivo. L'anno successivo è quello dopo l'anno a cui si riferiscono le mensilità."
+    ],
+    "attenzione": [
+      "L'INPS verifica che la struttura sia abilitata a erogare servizi educativi. Se la struttura non risulta abilitata, il contributo non verrà riconosciuto.",
+      "Devi chiedere alla struttura educativa i riferimenti precisi della sua abilitazione. Li devi inserire in domanda.",
+      "La fonte letta non dice per quanti anni indietro puoi ancora chiedere il contributo."
+    ],
+    "glossario": [
+      {
+        "termine": "contributo",
+        "spiegazione_semplice": "contributo: una somma di denaro che un ente ti dà per una spesa."
+      },
+      {
+        "termine": "retta",
+        "spiegazione_semplice": "retta: la somma che paghi ogni mese all'asilo nido."
+      },
+      {
+        "termine": "ISEE",
+        "spiegazione_semplice": "ISEE: l'indicatore della situazione economica della tua famiglia.",
+        "tipo_documento_collegato": "isee"
+      },
+      {
+        "termine": "neutralizzato",
+        "spiegazione_semplice": "neutralizzato: calcolato togliendo dal conteggio certe somme già ricevute."
+      },
+      {
+        "termine": "SPID, CIE o CNS",
+        "spiegazione_semplice": "SPID, CIE o CNS: le identità digitali con cui entri nei siti pubblici.",
+        "tipo_documento_collegato": "spid_cie_cns"
+      },
+      {
+        "termine": "patronato",
+        "spiegazione_semplice": "patronato: un ufficio che presenta per te le domande agli enti pubblici."
+      },
+      {
+        "termine": "abilitata",
+        "spiegazione_semplice": "abilitata: autorizzata per legge a svolgere quel servizio."
+      },
+      {
+        "termine": "mensilità",
+        "spiegazione_semplice": "mensilità: i singoli mesi per cui chiedi il contributo."
+      }
+    ],
+    "iterazione": 2,
+    "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+    "source_refs": [
+      "inps-cs-bonus-asilo-nido-2026#par-domanda",
+      "inps-cs-bonus-asilo-nido-2026#par-importo",
+      "inps-cs-bonus-asilo-nido-2026#par-strutture"
+    ]
+  }
+}

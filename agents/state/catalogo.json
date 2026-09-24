@@ -1,0 +1,928 @@
+{
+  "catalogo_id": "a-cosa-ho-diritto-2026",
+  "versione": "0.1.0",
+  "generato_il": "2026-09-24T15:10:00+02:00",
+  "anno_imposta_riferimento": 2026,
+  "fonti": [
+    {
+      "fonte_id": "ade-ristrutturazioni-cittadini",
+      "ente": "agenzia_entrate",
+      "url_fonte": "https://www.agenziaentrate.gov.it/portale/schede/agevolazioni/detrristredil36/schinfodetrristredil36-cittadini",
+      "data_consultazione": "2026-09-24"
+    },
+    {
+      "fonte_id": "ade-ristrutturazioni-misura-detrazione",
+      "ente": "agenzia_entrate",
+      "url_fonte": "https://www.agenziaentrate.gov.it/portale/la-misura-della-detrazione-limiti-detraibilita",
+      "data_consultazione": "2026-09-24"
+    },
+    {
+      "fonte_id": "ade-bonus-mobili-cittadini",
+      "ente": "agenzia_entrate",
+      "url_fonte": "https://www.agenziaentrate.gov.it/portale/bonus-mobili/infogen-bonus-mobili-cittadini",
+      "data_consultazione": "2026-09-24"
+    },
+    {
+      "fonte_id": "ade-spese-sanitarie-aspetti-generali",
+      "ente": "agenzia_entrate",
+      "url_fonte": "https://www.agenziaentrate.gov.it/portale/aspetti-generali",
+      "data_consultazione": "2026-09-24"
+    },
+    {
+      "fonte_id": "inps-circolare-7-2026-auu",
+      "ente": "inps",
+      "url_fonte": "https://www.inps.it/content/dam/inps-site/it/scorporati/circolari-e-messaggi/2026/01/Circolare_15152/Allegati/16548_Circolare-numero-7-del-30-01-2026.pdf",
+      "data_consultazione": "2026-09-24"
+    },
+    {
+      "fonte_id": "inps-circolare-7-2026-auu-allegato-1",
+      "ente": "inps",
+      "url_fonte": "https://www.inps.it/content/dam/inps-site/it/scorporati/circolari-e-messaggi/2026/01/Circolare_15152/Allegati/16549_Circolare-numero-7-del-30-01-2026_Allegato-n-1.pdf",
+      "data_consultazione": "2026-09-24"
+    },
+    {
+      "fonte_id": "inps-cs-bonus-asilo-nido-2026",
+      "ente": "inps",
+      "url_fonte": "https://www.inps.it/content/dam/inps-site/it/scorporati/comunicati-stampa/2026/03/Allegati/4065_CS-BONUS-ASILI-NIDO.pdf",
+      "data_consultazione": "2026-09-24"
+    },
+    {
+      "fonte_id": "ade-detrazioni-canoni-locazione-tabella",
+      "ente": "agenzia_entrate",
+      "url_fonte": "https://www.agenziaentrate.gov.it/portale/documents/20143/5629825/Detrazioni+per+canoni+di+locazione_tabella_aggiornata.pdf/f76fe2b8-ecab-9d12-1986-752885a8b95a",
+      "data_consultazione": "2026-09-24"
+    }
+  ],
+  "voci": [
+    {
+      "misura": {
+        "misura_id": "bonus-ristrutturazioni",
+        "nome": "Ristrutturazioni edilizie",
+        "tipo": "detrazione",
+        "descrizione_fonte": "Una detrazione dall'IRPEF, da ripartire in 10 quote annuali di pari importo, del 36% delle spese sostenute. Per le spese sostenute negli anni 2025 e 2026, la detrazione spetta nella misura del 36% (ovvero del 50% in caso di abitazione principale), su un massimo di 96.000 euro per unità immobiliare. Disciplinata dall'articolo 16-bis del Dpr 917/86 (Testo unico delle imposte sui redditi - TUIR).",
+        "anno_riferimento": 2026,
+        "beneficio": {
+          "forma": "percentuale",
+          "percentuale": 36,
+          "tetto_massimo_euro": 96000,
+          "base_tetto": "per unità immobiliare",
+          "testo_fonte": "\"Per le spese sostenute negli anni 2025 e 2026, la detrazione spetta nella misura del 36% (ovvero del 50% in caso di abitazione principale)\"; \"Su un massimo di 96.000 euro per unità immobiliare\"",
+          "source_refs": [
+            "ade-ristrutturazioni-cittadini#aliquote-2025-2026",
+            "ade-ristrutturazioni-cittadini#limite-di-spesa",
+            "ade-ristrutturazioni-misura-detrazione#aliquote-2025-2026"
+          ]
+        },
+        "requisiti": [
+          {
+            "requisito_id": "spesa-sostenuta-2025-2026",
+            "tipo_requisito": "temporale",
+            "descrizione_fonte": "Per le spese sostenute negli anni 2025 e 2026, la detrazione spetta nella misura del 36% (ovvero del 50% in caso di abitazione principale)",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-ristrutturazioni-cittadini#aliquote-2025-2026"
+            ]
+          },
+          {
+            "requisito_id": "abitazione-principale",
+            "tipo_requisito": "immobile",
+            "descrizione_fonte": "occorre, inoltre, che l'unità immobiliare sulla quale sono stati effettuati gli interventi sia adibita ad abitazione principale. Per \"abitazione principale\" deve intendersi quella nella quale la persona fisica dimorano abitualmente",
+            "obbligatorio": false,
+            "source_refs": [
+              "ade-ristrutturazioni-misura-detrazione#requisiti-aliquota-maggiorata"
+            ]
+          },
+          {
+            "requisito_id": "titolarita-diritto-reale",
+            "tipo_requisito": "immobile",
+            "descrizione_fonte": "è necessario che il contribuente sia titolare, al momento di inizio dei lavori di un diritto di PROPRIETÀ o di un diritto reale di godimento sull'unità immobiliare",
+            "obbligatorio": false,
+            "source_refs": [
+              "ade-ristrutturazioni-misura-detrazione#requisiti-aliquota-maggiorata"
+            ]
+          }
+        ],
+        "scadenza": {
+          "tipo_scadenza": "fine_anno_imposta",
+          "conseguenza_mancato_rispetto": "per le spese del 2027 \"detrazione del 36% (con limite massimo di spesa agevolabile di 96.000 euro)\" per abitazione principale; dal 2028 al 2033 \"detrazione del 30%, con limite massimo di spesa agevolabile di 48.000 euro, per tutte le abitazioni\"",
+          "source_refs": [
+            "ade-ristrutturazioni-misura-detrazione#aliquote-2027-2033"
+          ]
+        },
+        "recupero": {
+          "rate_annuali": 10,
+          "anni_pregressi_recuperabili": 0,
+          "descrizione_fonte": "\"Una detrazione dall'IRPEF, da ripartire in 10 quote annuali di pari importo\". La fonte letta non dichiara per quanti anni pregressi la misura sia recuperabile: il valore 0 è imposto dal contratto, che non ammette l'assenza del campo, e il dato è dichiarato in dati_mancanti.",
+          "source_refs": [
+            "ade-ristrutturazioni-cittadini#in-cosa-consiste",
+            "ade-ristrutturazioni-cittadini#quote-annuali"
+          ]
+        },
+        "documenti_richiesti": [],
+        "canali_accesso": [
+          "dichiarazione_redditi"
+        ],
+        "situazioni_vita_collegate": [
+          "casa"
+        ],
+        "timing_compatibile": [
+          "da_iniziare",
+          "in_corso"
+        ],
+        "dati_mancanti": [
+          "recupero",
+          "documenti"
+        ],
+        "source_refs": [
+          "ade-ristrutturazioni-cittadini#in-cosa-consiste",
+          "ade-ristrutturazioni-cittadini#riferimento-normativo",
+          "ade-ristrutturazioni-misura-detrazione#riferimento-normativo"
+        ]
+      },
+      "spiegazione": {
+        "misura_id": "bonus-ristrutturazioni",
+        "titolo_semplice": "Sconto sulle tasse se ristrutturi casa",
+        "cosa_e": "La detrazione per le ristrutturazioni edilizie è uno sconto sull'IRPEF. L'IRPEF è l'imposta che paghi sul tuo reddito. Lo sconto vale sulle spese che sostieni per ristrutturare. Non ricevi soldi: paghi meno tasse. Lo recuperi in 10 quote annuali di pari importo, cioè una quota all'anno per dieci anni. La regola è l'articolo 16-bis del Dpr 917/86, il Testo unico delle imposte sui redditi (TUIR).",
+        "quanto_vale": "Per le spese sostenute negli anni 2025 e 2026 la detrazione è del 36%. La detrazione sale al 50% in caso di abitazione principale. Il limite massimo di spesa è 96.000 euro per unità immobiliare. Lo sconto si divide in 10 quote annuali di pari importo.",
+        "a_chi_spetta": [
+          "Se sostieni la spesa negli anni 2025 e 2026, la detrazione è del 36%. Diventa del 50% in caso di abitazione principale.",
+          "Se l'unità immobiliare su cui fai i lavori è adibita ad abitazione principale, la detrazione è del 50%. Abitazione principale è quella nella quale la persona fisica dimora abitualmente.",
+          "Per la detrazione del 50% devi essere titolare di un diritto di proprietà. In alternativa devi essere titolare di un diritto reale di godimento sull'unità immobiliare. Devi esserlo al momento di inizio dei lavori."
+        ],
+        "attenzione": [
+          "Per le spese del 2027 la detrazione per l'abitazione principale è del 36%. Il limite massimo di spesa agevolabile resta di 96.000 euro.",
+          "Dal 2028 al 2033 la detrazione è del 30%, per tutte le abitazioni. Il limite massimo di spesa agevolabile è di 48.000 euro.",
+          "La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione.",
+          "La fonte letta non elenca i documenti da presentare o da conservare."
+        ],
+        "glossario": [
+          {
+            "termine": "detrazione",
+            "spiegazione_semplice": "detrazione: uno sconto sulle tasse che devi pagare."
+          },
+          {
+            "termine": "IRPEF",
+            "spiegazione_semplice": "IRPEF: l'imposta che paghi allo Stato sul tuo reddito."
+          },
+          {
+            "termine": "unità immobiliare",
+            "spiegazione_semplice": "unità immobiliare: una singola casa o un singolo locale accatastato a sé."
+          },
+          {
+            "termine": "abitazione principale",
+            "spiegazione_semplice": "abitazione principale: quella nella quale la persona fisica dimora abitualmente."
+          },
+          {
+            "termine": "diritto reale di godimento",
+            "spiegazione_semplice": "diritto reale di godimento: un diritto sulla casa riconosciuto dalla legge, diverso dalla proprietà."
+          },
+          {
+            "termine": "10 quote annuali di pari importo",
+            "spiegazione_semplice": "10 quote annuali di pari importo: dieci parti uguali, una ogni anno."
+          },
+          {
+            "termine": "TUIR",
+            "spiegazione_semplice": "TUIR: il Testo unico delle imposte sui redditi, la legge sulle imposte sul reddito."
+          }
+        ],
+        "iterazione": 2,
+        "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+        "source_refs": [
+          "ade-ristrutturazioni-cittadini#in-cosa-consiste",
+          "ade-ristrutturazioni-cittadini#aliquote-2025-2026",
+          "ade-ristrutturazioni-cittadini#limite-di-spesa",
+          "ade-ristrutturazioni-cittadini#quote-annuali",
+          "ade-ristrutturazioni-cittadini#riferimento-normativo",
+          "ade-ristrutturazioni-misura-detrazione#requisiti-aliquota-maggiorata",
+          "ade-ristrutturazioni-misura-detrazione#aliquote-2027-2033"
+        ]
+      },
+      "verifica": {
+        "verdict": "approved",
+        "iterazioni": 2,
+        "validato_il": "2026-09-24T15:10:00+02:00",
+        "confidence": 0.88,
+        "divergenze_residue": []
+      },
+      "pubblicata_il": "2026-09-24T15:10:00+02:00"
+    },
+    {
+      "misura": {
+        "misura_id": "bonus-mobili",
+        "nome": "Bonus mobili ed elettrodomestici",
+        "tipo": "detrazione",
+        "descrizione_fonte": "Una detrazione Irpef del 50% per l'acquisto di mobili e di grandi elettrodomestici, su un limite di spesa di 5.000 euro per gli anni 2024, 2025 e 2026. La detrazione va ripartita tra gli aventi diritto in 10 quote annuali di pari importo. Spetta a chi realizza un intervento di ristrutturazione edilizia iniziato a partire dal 1° gennaio dell'anno precedente a quello dell'acquisto dei beni.",
+        "anno_riferimento": 2026,
+        "beneficio": {
+          "forma": "percentuale",
+          "percentuale": 50,
+          "tetto_massimo_euro": 5000,
+          "base_tetto": "5.000 euro per gli anni 2024, 2025 e 2026",
+          "testo_fonte": "\"una detrazione Irpef del 50% per l'acquisto di mobili e di grandi elettrodomestici\"; \"5.000 euro per gli anni 2024, 2025 e 2026\"",
+          "source_refs": [
+            "ade-bonus-mobili-cittadini#detrazione",
+            "ade-bonus-mobili-cittadini#limite-di-spesa"
+          ]
+        },
+        "requisiti": [
+          {
+            "requisito_id": "intervento-ristrutturazione",
+            "tipo_requisito": "immobile",
+            "descrizione_fonte": "l'intervento di ristrutturazione edilizia deve essere \"iniziato a partire dal 1° gennaio dell'anno precedente a quello dell'acquisto dei beni\"",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-bonus-mobili-cittadini#requisito-ristrutturazione"
+            ]
+          },
+          {
+            "requisito_id": "classe-energetica",
+            "tipo_requisito": "altro",
+            "descrizione_fonte": "classe non inferiore classe A per i forni, alla classe E per le lavatrici, le lavasciugatrici e le lavastoviglie, alla classe F per i frigoriferi e i congelatori",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-bonus-mobili-cittadini#classi-energetiche"
+            ]
+          },
+          {
+            "requisito_id": "pagamento-ammesso",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "bonifico o carta di debito o credito. Non è consentito, invece, pagare con assegni bancari, contanti o altri mezzi di pagamento",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-bonus-mobili-cittadini#modalita-di-pagamento"
+            ]
+          }
+        ],
+        "scadenza": {
+          "tipo_scadenza": "data_fissa",
+          "data": "2026-12-31",
+          "source_refs": [
+            "ade-bonus-mobili-cittadini#scadenza-acquisto"
+          ]
+        },
+        "recupero": {
+          "rate_annuali": 10,
+          "anni_pregressi_recuperabili": 0,
+          "descrizione_fonte": "\"La detrazione va ripartita tra gli aventi diritto in 10 quote annuali di pari importo\". La fonte letta non dichiara per quanti anni pregressi la misura sia recuperabile: il valore 0 è imposto dal contratto, che non ammette l'assenza del campo, e il dato è dichiarato in dati_mancanti.",
+          "source_refs": [
+            "ade-bonus-mobili-cittadini#quote-annuali"
+          ]
+        },
+        "documenti_richiesti": [
+          {
+            "tipo_documento": "altro",
+            "nome": "l'attestazione del pagamento",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-bonus-mobili-cittadini#documenti"
+            ]
+          },
+          {
+            "tipo_documento": "fattura",
+            "nome": "le fatture di acquisto dei beni, riportanti la natura, la qualità e la quantità dei beni",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-bonus-mobili-cittadini#documenti"
+            ]
+          }
+        ],
+        "canali_accesso": [
+          "dichiarazione_redditi"
+        ],
+        "situazioni_vita_collegate": [
+          "casa"
+        ],
+        "timing_compatibile": [
+          "da_iniziare",
+          "in_corso"
+        ],
+        "dati_mancanti": [
+          "recupero"
+        ],
+        "source_refs": [
+          "ade-bonus-mobili-cittadini#detrazione",
+          "ade-bonus-mobili-cittadini#quote-annuali",
+          "ade-bonus-mobili-cittadini#requisito-ristrutturazione"
+        ]
+      },
+      "spiegazione": {
+        "misura_id": "bonus-mobili",
+        "titolo_semplice": "Sconto sulle tasse per mobili ed elettrodomestici",
+        "cosa_e": "Il Bonus mobili ed elettrodomestici è una detrazione Irpef. Detrazione vuol dire sconto sulle tasse che paghi. Lo sconto vale per l'acquisto di mobili e di grandi elettrodomestici. Lo ottieni solo se fai anche un intervento di ristrutturazione edilizia.",
+        "quanto_vale": "La detrazione Irpef è del 50%. Il limite di spesa è 5.000 euro per gli anni 2024, 2025 e 2026. La detrazione va ripartita tra gli aventi diritto in 10 quote annuali di pari importo.",
+        "a_chi_spetta": [
+          "L'intervento di ristrutturazione edilizia deve essere iniziato a partire dal 1° gennaio dell'anno precedente a quello dell'acquisto dei beni.",
+          "I grandi elettrodomestici devono avere una classe energetica minima. Serve la classe non inferiore alla classe A per i forni. Serve la classe E per le lavatrici, le lavasciugatrici e le lavastoviglie. Serve la classe F per i frigoriferi e i congelatori.",
+          "Devi pagare con bonifico o carta di debito o credito. Non è consentito pagare con assegni bancari, contanti o altri mezzi di pagamento."
+        ],
+        "attenzione": [
+          "L'agevolazione vale per gli acquisti effettuati entro il 31 dicembre 2026.",
+          "Ti servono due documenti: l'attestazione del pagamento e le fatture di acquisto dei beni.",
+          "Le fatture devono riportare la natura, la qualità e la quantità dei beni.",
+          "La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione."
+        ],
+        "glossario": [
+          {
+            "termine": "detrazione",
+            "spiegazione_semplice": "detrazione: uno sconto sulle tasse che devi pagare."
+          },
+          {
+            "termine": "Irpef",
+            "spiegazione_semplice": "Irpef: l'imposta che paghi allo Stato sul tuo reddito."
+          },
+          {
+            "termine": "bonifico",
+            "spiegazione_semplice": "bonifico: un pagamento che parte dal tuo conto e lascia traccia in banca."
+          },
+          {
+            "termine": "classe energetica",
+            "spiegazione_semplice": "classe energetica: la lettera sull'etichetta che dice quanta energia consuma."
+          },
+          {
+            "termine": "10 quote annuali di pari importo",
+            "spiegazione_semplice": "10 quote annuali di pari importo: dieci parti uguali, una ogni anno."
+          },
+          {
+            "termine": "attestazione del pagamento",
+            "spiegazione_semplice": "attestazione del pagamento: il documento che prova che hai pagato.",
+            "tipo_documento_collegato": "altro"
+          },
+          {
+            "termine": "fattura",
+            "spiegazione_semplice": "fattura: il documento con cui il venditore certifica che cosa ha venduto.",
+            "tipo_documento_collegato": "fattura"
+          }
+        ],
+        "iterazione": 1,
+        "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+        "source_refs": [
+          "ade-bonus-mobili-cittadini#detrazione",
+          "ade-bonus-mobili-cittadini#limite-di-spesa",
+          "ade-bonus-mobili-cittadini#quote-annuali",
+          "ade-bonus-mobili-cittadini#requisito-ristrutturazione",
+          "ade-bonus-mobili-cittadini#classi-energetiche",
+          "ade-bonus-mobili-cittadini#scadenza-acquisto",
+          "ade-bonus-mobili-cittadini#modalita-di-pagamento",
+          "ade-bonus-mobili-cittadini#documenti"
+        ]
+      },
+      "verifica": {
+        "verdict": "approved",
+        "iterazioni": 1,
+        "validato_il": "2026-09-24T15:10:00+02:00",
+        "confidence": 0.9,
+        "divergenze_residue": []
+      },
+      "pubblicata_il": "2026-09-24T15:10:00+02:00"
+    },
+    {
+      "misura": {
+        "misura_id": "detrazione-spese-sanitarie",
+        "nome": "Spese sanitarie",
+        "tipo": "detrazione",
+        "descrizione_fonte": "È possibile portare in detrazione dall'Irpef il 19% delle spese sanitarie per la parte eccedente l'importo di 129,11 euro. La detrazione del 19% degli oneri indicati nell'articolo 15 del Tuir è fruibile soltanto se il pagamento è effettuato con versamento bancario o postale o altri sistemi tracciabili.",
+        "anno_riferimento": 2026,
+        "beneficio": {
+          "forma": "percentuale",
+          "percentuale": 19,
+          "testo_fonte": "È possibile portare in detrazione dall'Irpef il 19% delle spese sanitarie per la parte eccedente l'importo di 129,11 euro.",
+          "source_refs": [
+            "ade-spese-sanitarie-aspetti-generali#detrazione-19-e-parte-eccedente"
+          ]
+        },
+        "requisiti": [
+          {
+            "requisito_id": "pagamento-tracciabile",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "la detrazione del 19% degli oneri indicati nell'articolo 15 del Tuir è fruibile soltanto se il pagamento è effettuato con versamento bancario o postale o altri sistemi tracciabili",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-spese-sanitarie-aspetti-generali#pagamento-tracciabile"
+            ]
+          },
+          {
+            "requisito_id": "eccezione-contanti",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "il versamento in contanti continua a essere ammesso, senza perdere il diritto alla detrazione, per l'acquisto di medicinali e di dispositivi medici e per pagare tutte le prestazioni sanitarie rese dalle strutture pubbliche o dalle strutture private accreditate al Servizio sanitario nazionale",
+            "obbligatorio": false,
+            "source_refs": [
+              "ade-spese-sanitarie-aspetti-generali#eccezioni-contanti"
+            ]
+          },
+          {
+            "requisito_id": "conservazione-giustificativi",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "I giustificativi delle spese devono essere conservati per tutto il tempo in cui l'Agenzia delle entrate può effettuare un accertamento (31 dicembre del quinto anno successivo)",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-spese-sanitarie-aspetti-generali#conservazione-documenti"
+            ]
+          }
+        ],
+        "scadenza": {
+          "tipo_scadenza": "non_determinata",
+          "source_refs": [
+            "ade-spese-sanitarie-aspetti-generali#detrazione-19-e-parte-eccedente"
+          ]
+        },
+        "recupero": {
+          "anni_pregressi_recuperabili": 0,
+          "descrizione_fonte": "\"È possibile ripartire la detrazione...in quattro quote annuali costanti e di pari importo quando il loro ammontare complessivo annuo...è superiore a 15.493,71 euro\". La fonte letta non dichiara per quanti anni pregressi la misura sia recuperabile: il valore 0 è imposto dal contratto, che non ammette l'assenza del campo, e il dato è dichiarato in dati_mancanti.",
+          "source_refs": [
+            "ade-spese-sanitarie-aspetti-generali#rateizzazione"
+          ]
+        },
+        "documenti_richiesti": [
+          {
+            "tipo_documento": "altro",
+            "nome": "I giustificativi delle spese",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-spese-sanitarie-aspetti-generali#conservazione-documenti"
+            ]
+          }
+        ],
+        "canali_accesso": [
+          "dichiarazione_redditi"
+        ],
+        "situazioni_vita_collegate": [
+          "spese_mediche"
+        ],
+        "timing_compatibile": [
+          "da_iniziare",
+          "in_corso"
+        ],
+        "dati_mancanti": [
+          "scadenza",
+          "recupero"
+        ],
+        "source_refs": [
+          "ade-spese-sanitarie-aspetti-generali#detrazione-19-e-parte-eccedente",
+          "ade-spese-sanitarie-aspetti-generali#pagamento-tracciabile"
+        ]
+      },
+      "spiegazione": {
+        "misura_id": "detrazione-spese-sanitarie",
+        "titolo_semplice": "Sconto sulle tasse per le spese mediche",
+        "cosa_e": "Le spese sanitarie danno diritto a una detrazione dall'Irpef. Detrazione vuol dire sconto sulle tasse che paghi. L'Irpef è l'imposta che paghi sul tuo reddito. Lo sconto non si calcola su tutta la spesa dell'anno.",
+        "quanto_vale": "Puoi portare in detrazione dall'Irpef il 19% delle spese sanitarie. Il 19% si calcola solo sulla parte eccedente l'importo di 129,11 euro. Quindi i primi 129,11 euro di spesa dell'anno restano fuori dal calcolo.",
+        "a_chi_spetta": [
+          "Devi pagare con versamento bancario o postale o altri sistemi tracciabili. La detrazione del 19% degli oneri indicati nell'articolo 15 del Tuir è fruibile soltanto a questa condizione.",
+          "Il versamento in contanti resta ammesso per l'acquisto di medicinali e di dispositivi medici. Resta ammesso anche per tutte le prestazioni sanitarie rese dalle strutture pubbliche. Resta ammesso per le strutture private accreditate al Servizio sanitario nazionale. In questi casi non perdi il diritto alla detrazione.",
+          "Devi conservare i giustificativi delle spese. Li conservi per tutto il tempo in cui l'Agenzia delle entrate può effettuare un accertamento. Cioè fino al 31 dicembre del quinto anno successivo."
+        ],
+        "attenzione": [
+          "Puoi ripartire la detrazione in quattro quote annuali costanti e di pari importo. Puoi farlo quando il loro ammontare complessivo annuo è superiore a 15.493,71 euro.",
+          "La fonte letta non indica una scadenza entro cui accedere a questa detrazione.",
+          "La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione."
+        ],
+        "glossario": [
+          {
+            "termine": "detrazione",
+            "spiegazione_semplice": "detrazione: uno sconto sulle tasse che devi pagare."
+          },
+          {
+            "termine": "Irpef",
+            "spiegazione_semplice": "Irpef: l'imposta che paghi allo Stato sul tuo reddito."
+          },
+          {
+            "termine": "parte eccedente",
+            "spiegazione_semplice": "parte eccedente: la parte di spesa che supera una certa cifra."
+          },
+          {
+            "termine": "sistemi tracciabili",
+            "spiegazione_semplice": "sistemi tracciabili: pagamenti che lasciano una traccia scritta, come bancomat o carta."
+          },
+          {
+            "termine": "giustificativi delle spese",
+            "spiegazione_semplice": "giustificativi delle spese: le ricevute e le fatture che provano la spesa.",
+            "tipo_documento_collegato": "altro"
+          },
+          {
+            "termine": "accertamento",
+            "spiegazione_semplice": "accertamento: il controllo con cui l'Agenzia delle entrate verifica la tua dichiarazione."
+          },
+          {
+            "termine": "Tuir",
+            "spiegazione_semplice": "Tuir: il Testo unico delle imposte sui redditi, la legge sulle imposte sul reddito."
+          }
+        ],
+        "iterazione": 2,
+        "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+        "source_refs": [
+          "ade-spese-sanitarie-aspetti-generali#detrazione-19-e-parte-eccedente",
+          "ade-spese-sanitarie-aspetti-generali#pagamento-tracciabile",
+          "ade-spese-sanitarie-aspetti-generali#eccezioni-contanti",
+          "ade-spese-sanitarie-aspetti-generali#rateizzazione",
+          "ade-spese-sanitarie-aspetti-generali#conservazione-documenti"
+        ]
+      },
+      "verifica": {
+        "verdict": "approved",
+        "iterazioni": 2,
+        "validato_il": "2026-09-24T15:10:00+02:00",
+        "confidence": 0.88,
+        "divergenze_residue": []
+      },
+      "pubblicata_il": "2026-09-24T15:10:00+02:00"
+    },
+    {
+      "misura": {
+        "misura_id": "assegno-unico",
+        "nome": "Assegno Unico e Universale per i figli a carico (AUU)",
+        "tipo": "assegno",
+        "descrizione_fonte": "L'AUU, di cui al decreto legislativo 29 dicembre 2021, n. 230, e successive modificazioni, è erogato d'ufficio, in continuità, per chi ha già beneficiato della misura, nel caso in cui negli archivi dell'Istituto risulti presente la relativa domanda in stato \"accolta\", senza necessità di presentarne una nuova. Per l'anno 2026 i valori degli importi, delle maggiorazioni e delle relative soglie ISEE sono rideterminati nei valori indicati nella tabella dell'Allegato n. 1 alla circolare INPS n. 7 del 30 gennaio 2026, dopo una variazione percentuale calcolata dall'ISTAT pari a +1,4%.",
+        "anno_riferimento": 2026,
+        "beneficio": {
+          "forma": "importo_massimo",
+          "tetto_massimo_euro": 203.8,
+          "base_tetto": "importo mensile per ciascun figlio minorenne, con ISEE fino a 17.468,51 euro; l'importo scende a 58,3 euro al mese con ISEE oltre 46.582,71 euro",
+          "testo_fonte": "Allegato n. 1, \"VALORI MENSILI 2026\", colonna \"Assegno figli minorenni\": riga \"fino a\" 17.468,51 -> 203,8; riga \"oltre\" 46.582,71 -> 58,3. La circolare conferma la soglia: \"fascia massima ISEE (46.582,71 euro per l'anno 2026)\".",
+          "source_refs": [
+            "inps-circolare-7-2026-auu-allegato-1#tabella-valori-mensili-2026",
+            "inps-circolare-7-2026-auu#par-2"
+          ]
+        },
+        "requisiti": [
+          {
+            "requisito_id": "dsu-attestata-per-importo-superiore-al-minimo",
+            "tipo_requisito": "isee",
+            "descrizione_fonte": "per percepire un importo dell'AUU superiore al valore minimo è necessario che la DSU per l'anno 2026 sia correttamente attestata",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          },
+          {
+            "requisito_id": "assenza-isee-importi-minimi",
+            "tipo_requisito": "isee",
+            "descrizione_fonte": "a partire dal mese di marzo 2026, in assenza dell'ISEE, l'importo dell'AUU viene calcolato con riferimento agli importi minimi previsti dalla normativa",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          },
+          {
+            "requisito_id": "domanda-in-continuita",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "per l'anno 2026, al fine di continuare a beneficare dell'AUU, non è necessario presentare una nuova domanda, salvo che la domanda precedentemente trasmessa all'Istituto non sia decaduta, revocata, rinunciata o respinta",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          },
+          {
+            "requisito_id": "comunicazione-variazioni",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "fatto salvo l'onere di comunicare le eventuali variazioni da inserire nel modello di domanda, come l'inserimento di una nuova scheda nel caso di nascita di un nuovo figlio o l'aggiornamento della scheda dei figli al raggiungimento della maggiore età per continuare a percepire l'AUU per i figli maggiorenni",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          },
+          {
+            "requisito_id": "maggiorazione-figlio-sotto-un-anno",
+            "tipo_requisito": "eta",
+            "descrizione_fonte": "per ciascun figlio di età inferiore a un anno l'importo dell'AUU calcolato sulla base delle soglie ISEE 2026 è incrementato nella misura del 50% fino al compimento del primo anno di vita del bambino",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-2"
+            ]
+          },
+          {
+            "requisito_id": "maggiorazione-almeno-tre-figli",
+            "tipo_requisito": "nucleo_familiare",
+            "descrizione_fonte": "nuclei familiari con almeno tre figli e ISEE, neutralizzato ai fini AUU, pari o inferiore alla fascia massima ISEE (46.582,71 euro per l'anno 2026): per ciascun figlio nella fascia di età da uno a tre anni, l'importo dell'AUU calcolato sulla base delle soglie ISEE 2026 è incrementato nella misura del 50%",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-2"
+            ]
+          },
+          {
+            "requisito_id": "maggiorazione-almeno-quattro-figli",
+            "tipo_requisito": "nucleo_familiare",
+            "descrizione_fonte": "nuclei familiari con almeno quattro figli a carico: maggiorazione forfettaria pari a 150 euro",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-2"
+            ]
+          }
+        ],
+        "scadenza": {
+          "tipo_scadenza": "data_fissa",
+          "data": "2026-06-30",
+          "conseguenza_mancato_rispetto": "a partire dal mese di marzo 2026, in assenza dell'ISEE, l'importo dell'AUU viene calcolato con riferimento agli importi minimi previsti dalla normativa",
+          "source_refs": [
+            "inps-circolare-7-2026-auu#par-1"
+          ]
+        },
+        "recupero": {
+          "anni_pregressi_recuperabili": 0,
+          "descrizione_fonte": "\"Qualora la nuova Dichiarazione Sostitutiva Unica (DSU) sia presentata entro il 30 giugno 2026, gli importi eventualmente già erogati per l'anno 2026 sono adeguati a decorrere dal mese di marzo 2026, con la corresponsione dei relativi arretrati\". La fonte letta non dichiara per quanti anni pregressi la misura sia recuperabile: il valore 0 è imposto dal contratto, che non ammette l'assenza del campo, e il dato è dichiarato in dati_mancanti.",
+          "source_refs": [
+            "inps-circolare-7-2026-auu#par-1"
+          ]
+        },
+        "documenti_richiesti": [
+          {
+            "tipo_documento": "isee",
+            "nome": "ISEE",
+            "obbligatorio": false,
+            "dove_si_ottiene": "portale_inps",
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          },
+          {
+            "tipo_documento": "altro",
+            "nome": "Dichiarazione Sostitutiva Unica (DSU)",
+            "obbligatorio": false,
+            "dove_si_ottiene": "portale_inps",
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          }
+        ],
+        "canali_accesso": [
+          "portale_inps"
+        ],
+        "situazioni_vita_collegate": [
+          "figlio"
+        ],
+        "timing_compatibile": [
+          "da_iniziare",
+          "in_corso"
+        ],
+        "dati_mancanti": [
+          "recupero"
+        ],
+        "source_refs": [
+          "inps-circolare-7-2026-auu#par-1",
+          "inps-circolare-7-2026-auu#par-2",
+          "inps-circolare-7-2026-auu-allegato-1#tabella-valori-mensili-2026"
+        ]
+      },
+      "spiegazione": {
+        "misura_id": "assegno-unico",
+        "titolo_semplice": "Assegno mensile per i figli a carico",
+        "cosa_e": "L'Assegno Unico e Universale per i figli a carico (AUU) è una somma di denaro. L'INPS te la paga ogni mese per i figli a carico. La regola è il decreto legislativo 29 dicembre 2021, n. 230, e successive modificazioni. L'AUU è erogato d'ufficio, in continuità, per chi ha già beneficiato della misura. D'ufficio vuol dire che l'INPS lo paga da solo, senza che tu chieda di nuovo.",
+        "quanto_vale": "L'importo mensile dipende dall'ISEE. Per ciascun figlio minorenne l'assegno è di 203,8 euro al mese con ISEE fino a 17.468,51 euro. È di 58,3 euro al mese con ISEE oltre 46.582,71 euro. I valori sono quelli della tabella dell'Allegato n. 1 alla circolare INPS n. 7 del 30 gennaio 2026. Per il 2026 sono stati aggiornati con una variazione calcolata dall'ISTAT pari a +1,4%.",
+        "a_chi_spetta": [
+          "Se vuoi un importo dell'AUU superiore al valore minimo, la tua DSU per l'anno 2026 deve essere correttamente attestata.",
+          "Se non hai l'ISEE, dal mese di marzo 2026 l'importo dell'AUU è calcolato al minimo. Il riferimento sono gli importi minimi previsti dalla normativa.",
+          "Se hai già una domanda in stato \"accolta\", per l'anno 2026 non devi presentare una nuova domanda. Vale salvo che la domanda non sia decaduta, revocata, rinunciata o respinta.",
+          "Devi comunicare le variazioni da inserire nel modello di domanda. Per esempio l'inserimento di una nuova scheda nel caso di nascita di un nuovo figlio. Oppure l'aggiornamento della scheda dei figli al raggiungimento della maggiore età. Serve per continuare a percepire l'AUU per i figli maggiorenni.",
+          "Per ciascun figlio di età inferiore a un anno l'importo dell'AUU è incrementato nella misura del 50%. L'aumento vale fino al compimento del primo anno di vita del bambino.",
+          "Se il tuo nucleo familiare ha almeno tre figli, c'è un altro aumento del 50%. Vale per ciascun figlio nella fascia di età da uno a tre anni. Serve un ISEE, neutralizzato ai fini AUU, pari o inferiore alla fascia massima. La fascia massima ISEE è 46.582,71 euro per l'anno 2026.",
+          "Se il tuo nucleo familiare ha almeno quattro figli a carico, c'è una maggiorazione forfettaria pari a 150 euro."
+        ],
+        "attenzione": [
+          "Dal mese di marzo 2026, in assenza dell'ISEE, l'AUU è calcolato con riferimento agli importi minimi previsti dalla normativa.",
+          "Puoi presentare la nuova Dichiarazione Sostitutiva Unica (DSU) entro il 30 giugno 2026. In quel caso gli importi già erogati per l'anno 2026 sono adeguati. L'adeguamento decorre dal mese di marzo 2026. Ricevi anche i relativi arretrati.",
+          "La fonte letta non dice per quanti anni indietro puoi ancora recuperare l'AUU."
+        ],
+        "glossario": [
+          {
+            "termine": "AUU",
+            "spiegazione_semplice": "AUU: la sigla di Assegno Unico e Universale per i figli a carico."
+          },
+          {
+            "termine": "ISEE",
+            "spiegazione_semplice": "ISEE: l'indicatore della situazione economica della tua famiglia.",
+            "tipo_documento_collegato": "isee"
+          },
+          {
+            "termine": "DSU",
+            "spiegazione_semplice": "DSU: la Dichiarazione Sostitutiva Unica, il modulo con cui ottieni l'ISEE.",
+            "tipo_documento_collegato": "altro"
+          },
+          {
+            "termine": "INPS",
+            "spiegazione_semplice": "INPS: l'ente pubblico che paga pensioni, assegni e sussidi."
+          },
+          {
+            "termine": "erogato d'ufficio",
+            "spiegazione_semplice": "erogato d'ufficio: pagato dall'ente senza che tu debba presentare una nuova domanda."
+          },
+          {
+            "termine": "decaduta",
+            "spiegazione_semplice": "decaduta: una domanda che ha perso validità e non produce più effetti."
+          },
+          {
+            "termine": "maggiorazione forfettaria",
+            "spiegazione_semplice": "maggiorazione forfettaria: una somma in più di importo fisso, uguale per tutti."
+          },
+          {
+            "termine": "arretrati",
+            "spiegazione_semplice": "arretrati: le somme di mesi passati che ti vengono pagate dopo."
+          }
+        ],
+        "iterazione": 1,
+        "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+        "source_refs": [
+          "inps-circolare-7-2026-auu#par-1",
+          "inps-circolare-7-2026-auu#par-2",
+          "inps-circolare-7-2026-auu-allegato-1#tabella-valori-mensili-2026"
+        ]
+      },
+      "verifica": {
+        "verdict": "approved",
+        "iterazioni": 1,
+        "validato_il": "2026-09-24T15:10:00+02:00",
+        "confidence": 0.75,
+        "divergenze_residue": []
+      },
+      "pubblicata_il": "2026-09-24T15:10:00+02:00"
+    },
+    {
+      "misura": {
+        "misura_id": "bonus-asilo-nido",
+        "nome": "Bonus Asilo Nido",
+        "tipo": "contributo",
+        "descrizione_fonte": "Dal 2026, per richiedere il beneficio basta trasmettere una sola domanda che sarà valida fino all'agosto dell'anno in cui il bambino compie 3 anni. Dal punto di vista economico, il beneficio può arrivare fino a 3.600 euro annui, calcolato in base all'ISEE per specifiche prestazioni familiari e per l'inclusione neutralizzato dagli importi erogati per l'Assegno Unico e Universale. La domanda deve essere presentata dal genitore che sostiene la spesa della retta, esclusivamente online tramite il portale INPS - utilizzando SPID, CIE o CNS - oppure tramite patronato.",
+        "anno_riferimento": 2026,
+        "beneficio": {
+          "forma": "importo_massimo",
+          "tetto_massimo_euro": 3600,
+          "base_tetto": "annui",
+          "testo_fonte": "Dal punto di vista economico, il beneficio può arrivare fino a 3.600 euro annui, calcolato in base all'ISEE per specifiche prestazioni familiari e per l'inclusione neutralizzato dagli importi erogati per l'Assegno Unico e Universale.",
+          "source_refs": [
+            "inps-cs-bonus-asilo-nido-2026#par-importo"
+          ]
+        },
+        "requisiti": [
+          {
+            "requisito_id": "genitore-che-sostiene-la-retta",
+            "tipo_requisito": "nucleo_familiare",
+            "descrizione_fonte": "La domanda deve essere presentata dal genitore che sostiene la spesa della retta, esclusivamente online tramite il portale INPS - utilizzando SPID, CIE o CNS - oppure tramite patronato",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-domanda"
+            ]
+          },
+          {
+            "requisito_id": "struttura-abilitata",
+            "tipo_requisito": "altro",
+            "descrizione_fonte": "Il Bonus è riconosciuto solo per nidi e strutture abilitate a erogare servizi educativi per bambini da 0 a 3 anni: quindi nidi, micronidi, sezioni primavera, spazi gioco e servizi educativi in contesti domiciliari",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-strutture"
+            ]
+          },
+          {
+            "requisito_id": "isee-prestazioni-familiari",
+            "tipo_requisito": "isee",
+            "descrizione_fonte": "calcolato in base all'ISEE per specifiche prestazioni familiari e per l'inclusione neutralizzato dagli importi erogati per l'Assegno Unico e Universale",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-importo"
+            ]
+          },
+          {
+            "requisito_id": "documenti-di-spesa",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "Ogni anno sarà possibile scegliere le mensilità per le quali si intende richiedere il contributo, caricando i relativi documenti di spesa entro il 30 aprile dell'anno successivo a quello a cui si riferiscono le mensilità",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-domanda"
+            ]
+          }
+        ],
+        "scadenza": {
+          "tipo_scadenza": "non_determinata",
+          "conseguenza_mancato_rispetto": "Se la struttura non risulta abilitata, il contributo non verrà riconosciuto",
+          "source_refs": [
+            "inps-cs-bonus-asilo-nido-2026#par-domanda",
+            "inps-cs-bonus-asilo-nido-2026#par-strutture"
+          ]
+        },
+        "recupero": {
+          "anni_pregressi_recuperabili": 0,
+          "descrizione_fonte": "\"Ogni anno sarà possibile scegliere le mensilità per le quali si intende richiedere il contributo, caricando i relativi documenti di spesa entro il 30 aprile dell'anno successivo a quello a cui si riferiscono le mensilità\". La fonte letta non dichiara per quanti anni pregressi la misura sia recuperabile: il valore 0 è imposto dal contratto, che non ammette l'assenza del campo, e il dato è dichiarato in dati_mancanti.",
+          "source_refs": [
+            "inps-cs-bonus-asilo-nido-2026#par-domanda"
+          ]
+        },
+        "documenti_richiesti": [
+          {
+            "tipo_documento": "spid_cie_cns",
+            "nome": "SPID, CIE o CNS",
+            "obbligatorio": true,
+            "dove_si_ottiene": "portale_inps",
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-domanda"
+            ]
+          },
+          {
+            "tipo_documento": "altro",
+            "nome": "documenti di spesa",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-domanda"
+            ]
+          }
+        ],
+        "canali_accesso": [
+          "portale_inps",
+          "altro"
+        ],
+        "situazioni_vita_collegate": [
+          "figlio"
+        ],
+        "timing_compatibile": [
+          "da_iniziare",
+          "in_corso"
+        ],
+        "dati_mancanti": [
+          "importo",
+          "scadenza"
+        ],
+        "source_refs": [
+          "inps-cs-bonus-asilo-nido-2026#par-domanda",
+          "inps-cs-bonus-asilo-nido-2026#par-importo",
+          "inps-cs-bonus-asilo-nido-2026#par-strutture"
+        ]
+      },
+      "spiegazione": {
+        "misura_id": "bonus-asilo-nido",
+        "titolo_semplice": "Contributo per la retta dell'asilo nido",
+        "cosa_e": "Il Bonus Asilo Nido è un contributo dell'INPS. Serve a pagare la retta dell'asilo nido. Dal 2026 basta trasmettere una sola domanda. La domanda sarà valida fino all'agosto dell'anno in cui il bambino compie 3 anni.",
+        "quanto_vale": "Il beneficio può arrivare fino a 3.600 euro annui. L'importo è calcolato in base all'ISEE per specifiche prestazioni familiari e per l'inclusione. Questo ISEE è neutralizzato dagli importi erogati per l'Assegno Unico e Universale. La fonte letta non riporta gli importi delle singole fasce di ISEE.",
+        "a_chi_spetta": [
+          "La domanda deve essere presentata dal genitore che sostiene la spesa della retta. La presenti esclusivamente online tramite il portale INPS, con SPID, CIE o CNS. In alternativa la presenti tramite patronato.",
+          "Il Bonus è riconosciuto solo per nidi e strutture abilitate. Sono le strutture abilitate a erogare servizi educativi per bambini da 0 a 3 anni. Cioè nidi, micronidi, sezioni primavera, spazi gioco e servizi educativi in contesti domiciliari.",
+          "L'importo è calcolato in base all'ISEE per specifiche prestazioni familiari e per l'inclusione. Questo ISEE è neutralizzato dagli importi erogati per l'Assegno Unico e Universale.",
+          "Ogni anno scegli le mensilità per le quali chiedi il contributo. Devi caricare i relativi documenti di spesa entro il 30 aprile dell'anno successivo. L'anno successivo è quello dopo l'anno a cui si riferiscono le mensilità."
+        ],
+        "attenzione": [
+          "L'INPS verifica che la struttura sia abilitata a erogare servizi educativi. Se la struttura non risulta abilitata, il contributo non verrà riconosciuto.",
+          "Devi chiedere alla struttura educativa i riferimenti precisi della sua abilitazione. Li devi inserire in domanda.",
+          "La fonte letta non dice per quanti anni indietro puoi ancora chiedere il contributo."
+        ],
+        "glossario": [
+          {
+            "termine": "contributo",
+            "spiegazione_semplice": "contributo: una somma di denaro che un ente ti dà per una spesa."
+          },
+          {
+            "termine": "retta",
+            "spiegazione_semplice": "retta: la somma che paghi ogni mese all'asilo nido."
+          },
+          {
+            "termine": "ISEE",
+            "spiegazione_semplice": "ISEE: l'indicatore della situazione economica della tua famiglia.",
+            "tipo_documento_collegato": "isee"
+          },
+          {
+            "termine": "neutralizzato",
+            "spiegazione_semplice": "neutralizzato: calcolato togliendo dal conteggio certe somme già ricevute."
+          },
+          {
+            "termine": "SPID, CIE o CNS",
+            "spiegazione_semplice": "SPID, CIE o CNS: le identità digitali con cui entri nei siti pubblici.",
+            "tipo_documento_collegato": "spid_cie_cns"
+          },
+          {
+            "termine": "patronato",
+            "spiegazione_semplice": "patronato: un ufficio che presenta per te le domande agli enti pubblici."
+          },
+          {
+            "termine": "abilitata",
+            "spiegazione_semplice": "abilitata: autorizzata per legge a svolgere quel servizio."
+          },
+          {
+            "termine": "mensilità",
+            "spiegazione_semplice": "mensilità: i singoli mesi per cui chiedi il contributo."
+          }
+        ],
+        "iterazione": 2,
+        "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista.",
+        "source_refs": [
+          "inps-cs-bonus-asilo-nido-2026#par-domanda",
+          "inps-cs-bonus-asilo-nido-2026#par-importo",
+          "inps-cs-bonus-asilo-nido-2026#par-strutture"
+        ]
+      },
+      "verifica": {
+        "verdict": "approved",
+        "iterazioni": 2,
+        "validato_il": "2026-09-24T15:10:00+02:00",
+        "confidence": 0.72,
+        "divergenze_residue": []
+      },
+      "pubblicata_il": "2026-09-24T15:10:00+02:00"
+    }
+  ],
+  "misure_escluse": [
+    {
+      "misura_id": "detrazione-canoni-locazione-giovani",
+      "nome": "Detrazione per canoni di locazione - inquilini di età compresa tra i 20 e 30 anni",
+      "motivo": "fonte_non_interpretabile",
+      "divergenze_residue": [],
+      "escluso_il": "2026-09-24T15:10:00+02:00",
+      "source_refs": [
+        "ade-detrazioni-canoni-locazione-tabella#riga-3-inquilini-20-30-anni"
+      ]
+    }
+  ]
+}

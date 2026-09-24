@@ -7,7 +7,7 @@ pagina, non l'intera pagina: ogni riga fra virgolette è testo della fonte, le r
 senza virgolette sono etichette di chi ha raccolto la fonte.
 ------------------------------------------------------------------------------
 
-[detrazione-e-franchigia]
+[detrazione-19-e-parte-eccedente]
 "È possibile portare in detrazione dall'Irpef il 19% delle spese sanitarie per la parte eccedente l'importo di 129,11 euro."
 
 [pagamento-tracciabile]

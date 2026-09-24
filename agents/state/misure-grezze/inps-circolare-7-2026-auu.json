@@ -1,0 +1,151 @@
+{
+  "status": "ok",
+  "confidence": 0.78,
+  "source_refs": [
+    "inps-circolare-7-2026-auu#par-1",
+    "inps-circolare-7-2026-auu#par-2",
+    "inps-circolare-7-2026-auu-allegato-1#tabella-valori-mensili-2026"
+  ],
+  "payload": {
+    "fonte_id": "inps-circolare-7-2026-auu",
+    "data_consultazione": "2026-09-24",
+    "misure": [
+      {
+        "misura_id": "assegno-unico",
+        "nome": "Assegno Unico e Universale per i figli a carico (AUU)",
+        "tipo": "assegno",
+        "descrizione_fonte": "L'AUU, di cui al decreto legislativo 29 dicembre 2021, n. 230, e successive modificazioni, è erogato d'ufficio, in continuità, per chi ha già beneficiato della misura, nel caso in cui negli archivi dell'Istituto risulti presente la relativa domanda in stato \"accolta\", senza necessità di presentarne una nuova. Per l'anno 2026 i valori degli importi, delle maggiorazioni e delle relative soglie ISEE sono rideterminati nei valori indicati nella tabella dell'Allegato n. 1 alla circolare INPS n. 7 del 30 gennaio 2026, dopo una variazione percentuale calcolata dall'ISTAT pari a +1,4%.",
+        "anno_riferimento": 2026,
+        "beneficio": {
+          "forma": "importo_massimo",
+          "tetto_massimo_euro": 203.8,
+          "base_tetto": "importo mensile per ciascun figlio minorenne, con ISEE fino a 17.468,51 euro; l'importo scende a 58,3 euro al mese con ISEE oltre 46.582,71 euro",
+          "testo_fonte": "Allegato n. 1, \"VALORI MENSILI 2026\", colonna \"Assegno figli minorenni\": riga \"fino a\" 17.468,51 -> 203,8; riga \"oltre\" 46.582,71 -> 58,3. La circolare conferma la soglia: \"fascia massima ISEE (46.582,71 euro per l'anno 2026)\".",
+          "source_refs": [
+            "inps-circolare-7-2026-auu-allegato-1#tabella-valori-mensili-2026",
+            "inps-circolare-7-2026-auu#par-2"
+          ]
+        },
+        "requisiti": [
+          {
+            "requisito_id": "dsu-attestata-per-importo-superiore-al-minimo",
+            "tipo_requisito": "isee",
+            "descrizione_fonte": "per percepire un importo dell'AUU superiore al valore minimo è necessario che la DSU per l'anno 2026 sia correttamente attestata",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          },
+          {
+            "requisito_id": "assenza-isee-importi-minimi",
+            "tipo_requisito": "isee",
+            "descrizione_fonte": "a partire dal mese di marzo 2026, in assenza dell'ISEE, l'importo dell'AUU viene calcolato con riferimento agli importi minimi previsti dalla normativa",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          },
+          {
+            "requisito_id": "domanda-in-continuita",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "per l'anno 2026, al fine di continuare a beneficare dell'AUU, non è necessario presentare una nuova domanda, salvo che la domanda precedentemente trasmessa all'Istituto non sia decaduta, revocata, rinunciata o respinta",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          },
+          {
+            "requisito_id": "comunicazione-variazioni",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "fatto salvo l'onere di comunicare le eventuali variazioni da inserire nel modello di domanda, come l'inserimento di una nuova scheda nel caso di nascita di un nuovo figlio o l'aggiornamento della scheda dei figli al raggiungimento della maggiore età per continuare a percepire l'AUU per i figli maggiorenni",
+            "obbligatorio": true,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          },
+          {
+            "requisito_id": "maggiorazione-figlio-sotto-un-anno",
+            "tipo_requisito": "eta",
+            "descrizione_fonte": "per ciascun figlio di età inferiore a un anno l'importo dell'AUU calcolato sulla base delle soglie ISEE 2026 è incrementato nella misura del 50% fino al compimento del primo anno di vita del bambino",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-2"
+            ]
+          },
+          {
+            "requisito_id": "maggiorazione-almeno-tre-figli",
+            "tipo_requisito": "nucleo_familiare",
+            "descrizione_fonte": "nuclei familiari con almeno tre figli e ISEE, neutralizzato ai fini AUU, pari o inferiore alla fascia massima ISEE (46.582,71 euro per l'anno 2026): per ciascun figlio nella fascia di età da uno a tre anni, l'importo dell'AUU calcolato sulla base delle soglie ISEE 2026 è incrementato nella misura del 50%",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-2"
+            ]
+          },
+          {
+            "requisito_id": "maggiorazione-almeno-quattro-figli",
+            "tipo_requisito": "nucleo_familiare",
+            "descrizione_fonte": "nuclei familiari con almeno quattro figli a carico: maggiorazione forfettaria pari a 150 euro",
+            "obbligatorio": false,
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-2"
+            ]
+          }
+        ],
+        "scadenza": {
+          "tipo_scadenza": "data_fissa",
+          "data": "2026-06-30",
+          "conseguenza_mancato_rispetto": "a partire dal mese di marzo 2026, in assenza dell'ISEE, l'importo dell'AUU viene calcolato con riferimento agli importi minimi previsti dalla normativa",
+          "source_refs": [
+            "inps-circolare-7-2026-auu#par-1"
+          ]
+        },
+        "recupero": {
+          "anni_pregressi_recuperabili": 0,
+          "descrizione_fonte": "\"Qualora la nuova Dichiarazione Sostitutiva Unica (DSU) sia presentata entro il 30 giugno 2026, gli importi eventualmente già erogati per l'anno 2026 sono adeguati a decorrere dal mese di marzo 2026, con la corresponsione dei relativi arretrati\". La fonte letta non dichiara per quanti anni pregressi la misura sia recuperabile: il valore 0 è imposto dal contratto, che non ammette l'assenza del campo, e il dato è dichiarato in dati_mancanti.",
+          "source_refs": [
+            "inps-circolare-7-2026-auu#par-1"
+          ]
+        },
+        "documenti_richiesti": [
+          {
+            "tipo_documento": "isee",
+            "nome": "ISEE",
+            "obbligatorio": false,
+            "dove_si_ottiene": "portale_inps",
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          },
+          {
+            "tipo_documento": "altro",
+            "nome": "Dichiarazione Sostitutiva Unica (DSU)",
+            "obbligatorio": false,
+            "dove_si_ottiene": "portale_inps",
+            "source_refs": [
+              "inps-circolare-7-2026-auu#par-1"
+            ]
+          }
+        ],
+        "canali_accesso": [
+          "portale_inps"
+        ],
+        "situazioni_vita_collegate": [
+          "figlio"
+        ],
+        "timing_compatibile": [
+          "da_iniziare",
+          "in_corso"
+        ],
+        "dati_mancanti": [
+          "recupero"
+        ],
+        "source_refs": [
+          "inps-circolare-7-2026-auu#par-1",
+          "inps-circolare-7-2026-auu#par-2",
+          "inps-circolare-7-2026-auu-allegato-1#tabella-valori-mensili-2026"
+        ]
+      }
+    ],
+    "misure_non_interpretabili": []
+  }
+}

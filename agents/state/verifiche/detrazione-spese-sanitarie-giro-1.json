@@ -1,0 +1,26 @@
+{
+  "status": "ok",
+  "confidence": 0.88,
+  "source_refs": [
+    "ade-spese-sanitarie-aspetti-generali#detrazione-19-e-parte-eccedente",
+    "ade-spese-sanitarie-aspetti-generali#pagamento-tracciabile"
+  ],
+  "payload": {
+    "misura_id": "detrazione-spese-sanitarie",
+    "verdict": "rejected",
+    "iterazione": 1,
+    "inventario_completato": true,
+    "divergenze": [
+      {
+        "tipo": "slittamento_senso",
+        "categoria_dato": "importo_o_tetto",
+        "gravita": "bloccante",
+        "campo": "/beneficio/testo_fonte",
+        "testo_originale": "il 19% delle spese sanitarie per la parte eccedente l'importo di 129,11 euro",
+        "testo_semplificato": "Puoi portare in detrazione dall'Irpef il 19% delle spese sanitarie che superano 129,11 euro.",
+        "descrizione": "D-06 perdita di condizione. «per la parte eccedente» sparisce e il 19% sembra calcolarsi sull'intera spesa: la persona si aspetta uno sconto più grande di quello che riceverà, perché i primi 129,11 euro restano fuori dal calcolo."
+      }
+    ],
+    "esito_misura": "da_riscrivere"
+  }
+}

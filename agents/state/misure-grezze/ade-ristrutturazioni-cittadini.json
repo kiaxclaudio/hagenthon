@@ -1,0 +1,99 @@
+{
+  "status": "ok",
+  "confidence": 0.9,
+  "source_refs": [
+    "ade-ristrutturazioni-cittadini#in-cosa-consiste",
+    "ade-ristrutturazioni-misura-detrazione#aliquote-2025-2026"
+  ],
+  "payload": {
+    "fonte_id": "ade-ristrutturazioni-cittadini",
+    "data_consultazione": "2026-09-24",
+    "misure": [
+      {
+        "misura_id": "bonus-ristrutturazioni",
+        "nome": "Ristrutturazioni edilizie",
+        "tipo": "detrazione",
+        "descrizione_fonte": "Una detrazione dall'IRPEF, da ripartire in 10 quote annuali di pari importo, del 36% delle spese sostenute. Per le spese sostenute negli anni 2025 e 2026, la detrazione spetta nella misura del 36% (ovvero del 50% in caso di abitazione principale), su un massimo di 96.000 euro per unità immobiliare. Disciplinata dall'articolo 16-bis del Dpr 917/86 (Testo unico delle imposte sui redditi - TUIR).",
+        "anno_riferimento": 2026,
+        "beneficio": {
+          "forma": "percentuale",
+          "percentuale": 36,
+          "tetto_massimo_euro": 96000,
+          "base_tetto": "per unità immobiliare",
+          "testo_fonte": "\"Per le spese sostenute negli anni 2025 e 2026, la detrazione spetta nella misura del 36% (ovvero del 50% in caso di abitazione principale)\"; \"Su un massimo di 96.000 euro per unità immobiliare\"",
+          "source_refs": [
+            "ade-ristrutturazioni-cittadini#aliquote-2025-2026",
+            "ade-ristrutturazioni-cittadini#limite-di-spesa",
+            "ade-ristrutturazioni-misura-detrazione#aliquote-2025-2026"
+          ]
+        },
+        "requisiti": [
+          {
+            "requisito_id": "spesa-sostenuta-2025-2026",
+            "tipo_requisito": "temporale",
+            "descrizione_fonte": "Per le spese sostenute negli anni 2025 e 2026, la detrazione spetta nella misura del 36% (ovvero del 50% in caso di abitazione principale)",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-ristrutturazioni-cittadini#aliquote-2025-2026"
+            ]
+          },
+          {
+            "requisito_id": "abitazione-principale",
+            "tipo_requisito": "immobile",
+            "descrizione_fonte": "occorre, inoltre, che l'unità immobiliare sulla quale sono stati effettuati gli interventi sia adibita ad abitazione principale. Per \"abitazione principale\" deve intendersi quella nella quale la persona fisica dimorano abitualmente",
+            "obbligatorio": false,
+            "source_refs": [
+              "ade-ristrutturazioni-misura-detrazione#requisiti-aliquota-maggiorata"
+            ]
+          },
+          {
+            "requisito_id": "titolarita-diritto-reale",
+            "tipo_requisito": "immobile",
+            "descrizione_fonte": "è necessario che il contribuente sia titolare, al momento di inizio dei lavori di un diritto di PROPRIETÀ o di un diritto reale di godimento sull'unità immobiliare",
+            "obbligatorio": false,
+            "source_refs": [
+              "ade-ristrutturazioni-misura-detrazione#requisiti-aliquota-maggiorata"
+            ]
+          }
+        ],
+        "scadenza": {
+          "tipo_scadenza": "fine_anno_imposta",
+          "conseguenza_mancato_rispetto": "per le spese del 2027 \"detrazione del 36% (con limite massimo di spesa agevolabile di 96.000 euro)\" per abitazione principale; dal 2028 al 2033 \"detrazione del 30%, con limite massimo di spesa agevolabile di 48.000 euro, per tutte le abitazioni\"",
+          "source_refs": [
+            "ade-ristrutturazioni-misura-detrazione#aliquote-2027-2033"
+          ]
+        },
+        "recupero": {
+          "rate_annuali": 10,
+          "anni_pregressi_recuperabili": 0,
+          "descrizione_fonte": "\"Una detrazione dall'IRPEF, da ripartire in 10 quote annuali di pari importo\". La fonte letta non dichiara per quanti anni pregressi la misura sia recuperabile: il valore 0 è imposto dal contratto, che non ammette l'assenza del campo, e il dato è dichiarato in dati_mancanti.",
+          "source_refs": [
+            "ade-ristrutturazioni-cittadini#in-cosa-consiste",
+            "ade-ristrutturazioni-cittadini#quote-annuali"
+          ]
+        },
+        "documenti_richiesti": [],
+        "canali_accesso": [
+          "dichiarazione_redditi"
+        ],
+        "situazioni_vita_collegate": [
+          "casa"
+        ],
+        "timing_compatibile": [
+          "da_iniziare",
+          "in_corso"
+        ],
+        "dati_mancanti": [
+          "recupero",
+          "documenti"
+        ],
+        "source_refs": [
+          "ade-ristrutturazioni-cittadini#in-cosa-consiste",
+          "ade-ristrutturazioni-cittadini#riferimento-normativo",
+          "ade-ristrutturazioni-misura-detrazione#riferimento-normativo"
+        ]
+      }
+    ],
+    "misure_non_interpretabili": []
+  }
+}

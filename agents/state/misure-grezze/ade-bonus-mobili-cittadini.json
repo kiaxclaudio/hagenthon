@@ -1,0 +1,112 @@
+{
+  "status": "ok",
+  "confidence": 0.92,
+  "source_refs": [
+    "ade-bonus-mobili-cittadini#detrazione"
+  ],
+  "payload": {
+    "fonte_id": "ade-bonus-mobili-cittadini",
+    "data_consultazione": "2026-09-24",
+    "misure": [
+      {
+        "misura_id": "bonus-mobili",
+        "nome": "Bonus mobili ed elettrodomestici",
+        "tipo": "detrazione",
+        "descrizione_fonte": "Una detrazione Irpef del 50% per l'acquisto di mobili e di grandi elettrodomestici, su un limite di spesa di 5.000 euro per gli anni 2024, 2025 e 2026. La detrazione va ripartita tra gli aventi diritto in 10 quote annuali di pari importo. Spetta a chi realizza un intervento di ristrutturazione edilizia iniziato a partire dal 1° gennaio dell'anno precedente a quello dell'acquisto dei beni.",
+        "anno_riferimento": 2026,
+        "beneficio": {
+          "forma": "percentuale",
+          "percentuale": 50,
+          "tetto_massimo_euro": 5000,
+          "base_tetto": "5.000 euro per gli anni 2024, 2025 e 2026",
+          "testo_fonte": "\"una detrazione Irpef del 50% per l'acquisto di mobili e di grandi elettrodomestici\"; \"5.000 euro per gli anni 2024, 2025 e 2026\"",
+          "source_refs": [
+            "ade-bonus-mobili-cittadini#detrazione",
+            "ade-bonus-mobili-cittadini#limite-di-spesa"
+          ]
+        },
+        "requisiti": [
+          {
+            "requisito_id": "intervento-ristrutturazione",
+            "tipo_requisito": "immobile",
+            "descrizione_fonte": "l'intervento di ristrutturazione edilizia deve essere \"iniziato a partire dal 1° gennaio dell'anno precedente a quello dell'acquisto dei beni\"",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-bonus-mobili-cittadini#requisito-ristrutturazione"
+            ]
+          },
+          {
+            "requisito_id": "classe-energetica",
+            "tipo_requisito": "altro",
+            "descrizione_fonte": "classe non inferiore classe A per i forni, alla classe E per le lavatrici, le lavasciugatrici e le lavastoviglie, alla classe F per i frigoriferi e i congelatori",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-bonus-mobili-cittadini#classi-energetiche"
+            ]
+          },
+          {
+            "requisito_id": "pagamento-ammesso",
+            "tipo_requisito": "documentale",
+            "descrizione_fonte": "bonifico o carta di debito o credito. Non è consentito, invece, pagare con assegni bancari, contanti o altri mezzi di pagamento",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-bonus-mobili-cittadini#modalita-di-pagamento"
+            ]
+          }
+        ],
+        "scadenza": {
+          "tipo_scadenza": "data_fissa",
+          "data": "2026-12-31",
+          "source_refs": [
+            "ade-bonus-mobili-cittadini#scadenza-acquisto"
+          ]
+        },
+        "recupero": {
+          "rate_annuali": 10,
+          "anni_pregressi_recuperabili": 0,
+          "descrizione_fonte": "\"La detrazione va ripartita tra gli aventi diritto in 10 quote annuali di pari importo\". La fonte letta non dichiara per quanti anni pregressi la misura sia recuperabile: il valore 0 è imposto dal contratto, che non ammette l'assenza del campo, e il dato è dichiarato in dati_mancanti.",
+          "source_refs": [
+            "ade-bonus-mobili-cittadini#quote-annuali"
+          ]
+        },
+        "documenti_richiesti": [
+          {
+            "tipo_documento": "altro",
+            "nome": "l'attestazione del pagamento",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-bonus-mobili-cittadini#documenti"
+            ]
+          },
+          {
+            "tipo_documento": "fattura",
+            "nome": "le fatture di acquisto dei beni, riportanti la natura, la qualità e la quantità dei beni",
+            "obbligatorio": true,
+            "source_refs": [
+              "ade-bonus-mobili-cittadini#documenti"
+            ]
+          }
+        ],
+        "canali_accesso": [
+          "dichiarazione_redditi"
+        ],
+        "situazioni_vita_collegate": [
+          "casa"
+        ],
+        "timing_compatibile": [
+          "da_iniziare",
+          "in_corso"
+        ],
+        "dati_mancanti": [
+          "recupero"
+        ],
+        "source_refs": [
+          "ade-bonus-mobili-cittadini#detrazione",
+          "ade-bonus-mobili-cittadini#quote-annuali",
+          "ade-bonus-mobili-cittadini#requisito-ristrutturazione"
+        ]
+      }
+    ],
+    "misure_non_interpretabili": []
+  }
+}

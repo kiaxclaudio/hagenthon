@@ -1,0 +1,36 @@
+{
+  "status": "ok",
+  "confidence": 0.88,
+  "source_refs": [
+    "ade-ristrutturazioni-cittadini#in-cosa-consiste",
+    "ade-ristrutturazioni-cittadini#riferimento-normativo",
+    "ade-ristrutturazioni-misura-detrazione#riferimento-normativo"
+  ],
+  "payload": {
+    "misura_id": "bonus-ristrutturazioni",
+    "verdict": "rejected",
+    "iterazione": 1,
+    "inventario_completato": true,
+    "divergenze": [
+      {
+        "tipo": "omissione",
+        "categoria_dato": "importo_o_tetto",
+        "gravita": "bloccante",
+        "campo": "/beneficio/base_tetto",
+        "testo_originale": "Su un massimo di 96.000 euro per unità immobiliare",
+        "testo_semplificato": "Il limite massimo di spesa è 96.000 euro.",
+        "descrizione": "D-01 omissione. Sparisce la base del tetto, «per unità immobiliare»: chi ristruttura due unità immobiliari crede di avere un tetto unico di 96.000 euro e presenta una spesa destinata a essere ridimensionata."
+      },
+      {
+        "tipo": "omissione",
+        "categoria_dato": "scadenza",
+        "gravita": "bloccante",
+        "campo": "/scadenza/conseguenza_mancato_rispetto",
+        "testo_originale": "dal 2028 al 2033 \"detrazione del 30%, con limite massimo di spesa agevolabile di 48.000 euro, per tutte le abitazioni\"",
+        "testo_semplificato": "assente",
+        "descrizione": "D-01 omissione. La riduzione dell'aliquota dopo il 2026 non compare in nessun blocco: chi rimanda i lavori non sa che la stessa spesa varrà meno, e la finestra temporale della misura sparisce."
+      }
+    ],
+    "esito_misura": "da_riscrivere"
+  }
+}
