@@ -51,7 +51,7 @@ schema: non si riformula e non si accorcia.
 
 1. Legge la misura in ingresso e, se `iterazione` vale 2, l'elenco delle
    `divergenze_da_correggere`.
-2. Apre `agents/skills/plain-language.md` e applica le regole `PL-01..PL-14`. La skill si carica
+2. Apre `agents/skills/plain-language.md` e applica le regole `PL-01..PL-15`. La skill si carica
    qui, non prima: fuori da questo passo non serve a nessuno.
 3. Scrive `titolo_semplice` e `cosa_e` traducendo il gergo, non eliminandolo: "detrazione"
    diventa "sconto sulle tasse che paghi", e il termine originale resta accanto, perché è la

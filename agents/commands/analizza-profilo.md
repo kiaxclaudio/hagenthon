@@ -21,15 +21,17 @@ Se manca o non e' JSON valido: **fermati**. Non inventare misure (G-01), non ric
 catalogo al volo (costa Opus e non e' questo il comando). Rispondi:
 `status: hitl_required`, motivo `catalogo assente`, e indica che va eseguita prima la Fase A.
 
-Se `$ARGUMENTS` e' vuoto: poni le domande a scelta multipla dello Step 1 di
-`agents/orchestrator.md` e fermati in attesa. Non indovinare un profilo.
+Se `$ARGUMENTS` e' vuoto: poni le domande a scelta multipla descritte in
+`agents/subagents/profiler.md` (sezione Input e tassonomia chiusa) e fermati in attesa.
+Non indovinare un profilo.
 
 ## Passi
 
 1. **profiler** (sub-agente `profiler`, haiku) — normalizza `$ARGUMENTS` sulla tassonomia
    chiusa. Input e output secondo `agents/schemas/profiler.input.json` e
    `profiler.output.json`. Scrive `agents/state/profilo.json`.
-   Se una risposta non e' mappabile sulla tassonomia: si marca `missing`, non si stima.
+   Se una risposta non e' mappabile sulla tassonomia: il valore diventa `non_so` e la domanda
+   entra in `risposte_mancanti`. Non si stima il valore piu' probabile (G-01).
 2. **eligibility** (sonnet) — incrocia `agents/state/profilo.json` con
    `agents/state/catalogo.json`. Restituisce le misure pertinenti con `confidence` e
    `source_refs` (G-06, G-07).
@@ -46,7 +48,7 @@ conversazione (G-12). Non rileggere un file gia' letto in questo run.
 | `catalogo.json` assente o invalido | stop, `hitl_required` |
 | una misura con `confidence < 0.6` | non entra nella scheda; si dice che il caso va portato a un CAF |
 | nessuna misura con `confidence >= 0.6` | scheda vuota dichiarata: "la tua situazione non e' coperta dal catalogo", rinvio a CAF |
-| un sub-agente restituisce JSON non conforme allo schema | 1 solo nuovo tentativo con input ridotto; se fallisce, `status: degraded` e si prosegue con i passi rimasti |
+| un sub-agente restituisce JSON non conforme allo schema | 1 sola ri-richiesta con lo schema in chiaro; se fallisce ancora, `status: hitl_required` e si chiude con il rimando a un CAF (G-08: al limite si escala, non si ritenta) |
 
 Limite di iterazione dell'intero comando: **un solo giro**. Non si richiama `eligibility`
 per "provare con un profilo diverso": quello e' un nuovo invio del comando.

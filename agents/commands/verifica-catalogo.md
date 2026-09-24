@@ -9,8 +9,8 @@ model: haiku
 
 Misura da riverificare: **$ARGUMENTS**
 
-Questo comando esegue **solo il tratto A3-A4** di `agents/ARCHITETTURA.md` su una misura
-sola. Serve quando una misura e' stata corretta alla fonte, e' uscita `hitl_required`, o si
+Questo comando esegue **solo il tratto A2-A3** di `agents/workflows/main-pipeline.md`, cioe'
+il giro `explainer` <-> `fidelity-validator`, su una misura sola. Serve quando una misura e' stata corretta alla fonte, e' uscita `hitl_required`, o si
 sospetta una riformulazione infedele. Non ricostruisce il catalogo e non esegue
 `source-analyzer`: se il modello della fonte non esiste, questo comando non e' quello giusto.
 
@@ -48,7 +48,7 @@ contato non e' un limite.
 
 | Situazione | Cosa fare |
 |---|---|
-| un sub-agente restituisce prosa invece di JSON conforme (G-05) | 1 nuovo tentativo con la richiesta ridotta al solo campo mancante; poi `degraded` |
+| un sub-agente restituisce prosa invece di JSON conforme (G-05) | 1 sola ri-richiesta con lo schema in chiaro; se fallisce ancora, `status: hitl_required` e si chiama una persona (G-08: al limite si escala, non si ritenta) |
 | timeout del modello | fino a 3 tentativi con backoff esponenziale (G-16), poi `status: degraded` |
 | il validator segnala un numero, una data o un riferimento normativo diverso dalla fonte | e' G-03: rifiuto immediato, non negoziabile, non conta come "differenza di stile" |
 

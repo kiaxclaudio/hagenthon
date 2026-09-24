@@ -3,9 +3,15 @@
 Un comando esiste solo se una sequenza di passi va rieseguita **identica** piu' volte. Se si
 usa una volta sola, il posto giusto e' `agents/workflows/main-pipeline.md`, non qui.
 
-Due comandi, uno per fase. Non ce n'e' un terzo perche' non c'e' un terzo tratto che si
-ripete: duplicare in un comando cio' che sta gia' in un file agente costa punti sul criterio
-"qualita' delle istruzioni", che penalizza esplicitamente le sovrapposizioni.
+Due comandi di prodotto, uno per fase. Non ce n'e' un terzo perche' non c'e' un terzo tratto
+della pipeline che si ripete: duplicare in un comando cio' che sta gia' in un file agente costa
+punti sul criterio "qualita' delle istruzioni", che penalizza esplicitamente le sovrapposizioni.
+
+Esiste un terzo slash command, `/canale`, ma **non e' un comando di prodotto**: non esegue
+nessun tratto della pipeline, coordina le due sessioni di lavoro (CLAUDE.md par. 2-bis). Per
+questo la sua sorgente sta in `tools/commands/canale.md` e non in questa cartella, pur
+arrivando anch'esso in `.claude/commands/` tramite `tools/sync_claude.py`: qui stanno i
+componenti del prodotto, in `tools/` gli attrezzi di squadra.
 
 | Comando | Fase | Tratto eseguito | Tier | Argomento |
 |---|---|---|---|---|
@@ -40,7 +46,7 @@ Il comando non aggira quella separazione, la esegue.
 | G-03 | importi, tetti e date riportati identici alla fonte |
 | G-04 | la scheda spiega cosa esiste, non cosa conviene fare |
 | G-05, G-06, G-07 | i sub-agenti si passano JSON con `status`, `confidence`, `source_refs` |
-| G-08 | 2 giri sul ciclo di fedelta', 1 solo giro sulla Fase B |
+| G-08 | 2 giri sul ciclo di fedelta', 1 solo giro sulla Fase B; al limite si escala, non si ritenta |
 | G-09 | i gate sono soglie numeriche (`confidence < 0.6`), non impressioni |
 | G-13 | `plain-language` e `fidelity-diff-taxonomy` si caricano dentro il ciclo, non prima |
 | G-16 | 3 tentativi con backoff sui timeout, poi `degraded` |

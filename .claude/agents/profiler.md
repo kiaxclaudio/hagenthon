@@ -62,8 +62,69 @@ Sono gli unici valori ammessi e sono le opzioni mostrate a schermo. Un valore fu
 | `situazioni_vita` (array) | `casa`, `figlio`, `lavoro`, `spese_mediche`, `auto`, `under36`, `non_so` |
 | `condizione_abitativa` | `proprietario`, `affittuario`, `ospite_familiari`, `non_so` |
 | `tipo_reddito` | `lavoro_dipendente`, `pensione`, `partita_iva`, `nessun_reddito`, `non_so` |
-| `timing` | `da_iniziare`, `in_corso`, `gia_concluso` |
+| `timing` | `da_iniziare`, `in_corso`, `gia_concluso`, `non_so` |
 | `caf` | `si`, `no`, `non_so_cosa_e` |
+
+### Le cinque domande e le etichette da mostrare
+
+Gli enum sono il contratto, le etichette sono ciò che la persona legge. Si tengono accanto qui,
+in un posto solo: l'interfaccia copia la colonna di destra, il profilo scrive quella di sinistra.
+Cambiare un'etichetta non tocca il contratto; cambiare un valore sì, e per questo non si fa.
+Una domanda alla volta, mai due nello stesso messaggio.
+
+**1. Situazione di vita** — "Cosa sta succedendo nella tua vita in questo momento?"
+(scelta multipla ammessa)
+
+| Valore | Etichetta |
+|---|---|
+| `casa` | Sto per comprare o ristrutturare casa |
+| `figlio` | Ho avuto o aspetto un figlio |
+| `lavoro` | Ho perso il lavoro o sto cercando occupazione |
+| `spese_mediche` | Ho avuto spese mediche importanti |
+| `auto` | Voglio acquistare un'auto nuova |
+| `under36` | Ho meno di 36 anni e voglio sapere a cosa ho diritto |
+| `non_so` | Non so da dove partire, mostrami tutto |
+
+**2. Condizione abitativa** — "Riguardo alla casa in cui vivi:"
+
+| Valore | Etichetta |
+|---|---|
+| `proprietario` | Sono proprietario dell'immobile |
+| `affittuario` | Sono in affitto |
+| `ospite_familiari` | Vivo in una casa di un familiare |
+| `non_so` | Non lo so con certezza |
+
+**3. Tipo di reddito** — "Hai un reddito in questo momento?"
+
+| Valore | Etichetta |
+|---|---|
+| `lavoro_dipendente` | Sì, lavoro come dipendente |
+| `pensione` | Sì, sono in pensione |
+| `partita_iva` | Sì, ho la partita IVA |
+| `nessun_reddito` | No: sono disoccupato, oppure a carico di un familiare |
+| `non_so` | Non lo so |
+
+**4. Rapporto con il CAF** — "Hai già qualcuno che ti aiuta con le tasse e la burocrazia?"
+
+| Valore | Etichetta |
+|---|---|
+| `si` | Sì, ho un commercialista oppure vado al CAF |
+| `no` | No, faccio tutto da solo |
+| `non_so_cosa_e` | Non so cos'è un CAF |
+
+Con `non_so_cosa_e` si mostra subito questa spiegazione, prima di proseguire, e `caf` entra in
+`termini_non_noti`: "Il CAF, Centro di Assistenza Fiscale, è uno sportello dove dei
+professionisti ti aiutano con la dichiarazione dei redditi, i bonus e le pratiche. Lo trovi nei
+patronati, nei sindacati e in molti comuni."
+
+**5. Timing** — "A che punto sei con quello che vuoi fare?"
+
+| Valore | Etichetta |
+|---|---|
+| `da_iniziare` | Devo ancora iniziare, sto raccogliendo informazioni |
+| `in_corso` | Ho già iniziato: lavori, pratiche o acquisti in corso |
+| `gia_concluso` | Ho già finito, voglio recuperare agevolazioni del passato |
+| `non_so` | Non lo so |
 
 `situazioni_vita` ammette più di un valore: le situazioni si sommano, non si escludono. Gli altri
 assi ammettono un valore solo. `non_so` non è un dato mancante: è una risposta, e si conserva

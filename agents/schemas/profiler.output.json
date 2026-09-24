@@ -27,9 +27,9 @@
       "enum": ["lavoro_dipendente", "pensione", "partita_iva", "nessun_reddito", "non_so"]
     },
     "timing": {
-      "description": "Momento in cui si trova la persona rispetto alla spesa o all'evento (Step 3). 'da_iniziare' = la spesa non è ancora stata sostenuta; 'in_corso' = già iniziata; 'gia_concluso' = conclusa, interessa il recupero degli anni passati. Filtra le misure per scadenza e attiva il blocco recupero della misura di catalogo.",
+      "description": "Momento in cui si trova la persona rispetto alla spesa o all'evento (Step 3). 'da_iniziare' = la spesa non è ancora stata sostenuta; 'in_corso' = già iniziata; 'gia_concluso' = conclusa, interessa il recupero degli anni passati; 'non_so' = la persona non lo ha dichiarato o non sa collocarsi, e il valore si conserva invece di essere dedotto (G-01). Filtra le misure per scadenza e attiva il blocco recupero della misura di catalogo; con 'non_so' non filtra, e il timing diventa un requisito da verificare.",
       "type": "string",
-      "enum": ["da_iniziare", "in_corso", "gia_concluso"]
+      "enum": ["da_iniziare", "in_corso", "gia_concluso", "non_so"]
     },
     "caf": {
       "description": "Presenza di un intermediario fiscale di riferimento (Step 2). Serve al navigator per scegliere il canale da indicare. Il valore 'non_so_cosa_e' attiva la spiegazione inline di due righe prevista dal flusso e aggiunge CAF al glossario contestuale.",

@@ -27,6 +27,12 @@ Mappatura
     agents/subagents/*.md  ->  .claude/agents/<nome>.md
     agents/commands/*.md   ->  .claude/commands/<nome>.md
     agents/skills/*.md     ->  .claude/skills/<nome>/SKILL.md
+    tools/commands/*.md    ->  .claude/commands/<nome>.md
+
+`tools/commands/` contiene i comandi che servono a **coordinare la squadra**, non a
+eseguire il prodotto: non stanno in `agents/commands/`, che elenca i due soli tratti
+della pipeline che si rilanciano identici (vedi agents/commands/README.md). Restano
+sincronizzati perche' Claude Code carica gli slash command solo da `.claude/commands/`.
 
 Esclusi dalla copia: `README.md` (documenta la cartella, non e' un componente),
 i file che iniziano con `_` (es. `_TEMPLATE.md`) e `.gitkeep`.
@@ -54,6 +60,7 @@ from pathlib import Path
 
 RADICE = Path(__file__).resolve().parent.parent
 SORGENTE = RADICE / "agents"
+SORGENTE_TOOLS = RADICE / "tools"
 DESTINAZIONE = RADICE / ".claude"
 
 # File che non sono componenti e non vanno copiati.
@@ -100,6 +107,10 @@ def pianifica() -> dict[Path, bytes]:
         (SORGENTE / "commands", lambda p: DESTINAZIONE / "commands" / p.name),
         (SORGENTE / "skills",
          lambda p: DESTINAZIONE / "skills" / p.stem / "SKILL.md"),
+        # Comandi di coordinamento di squadra: fonte fuori da agents/, perche'
+        # non sono componenti del prodotto (vedi agents/commands/README.md).
+        (SORGENTE_TOOLS / "commands",
+         lambda p: DESTINAZIONE / "commands" / p.name),
     ]
 
     for cartella, destina in mappature:

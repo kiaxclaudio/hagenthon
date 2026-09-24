@@ -18,7 +18,7 @@
       }
     },
     {
-      "description": "Quando si escala non si propone: la scheda resta vuota, compare il motivo e il rimando al CAF. Metà risposta più un rimando è la forma peggiore, perché la persona legge solo la metà.",
+      "description": "Chi escala dichiara sempre su che cosa: l'intera sessione oppure una singola misura. Senza l'ambito i due casi sarebbero indistinguibili, e il vincolo della regola successiva non sarebbe verificabile.",
       "if": {
         "properties": {
           "payload": {
@@ -30,10 +30,57 @@
       },
       "then": {
         "properties": {
+          "payload": {
+            "required": ["ambito_escalation", "motivo_escalation", "spiegazione_escalation"]
+          }
+        }
+      }
+    },
+    {
+      "description": "Escalation di sessione: riguarda l'intero profilo, non una misura sola. Allora non si propone niente: la scheda resta vuota, compare il motivo e il rimando al CAF. Metà risposta più un rimando è la forma peggiore, perché la persona legge solo la metà.",
+      "if": {
+        "properties": {
+          "payload": {
+            "properties": {
+              "escalation": { "const": true },
+              "ambito_escalation": { "const": "sessione" }
+            },
+            "required": ["escalation", "ambito_escalation"]
+          }
+        },
+        "required": ["payload"]
+      },
+      "then": {
+        "properties": {
           "status": { "const": "hitl_required" },
           "payload": {
-            "required": ["motivo_escalation", "spiegazione_escalation"],
             "properties": { "misure_pertinenti": { "maxItems": 0 } }
+          }
+        }
+      }
+    },
+    {
+      "description": "Esclusione di una singola misura: la misura sotto la soglia di 0.6 non si propone e diventa un rimando al CAF motivato, mentre le altre misure pertinenti restano nella scheda. Qui lo status non è hitl_required, perché la sessione ha comunque risposto, e misure_pertinenti non è vuoto per costruzione.",
+      "if": {
+        "properties": {
+          "payload": {
+            "properties": {
+              "escalation": { "const": true },
+              "ambito_escalation": { "const": "misura" }
+            },
+            "required": ["escalation", "ambito_escalation"]
+          }
+        },
+        "required": ["payload"]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "properties": {
+              "misure_pertinenti": {
+                "items": { "properties": { "confidence": { "minimum": 0.6 } } }
+              }
+            }
           }
         }
       }
@@ -51,7 +98,12 @@
       },
       "then": {
         "properties": {
-          "payload": { "not": { "required": ["motivo_escalation"] } }
+          "payload": {
+            "allOf": [
+              { "not": { "required": ["motivo_escalation"] } },
+              { "not": { "required": ["ambito_escalation"] } }
+            ]
+          }
         }
       }
     }
@@ -85,6 +137,11 @@
           "description": "Vero quando l'agente non è in condizione di rispondere: confidenza sotto soglia, profilo incompleto, caso non coperto dal catalogo o richiesta che uscirebbe dall'orientamento. È il campo che l'orchestratore legge per mostrare il rimando al CAF.",
           "type": "boolean"
         },
+        "ambito_escalation": {
+          "description": "Che cosa riguarda l'escalation, ed è la distinzione che rende i due comportamenti compatibili. 'sessione' = non è trattabile l'intero profilo (caso non coperto, profilo incompleto, requisiti non verificabili su tutte le candidate, richiesta di consulenza): non si propone nulla e lo status è 'hitl_required'. 'misura' = una singola misura sta sotto 0.6 di confidenza e viene tolta dall'elenco con il suo rimando al CAF, mentre le altre misure pertinenti restano proposte.",
+          "type": "string",
+          "enum": ["sessione", "misura"]
+        },
         "motivo_escalation": {
           "description": "Perché si escala. Enum chiuso, uno per ciascun gate dichiarato nell'architettura: 'confidence_bassa' = sotto 0.6; 'caso_non_coperto_dal_catalogo' = nessuna misura verificata copre la situazione; 'profilo_incompleto' = mancano risposte necessarie a decidere; 'requisiti_non_verificabili' = i requisiti dipendono da dati che il sistema non ha, tipicamente ISEE o composizione del nucleo; 'richiesta_di_consulenza' = la persona chiede che cosa le convenga fare, e quella risposta non è di questo sistema.",
           "type": "string",
@@ -114,11 +171,22 @@
           "minLength": 3
         },
         "titolo_semplice": {
-          "description": "Il nome in parole comuni, copiato dalla spiegazione approvata. Si copia, non si riscrive: il testo che la persona legge è già passato dal validator.",
+          "description": "Il nome della misura come lo chiamerebbe una persona comune, accanto al nome ufficiale del campo 'nome': e la coppia che permette di riconoscere la misura nella scheda e di ripetere allo sportello il nome giusto. Si copia dalla spiegazione approvata, non si riscrive qui: il testo che la persona legge è già passato dal validator.",
           "type": "string",
           "minLength": 3
         },
         "tipo": { "$ref": "./source-analyzer.output.json#/$defs/tipo_misura" },
+        "confidence": {
+          "description": "Quanto è affidabile l'incrocio fra questo profilo e i requisiti di questa misura, calcolato come frazione di requisiti soddisfatti sul totale dei requisiti valutabili. È il valore su cui opera il gate numerico dell'architettura (G-09): sotto 0.6 la misura non compare in questo elenco e diventa un'escalation con 'ambito_escalation': 'misura'. Distinto dalla confidence dell'envelope, che vale sull'intera risposta.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "rilevanza": {
+          "description": "La fascia leggibile di 'confidence', per l'interfaccia: 'alta' = 'confidence' almeno 0.85, 'media' = fra 0.6 e 0.85. NON e un ordinamento di convenienza e non dice quanto una misura valga: dice quanto e probabile che i requisiti risultino soddisfatti, cioe quanto e solido l'incrocio con il profilo. La fascia sotto 0.6 non compare in questo array per costruzione: e il gate, e quella misura diventa un'escalation con 'ambito_escalation': 'misura'. Campo facoltativo: chi non lo valorizza lascia parlare 'confidence'.",
+          "type": "string",
+          "enum": ["alta", "media"]
+        },
         "motivazione": {
           "description": "Perché questa misura compare, detto come constatazione sul profilo: hai dichiarato di essere proprietario e di dover ancora iniziare i lavori, e questa misura riguarda le spese di ristrutturazione. Mai come indicazione di comportamento: il vincolo non è solo una raccomandazione di stile, è il pattern di testo_senza_consulenza.",
           "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
@@ -155,8 +223,26 @@
         },
         "source_refs": { "$ref": "./_envelope.json#/$defs/source_refs_obbligatori" }
       },
-      "required": ["misura_id", "nome", "titolo_semplice", "tipo", "motivazione", "corrispondenze_profilo", "requisiti_da_verificare", "source_refs"],
-      "additionalProperties": false
+      "required": ["misura_id", "nome", "titolo_semplice", "tipo", "confidence", "motivazione", "corrispondenze_profilo", "requisiti_da_verificare", "source_refs"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "description": "La fascia e il numero non possono contraddirsi: se si dichiara 'alta', la confidenza deve esserci davvero. Il vincolo sta nel contratto, quindi non dipende dal prompt.",
+          "if": {
+            "properties": { "rilevanza": { "const": "alta" } },
+            "required": ["rilevanza"]
+          },
+          "then": { "properties": { "confidence": { "minimum": 0.85 } } }
+        },
+        {
+          "description": "Simmetrico: 'media' vive fra la soglia del gate e la soglia di 'alta'.",
+          "if": {
+            "properties": { "rilevanza": { "const": "media" } },
+            "required": ["rilevanza"]
+          },
+          "then": { "properties": { "confidence": { "minimum": 0.6, "exclusiveMaximum": 0.85 } } }
+        }
+      ]
     },
     "misura_esclusa": {
       "description": "Una misura valutata e scartata, con il motivo dell'esclusione. Enum chiuso: l'esclusione è una constatazione verificabile, non un giudizio.",

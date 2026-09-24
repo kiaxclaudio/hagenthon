@@ -30,7 +30,9 @@ Fase A, mai a runtime: è il posto giusto dove spendere.
 ## Perché esiste
 
 Un agente che controlla sé stesso non controlla niente. Separare chi scrive da chi verifica rende
-la fedeltà una proprietà del sistema invece di una speranza riposta nel prompt.
+la fedeltà una proprietà del sistema invece di una speranza riposta nel prompt. Il frontmatter
+dichiara **solo `Read`**, ed è il minimo necessario al compito: il giudice non può, fisicamente,
+riscrivere ciò che giudica.
 
 ## Input
 
@@ -98,8 +100,11 @@ e `status: "degraded"`. Non approva mai per assenza di prove.
 ## Gate HITL (escalation umana)
 
 Secondo `rejected` consecutivo sulla stessa misura: la misura esce `hitl_required`, non entra in
-`agents/state/catalogo.json` e non viene mostrata. Escala anche quando `confidence < 0.6` su una
-divergenza che riguarda un valore numerico o una scadenza.
+`agents/state/catalogo.json` e non viene mostrata. Escala anche quando la `confidence`
+dell'envelope scende sotto 0.6 su una verifica che tocca `categoria_dato` `percentuale`,
+`importo_o_tetto` o `scadenza`: il confronto su un numero o su una data o è certo o va a una
+persona. La soglia è sulla `confidence` della verifica, che è un campo dell'envelope: le singole
+divergenze non ne hanno una, hanno una `gravita`.
 
 ## Limite di iterazioni
 
@@ -115,12 +120,3 @@ un terzo giro: la decisione passa a una persona.
 | `agents/skills/fidelity-diff-taxonomy.md` non leggibile | verifica comunque i campi numerici e i requisiti, `descrizione` senza codice `D-xx`, `status: "degraded"` |
 | riscrittura vuota o assente | `verdict: "rejected"`, divergenza `uncomparable`, nessun giro consumato |
 | `misura_id` diverso fra originale e riscrittura | `verdict: "rejected"`, divergenza `uncomparable` con la causa in `descrizione`, `status: "hitl_required"` |
-
-## Strumenti assegnati
-
-Sezione definitiva: non contiene segnaposto.
-
-Gli strumenti sono nel frontmatter e sono il minimo necessario al compito. In particolare questo
-agente ha **solo `Read`**: il giudice non può, fisicamente, riscrivere ciò che giudica. La
-separazione fra chi produce e chi approva non è una raccomandazione nel prompt, è una conseguenza
-dei permessi.

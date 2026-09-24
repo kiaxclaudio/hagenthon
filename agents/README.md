@@ -11,7 +11,7 @@ commercialista (G-04).
 
 | Componente | Verbo | Tier | Fase | Strumenti |
 |---|---|---|---|---|
-| `orchestrator.md` | instrada | haiku-4.5 | A + B | nessuno |
+| `orchestrator.md` | instrada | haiku-4.5 | A + B | Read, Write, Task |
 | `subagents/source-analyzer.md` | destruttura | opus-5 | A | Read, Write, Grep, Glob |
 | `subagents/explainer.md` | riscrive | sonnet-5 | A | Read, Write |
 | `subagents/fidelity-validator.md` | verifica | opus-5 | A | solo Read |

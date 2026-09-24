@@ -14,7 +14,7 @@ decisione (G-04).
 
 | Componente | Verbo | Tier | Fase | Tool |
 |---|---|---|---|---|
-| `orchestrator` | instrada | haiku | A + B | — |
+| `orchestrator` | instrada | haiku | A + B | Read, Write, Task |
 | `source-analyzer` | destruttura | opus | A | Read, Write, Grep, Glob |
 | `explainer` | riscrive | sonnet | A | Read, Write |
 | `fidelity-validator` | verifica | opus | A | **solo Read** |
@@ -65,6 +65,11 @@ risposte utente -> profiler(haiku) -> eligibility(sonnet) -> navigator(haiku)
 | `agents/state/run-<id>.json` | B | sessione: passo, misure proposte, escalation |
 
 ## Gate HITL
+
+Le due tabelle che seguono sono l'**estratto** dei casi che hanno deciso la forma
+dell'architettura, non l'elenco completo: i sette gate HITL e i quattro limiti di iterazione
+effettivamente applicati stanno in `agents/orchestrator.md`, che resta coerente con questo file
+e lo dettaglia. Qui vince la decisione; li' si legge l'elenco intero.
 
 | Condizione | Azione |
 |---|---|

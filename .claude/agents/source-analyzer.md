@@ -46,7 +46,25 @@ Il contenuto arriva nel payload. `Glob` e `Read` servono quando la fonte è stat
 file sotto `agents/state/fonti/` e va recuperata; `Grep` serve al controllo del passo 7, cioè a
 ritrovare nella fonte ogni valore numerico scritto nell'output.
 
-TODO-TEMA: URL esatti delle pagine ufficiali che compongono il primo catalogo.
+### Fonti del primo catalogo
+
+Sono le otto pagine gia' scaricate in `agents/state/fonti/`, una per `fonte_id`. Ogni file
+riporta in testa `URL`, `ENTE` e `DATA_CONSULTAZIONE`: l'agente legge quelle righe e non le
+ricostruisce.
+
+| `fonte_id` | Ente | URL |
+|---|---|---|
+| `ade-ristrutturazioni-cittadini` | agenzia_entrate | https://www.agenziaentrate.gov.it/portale/schede/agevolazioni/detrristredil36/schinfodetrristredil36-cittadini |
+| `ade-ristrutturazioni-misura-detrazione` | agenzia_entrate | https://www.agenziaentrate.gov.it/portale/la-misura-della-detrazione-limiti-detraibilita |
+| `ade-bonus-mobili-cittadini` | agenzia_entrate | https://www.agenziaentrate.gov.it/portale/bonus-mobili/infogen-bonus-mobili-cittadini |
+| `ade-spese-sanitarie-aspetti-generali` | agenzia_entrate | https://www.agenziaentrate.gov.it/portale/aspetti-generali |
+| `ade-detrazioni-canoni-locazione-tabella` | agenzia_entrate | https://www.agenziaentrate.gov.it/portale/documents/20143/5629825/Detrazioni+per+canoni+di+locazione_tabella_aggiornata.pdf |
+| `inps-circolare-7-2026-auu` | inps | https://www.inps.it/.../16548_Circolare-numero-7-del-30-01-2026.pdf |
+| `inps-circolare-7-2026-auu-allegato-1` | inps | https://www.inps.it/.../16549_Circolare-numero-7-del-30-01-2026_Allegato-n-1.pdf |
+| `inps-cs-bonus-asilo-nido-2026` | inps | https://www.inps.it/.../4065_CS-BONUS-ASILI-NIDO.pdf |
+
+Gli URL INPS sono accorciati per leggibilita': quello integrale sta nella riga `URL` del file
+corrispondente, ed e' quello che finisce in `source_refs`.
 
 ## Output
 
@@ -74,8 +92,10 @@ due debba conoscere l'altro.
 3. Per ogni misura compila `beneficio`: forma, percentuale, importo, tetto massimo, base del
    tetto. I valori si copiano **carattere per carattere** dalla fonte.
 4. Estrae i `requisiti` come proposizioni verificabili e separate, ciascuna con il proprio tipo
-   (reddito, ISEE, età, nucleo familiare, immobile, occupazione, residenza, temporale,
-   documentale), la soglia se c'è, e se sia obbligatorio. Non li fonde e non li ammorbidisce.
+   preso dall'enum chiuso `tipo_requisito` di
+   `agents/schemas/source-analyzer.output.json#/$defs/tipo_requisito` (dieci valori, da
+   `reddito` ad `altro`), la soglia se c'è, e se sia obbligatorio. L'elenco vive solo nello
+   schema: qui si punta, non si ricopia. Non li fonde e non li ammorbidisce.
 5. Compila `scadenza` e `recupero` come strutture distinte: la data entro cui si accede e il
    numero di annualità su cui il beneficio si ripartisce non sono la stessa cosa.
 6. Compila `documenti_richiesti` e `canali_accesso` con i soli valori dichiarati nella fonte:

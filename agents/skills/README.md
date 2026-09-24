@@ -13,12 +13,12 @@ esplicitamente le sovrapposizioni tra file.
 
 | Skill | Caricata da | Condizione di caricamento | Peso | Perché non sta nel file dell'agente |
 |---|---|---|---|---|
-| `plain-language.md` | `subagents/explainer.md` | passo A2, a ogni riscrittura di una misura e a ogni correzione dopo un rifiuto | 207 righe, 1.962 parole | Sono 14 regole più una checklist di 9 controlli: quasi il doppio del file dell'`explainer` (115 righe). Inline, verrebbero caricate anche quando l'`explainer` non gira, cioè in tutta la Fase B |
-| `fidelity-diff-taxonomy.md` | `subagents/fidelity-validator.md` | passo A3, a ogni verifica, compreso il secondo giro | 349 righe, 3.008 parole | La tassonomia serve a **classificare**, e classificare è un lavoro che fa solo il validator. Tenerla fuori dall'`explainer` è anche una scelta di separazione: chi scrive non deve conoscere in anticipo la griglia con cui verrà giudicato, o la ottimizza invece di rispettarla |
-| `hitl-escalation.md` | `orchestrator.md` | quando scatta uno dei gate HITL dichiarati in `orchestrator.md`, in Fase A come in Fase B | 226 righe, 2.434 parole | È il percorso eccezionale: nel caso normale non serve mai. Caricarla sempre significherebbe pagare in ogni invocazione un contenuto che riguarda una frazione dei casi |
+| `plain-language.md` | `subagents/explainer.md` | passo A2, a ogni riscrittura di una misura e a ogni correzione dopo un rifiuto | 285 righe, 2.946 parole | Sono 15 regole più una checklist di 9 controlli: due volte e mezzo il file dell'`explainer` (115 righe). Inline, verrebbero caricate anche quando l'`explainer` non gira, cioè in tutta la Fase B |
+| `fidelity-diff-taxonomy.md` | `subagents/fidelity-validator.md` | passo A3, a ogni verifica, compreso il secondo giro | 374 righe, 3.393 parole | La tassonomia serve a **classificare**, e classificare è un lavoro che fa solo il validator. Tenerla fuori dall'`explainer` è anche una scelta di separazione: chi scrive non deve conoscere in anticipo la griglia con cui verrà giudicato, o la ottimizza invece di rispettarla |
+| `hitl-escalation.md` | `orchestrator.md` | quando scatta uno dei gate HITL dichiarati in `orchestrator.md`, in Fase A come in Fase B | 246 righe, 2.762 parole | È il percorso eccezionale: nel caso normale non serve mai. Caricarla sempre significherebbe pagare in ogni invocazione un contenuto che riguarda una frazione dei casi |
 
-Totale: **782 righe, 7.404 parole** (conteggi con `wc -lw`; stima di circa 11.000 token).
-I tre file che le caricano ne contano insieme 361 e 2.629. Inline, le istruzioni peserebbero
+Totale: **905 righe, 9.101 parole** (conteggi con `wc -lw`; stima di circa 14.000 token).
+I tre file che le caricano ne contano insieme 384 e 2.884. Inline, le istruzioni peserebbero
 **più del triplo**, in ogni invocazione. Con il caricamento on-demand nessuna invocazione ne
 carica più di una, e le invocazioni di Fase B non ne caricano nessuna finché non scatta un gate.
 

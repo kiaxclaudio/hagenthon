@@ -4,7 +4,22 @@
   "title": "NavigatorOutput",
   "description": "Output dell'agente navigator (Fase B, haiku). Trasforma una misura di catalogo in passi operativi ordinati: che cosa fare, in che ordine, con quali documenti e dove si fa. Non valuta se la misura convenga e non sceglie fra misure diverse: quella domanda non appartiene a questo sistema (G-04). Ogni canale e ogni documento provengono dagli enum chiusi della misura verificata, quindi il navigator non può indicare uno sportello che la fonte non prevede. Usa l'envelope comune via allOf.",
   "allOf": [
-    { "$ref": "./_envelope.json" }
+    { "$ref": "./_envelope.json" },
+    {
+      "description": "Una guida con 'status: ok' ha almeno un passo: se non se ne compone nemmeno uno, la procedura non è documentata nel catalogo e l'uscita è il fallback dichiarato ('passi' vuoto e 'status' degraded o hitl_required). Il vincolo sta qui e non nel prompt, così i due casi non possono confondersi.",
+      "if": {
+        "properties": { "status": { "const": "ok" } },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "properties": { "passi": { "minItems": 1 } },
+            "required": ["passi"]
+          }
+        }
+      }
+    }
   ],
   "properties": {
     "payload": {
@@ -18,15 +33,45 @@
           "maxLength": 300
         },
         "passi": {
-          "description": "I passi in ordine di esecuzione. L'ordine è vincolante quando un passo è prerequisito di un altro: invertirli produce una procedura che non funziona, non una procedura meno elegante.",
+          "description": "I passi in ordine di esecuzione. L'ordine è vincolante quando un passo è prerequisito di un altro: invertirli produce una procedura che non funziona, non una procedura meno elegante. Può essere vuoto solo nel fallback, cioè quando il catalogo non documenta la procedura: il vincolo è nell'if/then in testa allo schema.",
           "type": "array",
-          "minItems": 1,
           "items": { "$ref": "#/$defs/passo" }
         },
         "documenti_necessari": {
           "description": "Tutti i documenti che servono lungo il percorso, copiati dalla misura di catalogo con il loro nome ufficiale. È l'elenco che la persona può stampare prima di andare allo sportello.",
           "type": "array",
           "items": { "$ref": "./source-analyzer.output.json#/$defs/documento" }
+        },
+        "tempo_stimato": {
+          "description": "Quanto impegno chiede alla persona il percorso composto qui, in fasce chiuse. Non è il tempo di risposta dell'ente, che il sistema non conosce e non stima (G-01): è la somma dell'impegno dei passi elencati sopra. Si ricava dai passi, non dalla memoria del modello: 'minuti' per un percorso interamente online, 'mezza_giornata' quando c'è uno sportello o un appuntamento, 'qualche_giorno' quando un passo dipende dal rilascio di un documento, 'qualche_settimana' quando serve un tecnico o una pratica edilizia.",
+          "type": "string",
+          "enum": ["minuti", "mezza_giornata", "qualche_giorno", "qualche_settimana"]
+        },
+        "difficolta": {
+          "description": "Quanto il percorso è affrontabile da soli, in tre valori chiusi. È una constatazione sui passi, non un giudizio sulla persona e non una raccomandazione (G-04): 'facile' = tutti i passi hanno autonomia 'da_soli'; 'medio' = almeno un passo ha autonomia 'con_assistenza'; 'richiede_professionista' = almeno un passo ha autonomia 'richiede_professionista'. Derivabile dai passi, quindi verificabile contando.",
+          "type": "string",
+          "enum": ["facile", "medio", "richiede_professionista"]
+        },
+        "avvertenza_timing": {
+          "description": "Avvertenza di sequenza che riguarda l'intero percorso e non un passo solo, tipicamente: questo va fatto prima di iniziare i lavori. Si scrive solo se la misura verificata pone quel vincolo temporale; se non lo pone, il campo si omette invece di essere riempito con una cautela generica.",
+          "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+          "maxLength": 300
+        },
+        "riquadro_spid": {
+          "description": "Riquadro fisso sull'identità digitale, mostrato sempre, anche quando nessun passo la richiede: è il primo muro per chi non l'ha, e scoprirlo al terzo passo significa fermarsi lì. Il testo è vincolato con 'const' come il disclaimer, per la stessa ragione: è testo di interfaccia del sistema, non un dato della misura, quindi non porta 'source_refs' e nessun agente può riformularlo.",
+          "type": "object",
+          "properties": {
+            "necessario": {
+              "description": "Vero se almeno un passo del percorso passa da un canale che richiede l'identità digitale. Il riquadro si mostra comunque: cambia solo se la persona lo legge come un prerequisito o come un'informazione.",
+              "type": "boolean"
+            },
+            "testo": {
+              "type": "string",
+              "const": "Non hai ancora lo SPID? Puoi attivarlo presso uno sportello di Poste Italiane, in una banca abilitata oppure da app. Ti servono un documento d'identità valido e il tuo numero di telefono. L'attivazione è gratuita."
+            }
+          },
+          "required": ["necessario", "testo"],
+          "additionalProperties": false
         },
         "scadenza_da_rispettare": {
           "description": "La scadenza della misura, ripetuta qui accanto ai passi perché è lì che serve. Copiata dalla misura verificata, mai ricalcolata.",
@@ -39,7 +84,7 @@
         },
         "disclaimer": { "$ref": "./_envelope.json#/$defs/disclaimer" }
       },
-      "required": ["misura_id", "primo_passo_concreto", "passi", "documenti_necessari", "glossario", "disclaimer"],
+      "required": ["misura_id", "primo_passo_concreto", "passi", "documenti_necessari", "glossario", "riquadro_spid", "disclaimer"],
       "additionalProperties": false
     }
   },
@@ -79,6 +124,20 @@
           "type": "array",
           "uniqueItems": true,
           "items": { "type": "integer", "minimum": 1 }
+        },
+        "obbligatorio_prima": {
+          "description": "Vero quando la sequenza è vincolante e non solo consigliata: compiere questo passo dopo un altro fa perdere il diritto o invalida la pratica, tipicamente la comunicazione da depositare prima dell'inizio dei lavori. Distinto da 'dipende_da', che dice quali passi lo precedono: qui si dice che l'ordine non è negoziabile. Si mette a vero solo se il vincolo è nella misura verificata.",
+          "type": "boolean"
+        },
+        "autonomia": {
+          "description": "Chi può compiere il passo. Constatazione sul canale, non un consiglio (G-04): 'da_soli' = il canale è accessibile alla persona; 'con_assistenza' = il canale previsto dalla misura è un CAF o uno sportello, quindi il passo si compie davanti a qualcuno; 'richiede_professionista' = la fonte richiede un soggetto abilitato, per esempio un tecnico per il titolo edilizio o l'attestato energetico. Alimenta 'difficolta' e non esprime preferenza fra le tre.",
+          "type": "string",
+          "enum": ["da_soli", "con_assistenza", "richiede_professionista"]
+        },
+        "nota": {
+          "description": "Una sola informazione aggiuntiva sul passo, quando serve davvero: un orario, una condizione, un nome di sezione. Si omette invece di essere riempita: una nota su ogni passo smette di essere letta.",
+          "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+          "maxLength": 200
         },
         "source_refs": { "$ref": "./_envelope.json#/$defs/source_refs_obbligatori" }
       },

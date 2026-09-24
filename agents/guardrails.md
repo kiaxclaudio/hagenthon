@@ -5,8 +5,10 @@ controllare guardando un output non è un guardrail: è un auspicio.
 
 ## Integrità del contenuto
 
-- **G-01** Nessun agente inventa informazioni assenti nella fonte. Se un dato manca, va marcato
-  `missing`, non stimato.
+- **G-01** Nessun agente inventa informazioni assenti nella fonte. Se un dato manca si dichiara
+  mancante nel campo che il contratto prevede — `dati_mancanti` e `misure_non_interpretabili` in
+  Fase A, `non_so` piu' `risposte_mancanti` nel profilo, `requisiti_da_verificare` in Fase B —
+  e non si stima.
 - **G-02** Semplificare non può cambiare il significato. Ogni semplificazione passa dal
   `fidelity-validator` prima di raggiungere l'utente.
 - **G-03** Numeri, importi, date, scadenze e riferimenti normativi si riportano **identici**

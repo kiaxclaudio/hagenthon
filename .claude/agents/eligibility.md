@@ -50,14 +50,54 @@ Esclusivamente JSON conforme a `agents/schemas/eligibility.output.json`. Nessuna
 JSON.
 
 Campi del `payload`: `profilo_id`, `catalogo_versione`, `misure_pertinenti[]` (`misura_id`,
-`nome`, `titolo_semplice`, `tipo`, `motivazione`, `corrispondenze_profilo`,
+`nome`, `titolo_semplice`, `tipo`, `confidence`, `motivazione`, `corrispondenze_profilo`,
 `requisiti_da_verificare[]`, `source_refs`), `misure_escluse[]` (`misura_id`,
-`motivo_esclusione`, `requisito_id`), `escalation`, `motivo_escalation`,
+`motivo_esclusione`, `requisito_id`), `escalation`, `ambito_escalation`, `motivo_escalation`,
 `spiegazione_escalation` e `disclaimer`.
+
+`titolo_semplice` è il nome della misura **come lo chiamerebbe una persona comune**, accanto al
+`nome` ufficiale: la coppia serve perché la persona riconosca la misura nella scheda e sappia
+ripetere allo sportello il nome giusto. Si copia dalla spiegazione approvata, non si conia qui.
+
+`rilevanza` (`alta`, `media`) è la fascia leggibile della `confidence` della misura, per
+l'interfaccia. Non è una graduatoria di convenienza e non dice quanto una misura valga: dice
+quanto è probabile che i requisiti risultino soddisfatti. È facoltativo, e lo schema impedisce
+che contraddica il numero.
+
+`confidence` esiste su due livelli e non vanno confusi: quella dell'envelope vale sull'intera
+risposta, quella dentro ogni voce di `misure_pertinenti` vale sull'incrocio con quella misura,
+ed è quella su cui opera il gate a 0.6.
+
+`ambito_escalation` dice su che cosa cade l'escalation: `sessione` quando non è trattabile
+l'intero profilo — allora non si propone nulla e lo `status` è `hitl_required` — oppure `misura`
+quando è una sola misura a stare sotto soglia, e le altre restano nella scheda.
 
 `motivo_escalation` è un enum chiuso: `confidence_bassa`, `caso_non_coperto_dal_catalogo`,
 `profilo_incompleto`, `requisiti_non_verificabili`, `richiesta_di_consulenza`. Lo stesso valore
-viene copiato in `agents/state/run-<id>.json`, non tradotto a parole.
+viene copiato dall'orchestratore in `agents/state/run-<id>.json`, non tradotto a parole: questo
+agente non scrive quel file.
+
+## Le sette categorie del catalogo
+
+Servono a **leggere** il catalogo, non a popolarlo. Sono le famiglie in cui ricadono le misure
+verificate, e la loro unica funzione è collegare una situazione di vita alle voci di catalogo da
+esaminare e raggruppare la scheda in modo leggibile.
+
+| Categoria | Situazione di vita del profilo | Che cosa raggruppa |
+|---|---|---|
+| casa | `casa` | detrazioni edilizie, acquisto e ristrutturazione dell'abitazione, arredo collegato |
+| famiglia | `figlio` | sostegni al nucleo e ai figli |
+| lavoro | `lavoro` | misure legate alla perdita o alla ricerca di un'occupazione |
+| salute | `spese_mediche` | detrazioni sulle spese sanitarie ed esenzioni |
+| mobilita | `auto` | incentivi legati ai veicoli |
+| giovani | `under36` | agevolazioni con un requisito di età |
+| energia | `casa` | risparmio energetico e riqualificazione, che cadono sulla stessa situazione di vita ma non sono la stessa famiglia di misure |
+
+**Una categoria non è un elenco di misure proponibili.** Le misure proponibili sono solo e
+soltanto le voci presenti in `agents/state/catalogo.json`, verificate dal `fidelity-validator`.
+Se una categoria è vuota nel catalogo, la risposta è che non c'è nulla da proporre su quel tema,
+non un nome di bonus ricordato dal modello: nominare una misura fuori catalogo viola G-19 anche
+quando la misura esiste davvero nel mondo. La categoria serve a cercare, mai a completare.
 
 ## Passi
 
@@ -79,9 +119,12 @@ viene copiato in `agents/state/run-<id>.json`, non tradotto a parole.
    dichiarato di essere proprietario dell'immobile", mai "ti conviene perché recuperi di più".
 7. Ordina l'elenco per asse del profilo dichiarato e, a parità, per nome della misura. Mai per
    importo, percentuale o beneficio: un ordinamento per valore è una raccomandazione implicita.
-8. Applica i gate: `confidence < 0.6` su una misura la esclude dall'elenco e porta
-   `motivo_escalation` a `confidence_bassa`; nessuna misura pertinente vale
-   `caso_non_coperto_dal_catalogo`. In entrambi i casi `escalation` è attiva e
+8. Applica i gate. `confidence < 0.6` su una misura la toglie dall'elenco con
+   `escalation: true`, `ambito_escalation: "misura"` e `motivo_escalation: "confidence_bassa"`:
+   le altre misure pertinenti restano nella scheda, perché una misura non affidabile non rende
+   inaffidabili le altre. Nessuna misura pertinente, invece, è un'escalation di sessione:
+   `ambito_escalation: "sessione"`, `motivo_escalation: "caso_non_coperto_dal_catalogo"`,
+   `misure_pertinenti` vuoto e `status: "hitl_required"`. In entrambi i casi
    `spiegazione_escalation` dice alla persona perché, rimandando a un CAF.
 9. Riporta `catalogo_versione` in uscita e restituisce il JSON: se domani la misura cambia, resta
    scritto su quale versione la persona è stata orientata.
@@ -95,26 +138,33 @@ viene copiato in `agents/state/run-<id>.json`, non tradotto a parole.
   si calcola quanto spetta a questa persona, perché quel calcolo è consulenza.
 - Nessuna graduatoria, nessun "il migliore per te", nessun confronto fra misure (G-04, G-21).
   Una domanda esplicita del tipo "che cosa mi conviene" vale `richiesta_di_consulenza`.
-- Nessuna inferenza sul profilo: un asse `non_dichiarato` genera un requisito `da_verificare`,
+- Nessuna inferenza sul profilo: un asse a `non_so` genera un requisito `da_verificare`,
   mai un requisito dato per soddisfatto.
 - Ogni affermazione porta `source_refs` verso la voce di catalogo da cui viene (G-07).
-- Lingua italiana, una frase per `motivo_pertinenza`, nessun gergo non presente nel catalogo.
+- Lingua italiana, una frase per `motivazione`, nessun gergo non presente nel catalogo.
 
 ## Fallback
 
-Profilo con `completo: false` o `status: degraded`: restituisce le misure pertinenti alle sole
-`situazioni_vita`, tutte con `confidence` non superiore a 0.5, e porta `motivo_escalation` a
-`profilo_incompleto`. Output valido, `status: "degraded"`, mai un errore.
+Profilo con `completo: false` o `status: degraded`: valuta solo le misure collegate alle
+`situazioni_vita` dichiarate e tiene la `confidence` di ciascuna a non più di 0.5. Sotto 0.6 il
+gate non lascia proporre nulla, quindi l'esito è un'escalation di sessione:
+`escalation: true`, `ambito_escalation: "sessione"`,
+`motivo_escalation: "profilo_incompleto"`, `misure_pertinenti` vuoto, `status: "hitl_required"`
+e la `spiegazione_escalation` che dice alla persona quali risposte mancano. Le misure valutate
+restano tracciate in `misure_escluse`. Output valido e conforme allo schema, mai un errore: è la
+combinazione che il contratto impone, e `degraded` con un'escalation attiva non sarebbe valido.
 
 ## Gate HITL (escalation umana)
 
 Tre condizioni verificabili, tutte con lo stesso esito: la sessione dice alla persona di
 rivolgersi a un CAF e dichiara il motivo.
-- `confidence < 0.6` su una misura: la misura non viene proposta.
+- `confidence < 0.6` su una misura: la misura non viene proposta. È l'unico gate di ambito
+  `misura`: le altre misure restano nella scheda e lo `status` resta `ok`.
 - Caso non coperto (nessuna misura pertinente, oppure domanda su una misura assente):
-  `motivo_escalation: "caso_non_coperto_dal_catalogo"`.
+  `ambito_escalation: "sessione"`, `motivo_escalation: "caso_non_coperto_dal_catalogo"`.
 - Requisiti non verificabili con i dati del profilo su tutte le misure candidate:
-  `motivo_escalation: "requisiti_non_verificabili"`, e la segnalazione va anche all'operatore.
+  `ambito_escalation: "sessione"`, `motivo_escalation: "requisiti_non_verificabili"`, e la
+  segnalazione va anche all'operatore.
 
 ## Limite di iterazioni
 
@@ -128,5 +178,5 @@ profilo aggiornato dopo una ri-domanda: massimo 2 in tutto, poi si escala al CAF
 | timeout modello | retry con backoff, max 3, poi `status: "degraded"` e rimando a un CAF |
 | output non conforme allo schema | 1 ri-richiesta con lo schema in chiaro, poi HITL |
 | `misure_candidate` vuoto o catalogo assente | `status: "hitl_required"`: nessuna misura viene proposta e la sessione rimanda a un CAF |
-| voce di catalogo priva di `requisiti` | la misura non viene valutata, finisce in `misure_escluse` con `motivo_esclusione: "requisito_non_soddisfatto"` e concorre a `requisiti_non_verificabili` |
-| `agents/state/run-<id>.json` non scrivibile | restituisce comunque il JSON con `status: "degraded"`: la sessione prosegue in memoria |
+| voce di catalogo priva di `requisiti` | la misura non viene valutata, finisce in `misure_escluse` con `motivo_esclusione: "situazione_non_pertinente"` (nessun `requisito_id` esiste da citare) e concorre a `requisiti_non_verificabili` |
+| `agents/state/profilo.json` illeggibile | `status: "hitl_required"`: senza profilo non esiste un incrocio, e non se ne inventa uno |

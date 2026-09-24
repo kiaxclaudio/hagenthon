@@ -1,6 +1,6 @@
 ---
 name: plain-language
-description: Regole di riscrittura in lingua semplice PL-01..PL-14 e checklist C1..C9 per l'explainer. Caricare al passo A2, alla prima stesura di una misura fiscale e a ogni correzione dopo un rifiuto del fidelity-validator; restituisce le regole applicabili, i nove controlli da superare prima di emettere il JSON e la procedura di correzione mirata per codice D-xx.
+description: Regole di riscrittura in lingua semplice PL-01..PL-15 e checklist C1..C9 per l'explainer. Caricare al passo A2, alla prima stesura di una misura fiscale e a ogni correzione dopo un rifiuto del fidelity-validator; restituisce le regole applicabili, i nove controlli da superare prima di emettere il JSON e la procedura di correzione mirata per codice D-xx.
 ---
 
 # Skill: plain-language
@@ -9,7 +9,7 @@ description: Regole di riscrittura in lingua semplice PL-01..PL-14 e checklist C
 |---|---|
 | **Caricata da** | `agents/subagents/explainer.md`. Unico consumatore. |
 | **Quando** | Al passo A2 di `agents/workflows/main-pipeline.md`: alla prima riscrittura di una misura e a ogni correzione dopo un rifiuto di `fidelity-validator`. Fuori da A2 non sta in contesto. |
-| **Cosa restituisce a chi la usa** | Le 14 regole `PL-01..PL-14`, applicabili e controllabili, e la **checklist C1..C9** da superare prima di emettere il JSON. Non tocca il contratto `agents/schemas/explainer.output.json`: vincola il contenuto dei campi testuali del `payload` (`titolo_semplice`, `cosa_e`, `quanto_vale`, `a_chi_spetta`, `attenzione`, `glossario[]`). Una violazione non sanabile si dichiara per codice `PL-xx`, con `status: hitl_required` (fallback previsto da `explainer.md`). |
+| **Cosa restituisce a chi la usa** | Le 15 regole `PL-01..PL-15`, applicabili e controllabili, e la **checklist C1..C9** da superare prima di emettere il JSON. Non tocca il contratto `agents/schemas/explainer.output.json`: vincola il contenuto dei campi testuali del `payload` (`titolo_semplice`, `cosa_e`, `quanto_vale`, `a_chi_spetta`, `attenzione`, `glossario[]`). Una violazione non sanabile si dichiara per codice `PL-xx`, con `status: hitl_required` (fallback previsto da `explainer.md`). |
 | **Perché non è caricata da altri** | `eligibility` e `navigator` non riscrivono: citano il catalogo già verificato e le sue voci di glossario, prodotte in Fase A proprio con queste regole. `profiler` e `source-analyzer` non producono testo destinato alla persona, e `fidelity-validator` giudica con la propria tassonomia. |
 
 ---
@@ -24,7 +24,7 @@ per evitare che la stessa regola viva in due file.
 | Semplificare senza cambiare il significato | G-02, `explainer.md` | Le operazioni di riscrittura che non lo violano mai (PL-07..PL-11) |
 | Numeri, importi, date, scadenze invariati | G-03 | Le sei operazioni vietate sui numeri (PL-10) e il controllo C5 |
 | Nessun consiglio professionale | G-04, `schemas/_envelope.json#/$defs/testo_senza_consulenza` | Come si riscrive una frase prescrittiva senza trasformarla in consiglio (PL-11) e quali formule il contratto rifiuta già prima del validator (PL-09) |
-| Nessun calcolo sul caso di chi legge | G-18 | Perché l'esempio numerico costruito sul lettore è vietato anche quando le cifre vengono dalla fonte (PL-10) |
+| Nessun calcolo sul caso di chi legge | G-18 | Perché l'esempio numerico costruito sul lettore è vietato anche quando le cifre vengono dalla fonte (PL-10), e a quali cinque condizioni e' invece ammesso quello generico e impersonale (PL-15) |
 | Ogni termine tecnico ha una voce di glossario | G-22 | Forma e lunghezza massima della glossa, e in quale occorrenza si mette (PL-07) |
 | Il disclaimer non si riformula | G-20, `schemas/_envelope.json#/$defs/disclaimer` (`const`) | L'unico testo esente dalle regole di forma: non si semplifica e non entra nel budget di PL-14 |
 | Correggere il difetto segnalato, non riscrivere da capo | `explainer.md` | La procedura di correzione mirata (sezione 6) |
@@ -53,7 +53,11 @@ La nomenclatura delle divergenze (`D-xx`) è definita una volta sola in
   non..."). La negazione diventa affermazione solo se il senso resta identico: "non è ammesso
   l'invio via e-mail" si può riformulare come "puoi inviare solo per posta" **soltanto se**
   l'originale dichiara che la posta è l'unico canale. Se non lo dichiara, è D-02.
-- **PL-06 Riferimenti e pronomi.** Vietati "esso", "il medesimo", "di cui sopra", "quanto
+- **PL-06 Registro e pronomi.** Si dà del **tu**, sempre, alla seconda persona singolare: "hai
+  diritto", "puoi presentare". Il tono è diretto e **mai condiscendente**: niente diminutivi,
+  niente "come saprai", niente "è semplicissimo" davanti a una procedura che ha sette passi.
+  Chi legge non sa il gergo, non è meno capace.
+  Riferimenti e pronomi: Vietati "esso", "il medesimo", "di cui sopra", "quanto
   precede". Si ripete il nome della cosa, anche tre volte di fila. La ripetizione costa meno
   di un rimando.
 
@@ -70,6 +74,25 @@ La nomenclatura delle divergenze (`D-xx`) è definita una volta sola in
   L'elenco chiuso dei termini intoccabili — denominazioni ufficiali delle misure, documenti e
   identità digitali, enti e canali, riferimenti normativi, termini del beneficio — sta in
   `agents/skills/fidelity-diff-taxonomy.md`, sezione 1. Qui non si ricopia: si applica.
+
+  **Dizionario delle glosse ricorrenti.** Sette termini tornano in quasi tutte le misure. La
+  glossa è fissa e si usa **identica**, invece di reinventarla a ogni riscrittura: una stessa
+  parola spiegata in tre modi diversi costringe la persona a ricominciare da capo ogni volta.
+  La colonna di destra è la **glossa**, non un sostituto: il termine di sinistra resta nel testo
+  (PL-07), altrimenti è D-09.
+
+  | Termine della fonte | Glossa fissa |
+  |---|---|
+  | detrazione IRPEF | uno sconto sulle tasse che paghi a fine anno |
+  | detraibile | recuperabile come sconto sulle tasse |
+  | tetto massimo di spesa | la spesa massima su cui si calcola lo sconto |
+  | in dichiarazione dei redditi | quando fai il 730 o la dichiarazione dei redditi |
+  | cedolare secca | una tassa fissa al posto della percentuale normale |
+  | aliquota | la percentuale di tasse |
+  | soggetto passivo IRPEF | chi paga le tasse sul reddito in Italia |
+
+  Il dizionario si allunga quando il catalogo porta un termine scoperto: si aggiunge una riga
+  qui, una volta, e la usano tutte le misure. Non si aggiunge una glossa nel file dell'agente.
 - **PL-08 Il perimetro dell'informazione non cambia.** Non si aggiunge un esempio, un caso
   tipico, una rassicurazione o una stima di tempo che non siano nell'originale (G-01, D-02).
   Non si toglie un dettaglio perché sembra secondario (D-01). Il criterio non è
@@ -98,7 +121,8 @@ La nomenclatura delle divergenze (`D-xx`) è definita una volta sola in
   Il valore si **copia** dalla fonte, non si riscrive a memoria.
   L'esempio numerico costruito sul caso di chi legge ("se spendi 30.000 euro recuperi...") non è
   una settima operazione vietata: è già un calcolo personalizzato (G-18), e resta fuori anche
-  quando ogni cifra viene dalla fonte.
+  quando ogni cifra viene dalla fonte. L'esempio **generico e impersonale** è invece ammesso, e
+  le sue condizioni sono in PL-15.
 - **PL-11 Conseguenze e prescrizioni restano tali.** La conseguenza negativa (decadenza,
   archiviazione, sanzione, sospensione, rifiuto) si riporta con il suo nome e si spiega con
   PL-07. Non diventa mai un'eventualità generica come "potrebbero esserci dei ritardi": è D-08.
@@ -125,36 +149,64 @@ La nomenclatura delle divergenze (`D-xx`) è definita una volta sola in
   della descrizione di origine. L'unica ragione ammessa per crescere sono le glosse di PL-07.
   Oltre il 130%, o si tolgono parole di servizio (non informazione), o si applica il fallback
   di `explainer.md`.
+- **PL-15 Esempio numerico generico: ammesso, a cinque condizioni.** Una percentuale da sola
+  non si capisce; un esempio con le cifre sì. L'esempio è ammesso nel solo blocco `quanto_vale`
+  e solo se supera tutte e cinque le condizioni, che si verificano rileggendo la frase:
+  1. **è dichiarato**: si apre con "Esempio generico:" e nessuna altra formula;
+  2. **è impersonale**: non contiene "tu", "tuo", "tua", "ti", né un verbo alla seconda persona.
+     Si scrive "su una spesa di 10.000 euro", non "se spendi 10.000 euro";
+  3. **la base è un numero tondo di comodo**, dichiarato tale, e non una cifra che la persona
+     abbia dichiarato: nessun valore del profilo entra in un esempio (G-18, G-17);
+  4. **percentuale, tetto e numero di rate vengono dalla misura**, copiati secondo PL-10. Se la
+     fonte non dà uno dei tre, l'esempio non si scrive;
+  5. **il risultato è l'aritmetica di quei numeri e niente altro**: nessuna ipotesi su capienza
+     fiscale, reddito o detrazioni concorrenti. Se il risultato dipendesse da un dato che il
+     sistema non ha, l'esempio sarebbe un calcolo personalizzato travestito.
+
+  Ammesso: "Esempio generico: su una spesa di 10.000 euro la detrazione del 50% vale 5.000 euro,
+  divisi in 10 rate annuali da 500 euro." Vietato: "se spendi 10.000 euro recuperi 5.000 euro",
+  perché parla alla persona di ciò che otterrebbe, ed è il confine fra spiegare e consigliare.
 
 ---
 
 ## 4. Esempi
 
-**Esempio 1 — frase lunga con obbligo, scadenza e conseguenza.**
+I primi due esempi sono **citazioni letterali** della fonte
+`ade-spese-sanitarie-aspetti-generali` (`agents/state/fonti/`, consultata il 2026-09-24): il
+testo fra virgolette dell'originale si ritrova identico nel file della fonte.
 
-> *Originale:* "Il contribuente è tenuto a trasmettere la documentazione integrativa entro 30
-> giorni dalla data di ricezione della presente comunicazione, decorsi i quali l'istanza di
-> rimborso è archiviata."
+**Esempio 1 — obbligo con eccezione, e un termine tecnico che resta.**
+
+> *Originale:* "la detrazione del 19% degli oneri indicati nell'articolo 15 del Tuir...è fruibile
+> soltanto se il pagamento è effettuato con versamento bancario o postale o altri sistemi
+> tracciabili", e "il versamento in contanti continua a essere ammesso, senza perdere il diritto
+> alla detrazione, per l'acquisto di medicinali e di dispositivi medici e per pagare tutte le
+> prestazioni sanitarie rese dalle strutture pubbliche o dalle strutture private accreditate al
+> Servizio sanitario nazionale".
 >
-> *Riscrittura:* "**Mandare i documenti che mancano.** Devi mandare i documenti che mancano. Hai
-> 30 giorni di tempo dal giorno in cui hai ricevuto questa comunicazione. Se non li mandi entro
-> 30 giorni, l'**istanza di rimborso** viene archiviata. Archiviata vuol dire chiusa senza una
-> decisione. L'istanza di rimborso è la domanda con cui chiedi indietro dei soldi allo Stato."
+> *Riscrittura:* "**Pagare in modo tracciabile.** Per avere la **detrazione** del 19% devi pagare
+> in modo tracciabile. Tracciabile vuol dire che del pagamento resta una prova scritta: bonifico
+> bancario o postale, bancomat, carta. La detrazione è uno sconto sulle tasse che paghi. In
+> contanti puoi pagare solo tre cose, senza perdere la detrazione. Sono i medicinali, i
+> dispositivi medici e le prestazioni sanitarie. Le prestazioni devono essere fatte in strutture
+> pubbliche, o in strutture private accreditate al Servizio sanitario nazionale. La regola è
+> l'articolo 15 del **Tuir**, il testo unico delle imposte sui redditi."
 
-Perché è corretta: soggetto esplicito (PL-03), obbligo conservato (PL-09), "30 giorni" identico
-in entrambe le occorrenze (PL-10), conseguenza mantenuta e spiegata (PL-11 con PL-07), il termine
-"istanza di rimborso" mantenuto e glossato invece che sostituito (PL-07, altrimenti D-09),
-nessuna frase oltre 20 parole.
+Perché è corretta: soggetto esplicito (PL-03), obbligo conservato (PL-09), "19%" identico
+(PL-10), l'eccezione sui contanti mantenuta per intero invece di essere tagliata (PL-11,
+altrimenti D-06), i termini "detrazione" e "Tuir" mantenuti e glossati alla prima occorrenza
+invece che sostituiti (PL-07, altrimenti D-09), nessuna frase oltre 20 parole.
 
-**Esempio 2 — la stessa frase, riscritta male.**
+**Esempio 2 — la stessa misura, riscritta male.**
 
-> "Ti conviene mandare i documenti entro un mese, altrimenti potrebbero esserci dei ritardi."
+> "Ti conviene pagare con carta, altrimenti perdi lo sconto di circa il 20%."
 
-Tre violazioni in quindici parole: obbligo diventato consiglio (PL-09, cioè D-03), "30 giorni"
-diventato "un mese" (PL-10, cioè D-04), archiviazione diventata ritardo (PL-11, cioè D-08).
-Tutte e tre bloccanti: la misura viene respinta al primo giro. In più "ti conviene" fa fallire il
-`not/pattern` di `testo_senza_consulenza`: quel testo non è nemmeno un output conforme allo
-schema, e il rifiuto del validator sarebbe il secondo problema, non il primo.
+Tre violazioni in tredici parole: obbligo diventato consiglio (PL-09, cioè D-03), "19%" diventato
+"circa il 20%" (PL-10, cioè D-04), eccezione sui contanti sparita (PL-11, cioè D-06), e con essa
+la possibilità di pagare in contanti i medicinali. Tutte e tre bloccanti: la misura viene
+respinta al primo giro. In più "ti conviene" fa fallire il `not/pattern` di
+`testo_senza_consulenza`: quel testo non è nemmeno un output conforme allo schema, e il rifiuto
+del validator sarebbe il secondo problema, non il primo.
 
 **Esempio 3 — gergo e riferimento.**
 
@@ -180,7 +232,9 @@ La condizione sta in `a_chi_spetta` (PL-12.4), l'importo è identico (PL-10), il
 viene spiegato una volta sola (PL-07), il vincolo "previa presentazione" resta un obbligo
 (PL-09).
 
-`TODO-TEMA: gli esempi 1 e 2 sono formulazioni tipiche di una comunicazione dell'Agenzia delle Entrate, non citazioni verificate. Sostituirli con due estratti letterali delle pagine scaricate in agents/state/fonti/ appena il primo catalogo è stato costruito. Gli esempi 3 e 4 vengono già dal dominio fiscale e restano.`
+Gli esempi 3 e 4 non sono citazioni: sono formulazioni-tipo del linguaggio amministrativo,
+servono a mostrare una regola e non vanno usate come dato. I dati del catalogo vengono solo
+dalle fonti (G-01).
 
 ---
 

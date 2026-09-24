@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: Instrada le due fasi del sistema, applica i limiti di iterazione e i gate HITL. Non produce contenuto per la persona, delega ogni compito di dominio ai sei sub-agenti.
-tools: Read, Write
+tools: Read, Write, Task
 model: haiku
 maxTurns: 20
 ---
@@ -82,7 +82,11 @@ navigator (haiku)             come si accede, documenti, scadenze, glossario
 4. Nessun sub-agente ne invoca un altro (G-10): il grafo lo percorre solo l'orchestratore.
 5. Fra un agente e l'altro passa JSON conforme agli schemi in `agents/schemas/`, mai la
    trascrizione della conversazione (G-14).
-6. Il punto in cui si trova la conversazione è `passo_corrente` in
+6. Le domande a scelta multipla e le etichette da mostrare alla persona stanno in
+   `agents/subagents/profiler.md`, accanto ai valori di enum che producono: una domanda alla
+   volta, nell'ordine di quel file. L'orchestratore le pone, non le riscrive, e non le duplica
+   qui: un'etichetta scritta in due posti diverge al primo ritocco.
+7. Il punto in cui si trova la conversazione è `passo_corrente` in
    `agents/schemas/run-state.json`: `situazione_vita`, `profilo_base`, `timing`,
    `scheda_misure`, `come_accedere`, `chiusa`. L'orchestratore avanza solo su questi sei valori.
 
@@ -135,5 +139,9 @@ assistenza. Non finge di sapere.
 
 Due strati, come stabilito in `agents/ARCHITETTURA.md`: `fidelity-validator` in Fase A, che
 respinge ogni slittamento da informazione a raccomandazione, e un hook `PostToolUse` a runtime
-previsto dall'architettura, che blocca in modo deterministico le formule da consulenza. Il
+previsto dall'architettura, che **segnala** in modo deterministico le formule da consulenza
+elencate in `agents/hooks/frasi-vietate.txt`. Il secondo strato avvisa e non blocca, per scelta:
+distinguere un consiglio da una descrizione e' un giudizio linguistico, e un falso positivo che
+ferma il lavoro costa piu' di quanto rende (`agents/hooks/README.md`). A bloccare e' il
+`fidelity-validator`, che e' semantico. Il
 guardrail di riferimento è G-04, valido per tutti i componenti.

@@ -94,9 +94,10 @@ I tre script leggono JSON da stdin e scrivono JSON su stdout: si provano senza C
 Ogni comando e' **una riga sola** (i `\` a fine riga valgono per bash).
 
 ```bash
-# 1. caso bloccato: ruolo davide, scrittura in app/ (di Chiara)
+# 1. caso bloccato: ruolo davide, scrittura in docs/validation/ (di Chiara)
 echo davide > .team-role
-echo '{"hook_event_name":"PreToolUse","tool_name":"Write","tool_input":{"file_path":"app/chat.py"},"cwd":"."}' | python agents/hooks/ownership_guard.py
+echo '{"hook_event_name":"PreToolUse","tool_name":"Write","tool_input":{"file_path":"docs/validation/scenari.md"},"cwd":"."}' | python agents/hooks/ownership_guard.py
+#    -> permissionDecision: deny, con l'indicazione di passare da docs/status-davide.md
 
 # 2. caso permesso: ruolo davide, scrittura in agents/ (sua)
 echo '{"hook_event_name":"PreToolUse","tool_name":"Write","tool_input":{"file_path":"agents/state/profilo.json"},"cwd":"."}' | python agents/hooks/ownership_guard.py
@@ -104,7 +105,7 @@ echo '{"hook_event_name":"PreToolUse","tool_name":"Write","tool_input":{"file_pa
 
 # 3. caso senza ruolo
 rm .team-role
-echo '{"hook_event_name":"PreToolUse","tool_name":"Write","tool_input":{"file_path":"app/chat.py"},"cwd":"."}' | python agents/hooks/ownership_guard.py
+echo '{"hook_event_name":"PreToolUse","tool_name":"Write","tool_input":{"file_path":"docs/validation/scenari.md"},"cwd":"."}' | python agents/hooks/ownership_guard.py
 #    -> systemMessage, nessun deny
 
 # 4. anti-consulenza su un file con una formula vietata
