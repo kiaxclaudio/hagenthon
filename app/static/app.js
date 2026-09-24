@@ -1,7 +1,7 @@
 /* ============================================================================
    A cosa ho diritto? — comportamento dell'interfaccia.
 
-   Il percorso e' a schermate: una domanda per volta, con la barra di
+   Il percorso è a schermate: una domanda per volta, con la barra di
    avanzamento e la possibilita' di tornare indietro. Non c'e' nessuna casella
    di testo libero: la specifica la vieta in tutta la Fase B, e nel flusso a
    chat era l'unico fallback quando la lista delle opzioni non veniva fuori
@@ -88,6 +88,24 @@ function tintaDiPagina(situazione) {
   if (t) document.body.dataset.cat = t; else delete document.body.dataset.cat;
 }
 
+
+/* --- domande che non hanno senso per tutti -------------------------------
+   "A che punto sei?" ha senso se c'e un prima e un dopo rispetto a una spesa:
+   una ristrutturazione, un'auto. Non ne ha per chi ha appena avuto un figlio
+   o ha gia sostenuto spese mediche: l'evento e accaduto. Chiederlo lo stesso
+   fa sembrare il sistema distratto, e a una persona insicura toglie fiducia.
+   Stessa regola del backend: agents.QUESTIONARIO, campo timing, solo_se. --- */
+const TIMING_SOLO_SE = ['casa', 'auto'];
+
+function timingServe() {
+  return (profilo.situazione || []).some(v => TIMING_SOLO_SE.includes(v));
+}
+
+function saltaSeNonServe(id) {
+  if (id === 's4a' && !timingServe()) return 's4b';
+  return id;
+}
+
 /* --- domande a scelta singola: selezione + avanzamento ------------------- */
 
 document.querySelectorAll('[data-single]').forEach(gruppo => {
@@ -104,7 +122,10 @@ document.querySelectorAll('[data-single]').forEach(gruppo => {
         document.getElementById('g-caf').hidden = (b.dataset.val !== 'non_so_cosa_e');
         document.getElementById('s4b-next').setAttribute('aria-disabled', 'false');
       }
-      if (!noauto) setTimeout(() => { dopo === 's5' ? avvia() : mostra(dopo); }, 400);
+      if (!noauto) setTimeout(() => {
+        const prossima = saltaSeNonServe(dopo);
+        prossima === 's5' ? avvia() : mostra(prossima);
+      }, 400);
     });
   });
 });
@@ -221,9 +242,9 @@ async function nuovaSessione() {
 
 /* --- S5: elaborazione, poi scheda --------------------------------------- */
 
-/* --- attesa: il modello puo' metterci decine di secondi ------------------
+/* --- attesa: il modello può metterci decine di secondi ------------------
 
-   Non e' una barra finta che finisce e poi resta ferma. I tre passi avanzano
+   Non è una barra finta che finisce e poi resta ferma. I tre passi avanzano
    sui fatti veri (risposte inviate, misure cercate, percorso composto), il
    tempo trascorso si dichiara, e a intervalli noti si spiega cosa sta
    succedendo. Una persona che aspetta senza sapere pensa che sia rotto.
@@ -234,10 +255,10 @@ const NOTE_ATTESA = [
     + 'del modello: i numeri devono venire da una pagina che possiamo citare.'],
   [20, 'Ci vuole ancora un momento. Preferiamo controllare due volte che '
     + 'aspettare di meno e dirti una cosa sbagliata.'],
-  [45, 'Sta durando piu' + '’' + ' del solito. Non serve ricaricare la pagina: '
-    + 'appena il controllo e' + '’' + ' finito la scheda compare da sola.'],
-  [90, 'Se non arriva niente, non e' + '’' + ' colpa tua. Puoi ricominciare, '
-    + 'oppure andare direttamente a un CAF: il servizio e' + '’' + ' spesso gratuito.'],
+  [45, 'Sta durando più + '’' + ' del solito. Non serve ricaricare la pagina: '
+    + 'appena il controllo è + '’' + ' finito la scheda compare da sola.'],
+  [90, 'Se non arriva niente, non è + '’' + ' colpa tua. Puoi ricominciare, '
+    + 'oppure andare direttamente a un CAF: il servizio è + '’' + ' spesso gratuito.'],
 ];
 
 let attesa = null;
@@ -276,7 +297,7 @@ async function avvia() {
     const testi = messaggi();
     let dati = null;
     for (let i = 0; i < testi.length; i += 1) {
-      // l'ultima risposta e' quella che fa partire la ricerca vera
+      // l'ultima risposta è quella che fa partire la ricerca vera
       attesa.passo(i < testi.length - 1 ? 0 : 1);
       dati = await invia(testi[i]);
       if (dati.stage === 'results' || dati.stage === 'escalation') break;
@@ -334,7 +355,7 @@ function componi(vista, dati) {
   document.getElementById('recap').innerHTML = riepilogo();
   document.getElementById('recap-vuoto').innerHTML = riepilogo();
 
-  // il risultato c'e' ma e' meno affidabile: si dice, senza numeri interni
+  // il risultato c'e' ma è meno affidabile: si dice, senza numeri interni
   const degradato = dati && dati.status === 'degraded';
   document.getElementById('degraded-slot').innerHTML = degradato
     ? '<div class="banner-degraded" role="status">'
@@ -352,7 +373,7 @@ function componi(vista, dati) {
 
   rivela(spiegazioni, percorsi);
 
-  // SPID: e' un servizio, non un'escalation, e sta fuori dalle misure
+  // SPID: è un servizio, non un'escalation, e sta fuori dalle misure
   const spid = vista && vista.navigator && vista.navigator.riquadro_spid;
   document.getElementById('spid-slot').innerHTML = (spid && spid.mostra)
     ? '<div class="spid"><b>Non hai ancora lo SPID?</b><p>' + esc(spid.testo) + '</p></div>'
@@ -372,8 +393,8 @@ function componi(vista, dati) {
     (spiegazioni[0] && spiegazioni[0].disclaimer) || (vista && vista.disclaimer) || '';
 }
 
-/* Rivelazione progressiva: una misura per volta. Non e' un effetto: tre
-   schede tutte insieme sono un muro, e il primo gesto di chi legge e'
+/* Rivelazione progressiva: una misura per volta. Non è un effetto: tre
+   schede tutte insieme sono un muro, e il primo gesto di chi legge è
    scorrere fino in fondo senza leggere niente. */
 function rivela(spiegazioni, percorsi) {
   const contenitore = document.getElementById('cards');
@@ -442,8 +463,8 @@ function scheda(s, percorso, i) {
       }).join('')
       + s.dove_si_fa.dettagli.map(d => '<div class="dove-voce"><p>' + esc(d) + '</p></div>').join('')
       + '</div>'
-      // Il collegamento esatto alla pagina della misura e' quello che abbiamo
-      // letto davvero: non se ne inventa uno piu' preciso.
+      // Il collegamento esatto alla pagina della misura è quello che abbiamo
+      // letto davvero: non se ne inventa uno più preciso.
       + (s.fonti && s.fonti[0] && s.fonti[0].url
         ? '<p class="help mt3">La pagina che abbiamo letto per questa misura: '
           + '<a href="' + esc(s.fonti[0].url) + '" target="_blank" rel="noopener">'
@@ -475,7 +496,7 @@ function scheda(s, percorso, i) {
   }).join('');
   if (chips) html += '<div class="chips">' + chips + '</div>';
 
-  // la fonte con la data in cui l'abbiamo consultata: senza data non e' una fonte
+  // la fonte con la data in cui l'abbiamo consultata: senza data non è una fonte
   if (s.fonti && s.fonti.length) {
     html += '<div class="src"><span>Da dove viene questa informazione</span><ul>'
       + s.fonti.map(f => '<li>' + (f.url
@@ -516,7 +537,7 @@ function domaniMattina(spiegazioni, percorsi) {
 
    Nessuna mappa incorporata: le tessere di una mappa sono una risorsa remota,
    e se la rete cade durante la demo salta tutto. Qui si costruisce un solo
-   collegamento a una ricerca gia' scritta, che si apre nell'app di mappe della
+   collegamento a una ricerca già scritta, che si apre nell'app di mappe della
    persona. Senza CAP il resto della scheda funziona uguale.
    ------------------------------------------------------------------------ */
 
@@ -537,7 +558,7 @@ function cercaVicino() {
   esito.innerHTML = '<a class="btn btn-primary" href="' + esc(collegamentoMappa(luogo))
     + '" target="_blank" rel="noopener">Apri la mappa dei CAF e dei patronati a '
     + esc(luogo) + '</a>'
-    + '<p class="help mt3">Si apre una ricerca gia&#39; pronta nella tua app di mappe. '
+    + '<p class="help mt3">Si apre una ricerca già pronta nella tua app di mappe. '
     + 'Telefona prima di andare: quasi tutti ricevono su appuntamento.</p>';
   // La scheda stampata deve portarsi dietro anche questo.
   document.getElementById('stampa-dove').textContent =
@@ -612,12 +633,12 @@ async function dichiaraProvenienza() {
     const d = await resp.json();
     const riga = document.getElementById('provenienza');
     if (!d.demo_mode) { riga.hidden = true; return; }
-    riga.innerHTML = '<b>Questa e&#39; una dimostrazione.</b> Le domande seguono un percorso gia&#39; '
+    riga.innerHTML = '<b>Questa e&#39; una dimostrazione.</b> Le domande seguono un percorso già '
       + 'registrato, mentre misure, importi e fonti arrivano dalle pagine ufficiali che abbiamo letto '
       + 'e controllato. Nessuna cifra e&#39; inventata qui.';
     riga.hidden = false;
   } catch (e) {
-    /* la diagnostica non e' essenziale al percorso */
+    /* la diagnostica non è essenziale al percorso */
   }
 }
 
