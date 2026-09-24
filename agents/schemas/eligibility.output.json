@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/eligibility.output.json",
+  "title": "EligibilityOutput",
+  "description": "Output dell'agente eligibility (Fase B, sonnet). Dice quali misure del catalogo sono pertinenti alla situazione dichiarata dalla persona e perché, oppure dichiara di non poterlo dire e rimanda a un CAF. Il contratto è costruito per rendere strutturalmente impossibile una raccomandazione (G-04): non esiste alcun campo di punteggio, priorità, convenienza, importo atteso o misura consigliata, l'ordine dell'array non esprime preferenza, e l'unico campo testuale libero è vincolato a non contenere formule di consulenza. Usa l'envelope comune via allOf.",
+  "allOf": [
+    { "$ref": "./_envelope.json" },
+    {
+      "description": "Gate numerico dell'architettura: sotto 0.6 di confidenza l'agente non propone e rimanda a una persona (G-09).",
+      "if": {
+        "properties": { "confidence": { "exclusiveMaximum": 0.6 } },
+        "required": ["confidence"]
+      },
+      "then": {
+        "properties": {
+          "payload": { "properties": { "escalation": { "const": true } } }
+        }
+      }
+    },
+    {
+      "description": "Quando si escala non si propone: la scheda resta vuota, compare il motivo e il rimando al CAF. Metà risposta più un rimando è la forma peggiore, perché la persona legge solo la metà.",
+      "if": {
+        "properties": {
+          "payload": {
+            "properties": { "escalation": { "const": true } },
+            "required": ["escalation"]
+          }
+        },
+        "required": ["payload"]
+      },
+      "then": {
+        "properties": {
+          "status": { "const": "hitl_required" },
+          "payload": {
+            "required": ["motivo_escalation", "spiegazione_escalation"],
+            "properties": { "misure_pertinenti": { "maxItems": 0 } }
+          }
+        }
+      }
+    },
+    {
+      "description": "Senza escalation non esiste un motivo di escalation: il campo va omesso, non riempito con un valore di comodo.",
+      "if": {
+        "properties": {
+          "payload": {
+            "properties": { "escalation": { "const": false } },
+            "required": ["escalation"]
+          }
+        },
+        "required": ["payload"]
+      },
+      "then": {
+        "properties": {
+          "payload": { "not": { "required": ["motivo_escalation"] } }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "payload": {
+      "description": "Misure pertinenti al profilo, oppure il rimando motivato a un CAF.",
+      "type": "object",
+      "properties": {
+        "profilo_id": {
+          "description": "Profilo su cui è stato fatto l'incrocio.",
+          "type": "string",
+          "minLength": 1
+        },
+        "catalogo_versione": {
+          "description": "Versione del catalogo usata, ripetuta dall'input per rendere la risposta ricostruibile.",
+          "type": "string",
+          "pattern": "^[0-9]+[.][0-9]+[.][0-9]+$"
+        },
+        "misure_pertinenti": {
+          "description": "Misure che riguardano la situazione dichiarata. L'ordine è quello del catalogo e non esprime una graduatoria: non esiste una misura migliore, esistono misure che riguardano la persona e altre che non la riguardano.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/misura_pertinente" }
+        },
+        "misure_escluse": {
+          "description": "Misure valutate e scartate, con il motivo. Si dichiarano perché la persona possa capire di non averle perse per errore, e perché un CAF possa ripartire da qui.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/misura_esclusa" }
+        },
+        "escalation": {
+          "description": "Vero quando l'agente non è in condizione di rispondere: confidenza sotto soglia, profilo incompleto, caso non coperto dal catalogo o richiesta che uscirebbe dall'orientamento. È il campo che l'orchestratore legge per mostrare il rimando al CAF.",
+          "type": "boolean"
+        },
+        "motivo_escalation": {
+          "description": "Perché si escala. Enum chiuso, uno per ciascun gate dichiarato nell'architettura: 'confidence_bassa' = sotto 0.6; 'caso_non_coperto_dal_catalogo' = nessuna misura verificata copre la situazione; 'profilo_incompleto' = mancano risposte necessarie a decidere; 'requisiti_non_verificabili' = i requisiti dipendono da dati che il sistema non ha, tipicamente ISEE o composizione del nucleo; 'richiesta_di_consulenza' = la persona chiede che cosa le convenga fare, e quella risposta non è di questo sistema.",
+          "type": "string",
+          "enum": ["confidence_bassa", "caso_non_coperto_dal_catalogo", "profilo_incompleto", "requisiti_non_verificabili", "richiesta_di_consulenza"]
+        },
+        "spiegazione_escalation": {
+          "description": "Il motivo detto alla persona in una frase, con parole comuni. Dice perché non si risponde, non si scusa e non promette: un rimando senza motivo sembra un rifiuto.",
+          "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+          "maxLength": 400
+        },
+        "disclaimer": { "$ref": "./_envelope.json#/$defs/disclaimer" }
+      },
+      "required": ["profilo_id", "catalogo_versione", "misure_pertinenti", "misure_escluse", "escalation", "disclaimer"],
+      "additionalProperties": false
+    }
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "misura_pertinente": {
+      "description": "Una misura che riguarda la situazione della persona, con il motivo per cui la riguarda. Il motivo è un fatto sul profilo, non un invito ad agire.",
+      "type": "object",
+      "properties": {
+        "misura_id": { "$ref": "./_envelope.json#/$defs/misura_id" },
+        "nome": {
+          "description": "Nome ufficiale della misura, copiato dal catalogo senza riformulazioni.",
+          "type": "string",
+          "minLength": 3
+        },
+        "titolo_semplice": {
+          "description": "Il nome in parole comuni, copiato dalla spiegazione approvata. Si copia, non si riscrive: il testo che la persona legge è già passato dal validator.",
+          "type": "string",
+          "minLength": 3
+        },
+        "tipo": { "$ref": "./source-analyzer.output.json#/$defs/tipo_misura" },
+        "motivazione": {
+          "description": "Perché questa misura compare, detto come constatazione sul profilo: hai dichiarato di essere proprietario e di dover ancora iniziare i lavori, e questa misura riguarda le spese di ristrutturazione. Mai come indicazione di comportamento: il vincolo non è solo una raccomandazione di stile, è il pattern di testo_senza_consulenza.",
+          "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+          "maxLength": 500
+        },
+        "corrispondenze_profilo": {
+          "description": "Quali risposte del profilo hanno determinato la corrispondenza. Rende l'incrocio ispezionabile: se la persona cambia una risposta si vede subito che cosa cambia.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "./profiler.output.json#/$defs/domanda_id" }
+        },
+        "requisiti_da_verificare": {
+          "description": "Requisiti che il profilo non permette di verificare, tipicamente ISEE, composizione del nucleo o soglie di reddito. Si dichiarano sempre: presentare una misura come spettante quando un requisito non è verificato è il modo in cui una persona presenta una domanda destinata a essere respinta.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "requisito_id": {
+                "description": "Identificatore del requisito nella misura di catalogo.",
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "tipo_requisito": { "$ref": "./source-analyzer.output.json#/$defs/tipo_requisito" },
+              "da_verificare_perche": {
+                "description": "Perché il sistema non può verificarlo: quale dato mancherebbe.",
+                "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+                "maxLength": 300
+              }
+            },
+            "required": ["requisito_id", "tipo_requisito", "da_verificare_perche"],
+            "additionalProperties": false
+          }
+        },
+        "source_refs": { "$ref": "./_envelope.json#/$defs/source_refs_obbligatori" }
+      },
+      "required": ["misura_id", "nome", "titolo_semplice", "tipo", "motivazione", "corrispondenze_profilo", "requisiti_da_verificare", "source_refs"],
+      "additionalProperties": false
+    },
+    "misura_esclusa": {
+      "description": "Una misura valutata e scartata, con il motivo dell'esclusione. Enum chiuso: l'esclusione è una constatazione verificabile, non un giudizio.",
+      "type": "object",
+      "properties": {
+        "misura_id": { "$ref": "./_envelope.json#/$defs/misura_id" },
+        "motivo_esclusione": {
+          "description": "Perché non compare. 'requisito_non_soddisfatto' = una condizione obbligatoria è incompatibile con una risposta del profilo; 'situazione_non_pertinente' = la misura non risponde a nessuna delle situazioni di vita dichiarate; 'timing_non_compatibile' = la misura non è più utile nel momento in cui si trova la persona; 'scadenza_superata' = il termine dichiarato dalla fonte è passato.",
+          "type": "string",
+          "enum": ["requisito_non_soddisfatto", "situazione_non_pertinente", "timing_non_compatibile", "scadenza_superata"]
+        },
+        "requisito_id": {
+          "description": "Requisito che ha determinato l'esclusione, quando il motivo è 'requisito_non_soddisfatto'.",
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        }
+      },
+      "required": ["misura_id", "motivo_esclusione"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "description": "Se si esclude per un requisito, si dice quale.",
+          "if": {
+            "properties": { "motivo_esclusione": { "const": "requisito_non_soddisfatto" } },
+            "required": ["motivo_esclusione"]
+          },
+          "then": { "required": ["requisito_id"] }
+        }
+      ]
+    }
+  }
+}

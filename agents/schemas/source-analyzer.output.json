@@ -2,106 +2,585 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hagenthon/agents/schemas/source-analyzer.output.json",
   "title": "SourceAnalyzerOutput",
-  "description": "Output dell'agente source-analyzer. Artefatto reale destrutturato in una sequenza di passi, ognuno con cosa chiede, informazione necessaria, vincoli, gergo e source_refs. Persistito in state/source-model.json.",
+  "description": "Output dell'agente source-analyzer (Fase A, opus). Destruttura una fonte ufficiale nelle misure che contiene: che cosa dà, a chi, entro quando, con quali documenti. Definisce la struttura canonica di una misura ($defs/misura), riusata da catalogo.json, eligibility e navigator. Ogni dato numerico porta i propri source_refs: è qui che si impedisce l'allucinazione di una percentuale (G-01, G-03, G-07). Usa l'envelope comune via allOf (G-06).",
   "allOf": [
     {
       "$ref": "./_envelope.json"
+    },
+    {
+      "description": "Se anche una sola porzione della fonte non è interpretabile, l'output non può dichiararsi 'ok': la Fase A si ferma e chiama una persona (gate HITL dell'architettura).",
+      "if": {
+        "properties": {
+          "payload": {
+            "properties": {
+              "misure_non_interpretabili": {
+                "minItems": 1
+              }
+            },
+            "required": [
+              "misure_non_interpretabili"
+            ]
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "enum": [
+              "degraded",
+              "hitl_required"
+            ]
+          }
+        }
+      }
     }
   ],
   "properties": {
     "payload": {
-      "description": "Modello strutturato dell'artefatto: metadati e sequenza di passi.",
+      "description": "Misure estratte dalla fonte, più ciò che la fonte non permette di estrarre.",
       "type": "object",
       "properties": {
-        "artifact_id": {
-          "description": "Identificatore dell'artefatto analizzato, identico all'input.",
-          "type": "string"
+        "fonte_id": {
+          "description": "Identificatore della fonte analizzata, identico a quello ricevuto in input.",
+          "type": "string",
+          "minLength": 1
         },
-        "passi": {
-          "description": "Sequenza ordinata dei passi estratti dall'artefatto. Ogni passo corrisponde a un'azione o una decisione distinta richiesta all'utente.",
+        "data_consultazione": {
+          "description": "Data di scarico della fonte, ripetuta qui perché il catalogo la conserva insieme alla misura: una percentuale senza la data della fonte non è verificabile.",
+          "type": "string",
+          "format": "date"
+        },
+        "misure": {
+          "description": "Misure estratte. Può essere vuoto se la fonte non ne contiene nessuna di pertinente: un array vuoto è un esito legittimo, inventare una misura non lo è (G-01).",
           "type": "array",
-          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/misura"
+          }
+        },
+        "misure_non_interpretabili": {
+          "description": "Porzioni della fonte che descrivono una misura ma non permettono di estrarne i dati in modo affidabile. Alimentano il gate HITL: si dichiara il problema, non si tira a indovinare.",
+          "type": "array",
           "items": {
             "type": "object",
-            "description": "Un singolo passo dell'artefatto: un'azione o decisione discreta.",
             "properties": {
-              "passo_id": {
-                "description": "Identificatore univoco del passo all'interno di questo artefatto. Formato suggerito: 'P001', 'P002', ecc.",
-                "type": "string"
+              "nome_presunto": {
+                "description": "Nome della misura come compare nella fonte, anche se parziale.",
+                "type": "string",
+                "minLength": 1
               },
-              "cosa_chiede": {
-                "description": "Descrizione precisa di ciò che l'artefatto chiede di fare in questo passo. Copiato o parafrasato strettamente dall'originale (G-01, G-03).",
-                "type": "string"
-              },
-              "informazione_necessaria": {
-                "description": "Dato o documento che la persona deve avere a portata di mano. Null se il passo non richiede informazioni specifiche.",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "vincoli": {
-                "description": "Elenco di vincoli espliciti presenti nell'artefatto (es. scadenze, formati richiesti, obbligatorietà). Copiati identici dalla fonte (G-03).",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "gergo": {
-                "description": "Termini tecnici o burocratici presenti nel passo che potrebbero ostacolare la comprensione.",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "source_refs": {
-                "description": "Riferimenti al punto esatto dell'artefatto originale da cui proviene questo passo (G-07). Obbligatorio: senza riferimento il passo non è verificabile.",
-                "type": "array",
-                "minItems": 1,
-                "items": {
-                  "type": "string"
-                }
-              },
-              "leggibilita": {
-                "description": "Stato di leggibilità del passo nel sorgente. 'leggibile' = completamente interpretabile; 'parziale' = alcune parti ambigue o mancanti; 'unreadable' = impossibile interpretare, il passo non entra nel journey.",
+              "motivo": {
+                "description": "Perché la porzione non è interpretabile. 'testo_ambiguo' = più letture possibili; 'dati_numerici_assenti' = mancano percentuale, importo o tetto; 'rimando_ad_altra_norma' = il dato sta in un documento non fornito; 'formato_illeggibile' = estrazione del testo fallita.",
                 "type": "string",
                 "enum": [
-                  "leggibile",
-                  "parziale",
-                  "unreadable"
+                  "testo_ambiguo",
+                  "dati_numerici_assenti",
+                  "rimando_ad_altra_norma",
+                  "formato_illeggibile"
                 ]
               },
-              "obbligatorio": {
-                "description": "True se il passo è obbligatorio secondo l'artefatto sorgente.",
-                "type": "boolean"
+              "porzione_fonte": {
+                "description": "Citazione letterale della porzione problematica, da allegare al dossier per l'operatore.",
+                "type": "string",
+                "minLength": 1
+              },
+              "source_refs": {
+                "$ref": "./_envelope.json#/$defs/source_refs_obbligatori"
               }
             },
             "required": [
-              "passo_id",
-              "cosa_chiede",
-              "informazione_necessaria",
-              "vincoli",
-              "gergo",
-              "source_refs",
-              "leggibilita",
-              "obbligatorio"
+              "nome_presunto",
+              "motivo",
+              "porzione_fonte",
+              "source_refs"
             ],
             "additionalProperties": false
           }
-        },
-        "passi_unreadable_count": {
-          "description": "Numero di passi marcati 'unreadable'. Se > 0 e status='degraded', l'orchestratore attiva HITL.",
-          "type": "integer",
-          "minimum": 0
         }
       },
       "required": [
-        "artifact_id",
-        "passi",
-        "passi_unreadable_count"
+        "fonte_id",
+        "data_consultazione",
+        "misure",
+        "misure_non_interpretabili"
       ],
       "additionalProperties": false
     }
   },
-  "unevaluatedProperties": false
+  "unevaluatedProperties": false,
+  "$defs": {
+    "tipo_misura": {
+      "description": "Forma giuridica dell'aiuto, che determina come la persona lo ottiene. 'detrazione' = sconto sulle imposte dovute, richiede capienza fiscale; 'credito_imposta' = importo compensabile o cedibile; 'assegno' = somma erogata periodicamente; 'esenzione' = dispensa dal pagare qualcosa; 'contributo' = somma una tantum a fronte di una spesa. Enum chiuso: un aiuto che non rientra in queste cinque forme va in misure_non_interpretabili.",
+      "type": "string",
+      "enum": [
+        "detrazione",
+        "credito_imposta",
+        "assegno",
+        "esenzione",
+        "contributo"
+      ]
+    },
+    "tipo_requisito": {
+      "description": "Categoria del requisito. Enum chiuso: è la chiave con cui eligibility incrocia il profilo, che conosce solo situazione di vita, condizione abitativa, tipo di reddito e timing. Un requisito di tipo 'isee' o 'nucleo_familiare' non è verificabile dal profilo e va sempre dichiarato da verificare.",
+      "type": "string",
+      "enum": [
+        "reddito",
+        "isee",
+        "eta",
+        "nucleo_familiare",
+        "immobile",
+        "occupazione",
+        "residenza",
+        "temporale",
+        "documentale",
+        "altro"
+      ]
+    },
+    "canale": {
+      "description": "Luogo o strumento attraverso cui si accede alla misura. Enum chiuso: il navigator può indicare solo canali previsti dalla fonte, mai un canale plausibile (è la divergenza D-02, aggiunta non supportata).",
+      "type": "string",
+      "enum": [
+        "portale_agenzia_entrate",
+        "portale_inps",
+        "caf",
+        "commercialista",
+        "dichiarazione_redditi",
+        "datore_di_lavoro",
+        "banca_o_posta",
+        "comune",
+        "sportello_fisico",
+        "automatico_in_fattura",
+        "altro"
+      ]
+    },
+    "tipo_documento": {
+      "description": "Documento o credenziale richiesta. Enum chiuso perché le voci di glossario e i riquadri Cosa significa? sono agganciati a questi valori: un documento fuori elenco resterebbe una parola senza spiegazione davanti alla persona.",
+      "type": "string",
+      "enum": [
+        "isee",
+        "cu",
+        "dichiarazione_redditi",
+        "cassetto_fiscale",
+        "spid_cie_cns",
+        "fattura",
+        "bonifico_parlante",
+        "titolo_edilizio",
+        "visura_catastale",
+        "certificato_medico",
+        "scontrino_fiscale",
+        "documento_identita",
+        "codice_fiscale",
+        "iban",
+        "contratto_affitto",
+        "certificato_nascita",
+        "altro"
+      ]
+    },
+    "beneficio": {
+      "description": "Quanto vale la misura. Blocco separato perché è il dato più pericoloso del sistema: percentuale, importo e tetto non possono venire dalla memoria del modello e portano source_refs obbligatori (G-03).",
+      "type": "object",
+      "properties": {
+        "forma": {
+          "description": "Come si esprime il beneficio. 'percentuale' = quota della spesa; 'importo_fisso' = somma determinata; 'importo_massimo' = somma variabile con un tetto; 'esenzione_totale' = non si paga; 'non_determinato' = la fonte non lo quantifica, e in quel caso percentuale e importo restano assenti (G-01).",
+          "type": "string",
+          "enum": [
+            "percentuale",
+            "importo_fisso",
+            "importo_massimo",
+            "esenzione_totale",
+            "non_determinato"
+          ]
+        },
+        "percentuale": {
+          "description": "Percentuale della spesa riconosciuta, riportata identica alla fonte, mai arrotondata (G-03).",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "importo_euro": {
+          "description": "Importo in euro riconosciuto, riportato identico alla fonte.",
+          "type": "number",
+          "minimum": 0
+        },
+        "tetto_massimo_euro": {
+          "description": "Tetto massimo di spesa o di beneficio in euro. Assente solo se la fonte non ne prevede uno: un tetto omesso è ciò che fa presentare alla persona una domanda destinata a essere ridimensionata.",
+          "type": "number",
+          "minimum": 0
+        },
+        "base_tetto": {
+          "description": "A che cosa si applica il tetto, nelle parole della fonte: per unità immobiliare, per figlio, per anno, per nucleo familiare. Senza questo campo il tetto non è interpretabile.",
+          "type": "string",
+          "minLength": 1
+        },
+        "testo_fonte": {
+          "description": "Citazione letterale della frase della fonte che contiene questi numeri. È la prova su cui lavora il fidelity-validator.",
+          "type": "string",
+          "minLength": 1
+        },
+        "source_refs": {
+          "$ref": "./_envelope.json#/$defs/source_refs_obbligatori"
+        }
+      },
+      "required": [
+        "forma",
+        "testo_fonte",
+        "source_refs"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "description": "Una misura dichiarata a percentuale deve portare la percentuale.",
+          "if": {
+            "properties": {
+              "forma": {
+                "const": "percentuale"
+              }
+            },
+            "required": [
+              "forma"
+            ]
+          },
+          "then": {
+            "required": [
+              "percentuale"
+            ]
+          }
+        },
+        {
+          "description": "Una misura dichiarata a importo fisso deve portare l'importo.",
+          "if": {
+            "properties": {
+              "forma": {
+                "const": "importo_fisso"
+              }
+            },
+            "required": [
+              "forma"
+            ]
+          },
+          "then": {
+            "required": [
+              "importo_euro"
+            ]
+          }
+        },
+        {
+          "description": "Un tetto dichiarato deve dire a che cosa si applica.",
+          "if": {
+            "required": [
+              "tetto_massimo_euro"
+            ]
+          },
+          "then": {
+            "required": [
+              "base_tetto"
+            ]
+          }
+        }
+      ]
+    },
+    "requisito": {
+      "description": "Condizione di accesso alla misura. La perdita di una condizione è la divergenza più pericolosa della Fase A, perché il testo che ne risulta è più chiaro dell'originale e sembra migliore.",
+      "type": "object",
+      "properties": {
+        "requisito_id": {
+          "description": "Identificatore del requisito all'interno della misura, in minuscolo con trattini. Citato da eligibility quando un requisito resta da verificare.",
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "tipo_requisito": {
+          "$ref": "#/$defs/tipo_requisito"
+        },
+        "descrizione_fonte": {
+          "description": "Il requisito nelle parole della fonte, senza semplificazioni: la versione leggibile la produce l'explainer.",
+          "type": "string",
+          "minLength": 1
+        },
+        "soglia_euro": {
+          "description": "Soglia economica del requisito in euro, se prevista, riportata identica alla fonte.",
+          "type": "number",
+          "minimum": 0
+        },
+        "obbligatorio": {
+          "description": "Vero se il requisito è necessario per accedere; falso se concorre solo a determinare l'importo.",
+          "type": "boolean"
+        },
+        "source_refs": {
+          "$ref": "./_envelope.json#/$defs/source_refs_obbligatori"
+        }
+      },
+      "required": [
+        "requisito_id",
+        "tipo_requisito",
+        "descrizione_fonte",
+        "obbligatorio",
+        "source_refs"
+      ],
+      "additionalProperties": false
+    },
+    "scadenza": {
+      "description": "Termine entro cui si deve agire. Insieme al beneficio è il dato che determina se la persona agisce oggi o fra due settimane.",
+      "type": "object",
+      "properties": {
+        "tipo_scadenza": {
+          "description": "Natura del termine. 'data_fissa' = giorno determinato; 'fine_anno_imposta' = spesa da sostenere entro l'anno; 'entro_giorni_da_evento' = durata che decorre da un fatto; 'a_sportello_fino_esaurimento' = finché ci sono fondi; 'nessuna' = misura strutturale; 'non_determinata' = la fonte non lo dice, e non si stima (G-01).",
+          "type": "string",
+          "enum": [
+            "data_fissa",
+            "fine_anno_imposta",
+            "entro_giorni_da_evento",
+            "a_sportello_fino_esaurimento",
+            "nessuna",
+            "non_determinata"
+          ]
+        },
+        "data": {
+          "description": "Data del termine, quando il tipo è 'data_fissa'.",
+          "type": "string",
+          "format": "date"
+        },
+        "giorni": {
+          "description": "Numero di giorni del termine, quando il tipo è 'entro_giorni_da_evento'.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "evento_di_riferimento": {
+          "description": "Fatto da cui decorrono i giorni: senza di esso il termine non è calcolabile ed è come non averlo.",
+          "type": "string",
+          "minLength": 1
+        },
+        "conseguenza_mancato_rispetto": {
+          "description": "Che cosa succede se il termine non viene rispettato, nelle parole della fonte. Non si ammorbidisce e non si omette.",
+          "type": "string",
+          "minLength": 1
+        },
+        "source_refs": {
+          "$ref": "./_envelope.json#/$defs/source_refs_obbligatori"
+        }
+      },
+      "required": [
+        "tipo_scadenza",
+        "source_refs"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "tipo_scadenza": {
+                "const": "data_fissa"
+              }
+            },
+            "required": [
+              "tipo_scadenza"
+            ]
+          },
+          "then": {
+            "required": [
+              "data"
+            ]
+          }
+        },
+        {
+          "description": "Una durata senza il suo punto di partenza non è una scadenza.",
+          "if": {
+            "properties": {
+              "tipo_scadenza": {
+                "const": "entro_giorni_da_evento"
+              }
+            },
+            "required": [
+              "tipo_scadenza"
+            ]
+          },
+          "then": {
+            "required": [
+              "giorni",
+              "evento_di_riferimento"
+            ]
+          }
+        }
+      ]
+    },
+    "recupero": {
+      "description": "Per quanti anni il beneficio si ripartisce e se è ancora recuperabile per spese già sostenute. È il blocco che risponde a chi ha scelto: ho già finito, voglio recuperare il passato (timing 'gia_concluso').",
+      "type": "object",
+      "properties": {
+        "rate_annuali": {
+          "description": "In quante quote annuali si ripartisce il beneficio, secondo la fonte. Assente se la misura non si ripartisce.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "anni_pregressi_recuperabili": {
+          "description": "Quanti anni indietro si può ancora recuperare la misura per spese già sostenute. Zero significa che la fonte esclude il recupero, non che il dato manca: se manca si usa dati_mancanti sulla misura.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "descrizione_fonte": {
+          "description": "La regola di recupero nelle parole della fonte.",
+          "type": "string",
+          "minLength": 1
+        },
+        "source_refs": {
+          "$ref": "./_envelope.json#/$defs/source_refs_obbligatori"
+        }
+      },
+      "required": [
+        "anni_pregressi_recuperabili",
+        "descrizione_fonte",
+        "source_refs"
+      ],
+      "additionalProperties": false
+    },
+    "documento": {
+      "description": "Documento che la persona dovrà procurarsi o mostrare. Il nome resta identico a quello ufficiale: sostituirlo con una descrizione generica è ciò che manda la persona allo sportello a chiedere la cosa sbagliata.",
+      "type": "object",
+      "properties": {
+        "tipo_documento": {
+          "$ref": "#/$defs/tipo_documento"
+        },
+        "nome": {
+          "description": "Nome ufficiale del documento, così come la persona lo troverà scritto sul portale o allo sportello. Obbligatorio anche quando il tipo è 'altro'.",
+          "type": "string",
+          "minLength": 1
+        },
+        "obbligatorio": {
+          "description": "Vero se senza questo documento la domanda non si può presentare.",
+          "type": "boolean"
+        },
+        "dove_si_ottiene": {
+          "$ref": "#/$defs/canale"
+        },
+        "source_refs": {
+          "$ref": "./_envelope.json#/$defs/source_refs_obbligatori"
+        }
+      },
+      "required": [
+        "tipo_documento",
+        "nome",
+        "obbligatorio",
+        "source_refs"
+      ],
+      "additionalProperties": false
+    },
+    "misura": {
+      "description": "Struttura canonica di una misura di aiuto statale. Definita qui una volta sola e referenziata da catalogo.json, eligibility.input.json e navigator.input.json: se cambia la forma di una misura, cambia in un punto solo.",
+      "type": "object",
+      "properties": {
+        "misura_id": {
+          "$ref": "./_envelope.json#/$defs/misura_id"
+        },
+        "nome": {
+          "description": "Nome ufficiale della misura, identico alla fonte, ad esempio Assegno unico e universale per i figli a carico. Il nome comprensibile lo aggiunge l'explainer, senza sostituire questo.",
+          "type": "string",
+          "minLength": 3
+        },
+        "tipo": {
+          "$ref": "#/$defs/tipo_misura"
+        },
+        "descrizione_fonte": {
+          "description": "Che cosa fa la misura, nelle parole della fonte. Non è il testo che leggerà la persona: è il testo contro cui il fidelity-validator confronterà quello semplificato.",
+          "type": "string",
+          "minLength": 10
+        },
+        "anno_riferimento": {
+          "description": "Anno di imposta o anno di validità della misura secondo la fonte.",
+          "type": "integer",
+          "minimum": 2000,
+          "maximum": 2100
+        },
+        "beneficio": {
+          "$ref": "#/$defs/beneficio"
+        },
+        "requisiti": {
+          "description": "Tutte le condizioni di accesso trovate nella fonte. Un array vuoto dichiara che la fonte non ne pone: va usato solo se è vero.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/requisito"
+          }
+        },
+        "scadenza": {
+          "$ref": "#/$defs/scadenza"
+        },
+        "recupero": {
+          "$ref": "#/$defs/recupero"
+        },
+        "documenti_richiesti": {
+          "description": "Documenti necessari per accedere, nell'ordine in cui la fonte li elenca.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/documento"
+          }
+        },
+        "canali_accesso": {
+          "description": "Canali attraverso cui si accede alla misura, secondo la fonte. Il navigator sceglie fra questi anche in base alla presenza di un CAF nel profilo.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/canale"
+          }
+        },
+        "situazioni_vita_collegate": {
+          "description": "Situazioni di vita dello Step 1 a cui la misura risponde. È la chiave di incrocio con il profilo: qui la Fase A prepara il lavoro che la Fase B deve solo leggere. Il valore 'non_so' non compare mai, perché non è una situazione ma la richiesta di vedere tutto.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "./profiler.output.json#/$defs/situazione_vita"
+          }
+        },
+        "timing_compatibile": {
+          "description": "Momenti in cui la misura è ancora utile alla persona. Il valore 'gia_concluso' compare solo se la misura è recuperabile per spese passate.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "./profiler.output.json#/$defs/timing"
+          }
+        },
+        "dati_mancanti": {
+          "description": "Elementi che la fonte non riporta. Enum chiuso, obbligatorio anche se vuoto: dichiarare un dato mancante è l'alternativa allo stimarlo (G-01). Una misura con 'percentuale' o 'tetto_massimo' fra i dati mancanti non può essere presentata come quantificata.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "percentuale",
+              "importo",
+              "tetto_massimo",
+              "requisiti",
+              "scadenza",
+              "recupero",
+              "documenti",
+              "canale"
+            ]
+          }
+        },
+        "source_refs": {
+          "$ref": "./_envelope.json#/$defs/source_refs_obbligatori"
+        }
+      },
+      "required": [
+        "misura_id",
+        "nome",
+        "tipo",
+        "descrizione_fonte",
+        "anno_riferimento",
+        "beneficio",
+        "requisiti",
+        "scadenza",
+        "recupero",
+        "documenti_richiesti",
+        "canali_accesso",
+        "situazioni_vita_collegate",
+        "timing_compatibile",
+        "dati_mancanti",
+        "source_refs"
+      ],
+      "additionalProperties": false
+    }
+  }
 }

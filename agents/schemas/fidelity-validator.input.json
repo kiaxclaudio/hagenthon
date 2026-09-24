@@ -2,118 +2,41 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hagenthon/agents/schemas/fidelity-validator.input.json",
   "title": "FidelityValidatorInput",
-  "description": "Input per l'agente fidelity-validator. Confronto tra il passo originale e la versione semplificata dal simplifier.",
+  "description": "Input dell'agente fidelity-validator (Fase A, opus, solo Read). Contiene la coppia da confrontare: la misura destrutturata con i suoi numeri ancorati alla fonte, e la spiegazione in lingua semplice prodotta dall'explainer. Il validator riceve entrambe già strutturate e non ha accesso in scrittura a nessuna delle due.",
   "type": "object",
   "properties": {
-    "passo_originale": {
-      "description": "Il passo originale estratto da source-analyzer, intoccato.",
-      "type": "object",
-      "properties": {
-        "passo_id": {
-          "type": "string",
-          "description": "Identificatore del passo."
-        },
-        "cosa_chiede": {
-          "type": "string",
-          "description": "Testo originale di ciò che il passo chiede."
-        },
-        "informazione_necessaria": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Dato/documento necessario."
-        },
-        "vincoli": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Vincoli espliciti."
-        },
-        "gergo": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Termini tecnici."
-        },
-        "source_refs": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Riferimenti alla fonte."
-        },
-        "obbligatorio": {
-          "type": "boolean",
-          "description": "Se il passo è obbligatorio."
-        }
-      },
-      "required": [
-        "passo_id",
-        "cosa_chiede",
-        "informazione_necessaria",
-        "vincoli",
-        "gergo",
-        "source_refs",
-        "obbligatorio"
-      ],
-      "additionalProperties": false
+    "misura": {
+      "description": "La misura come l'ha estratta il source-analyzer: è l'originale contro cui si misura la fedeltà.",
+      "$ref": "./source-analyzer.output.json#/$defs/misura"
     },
-    "passo_semplificato": {
-      "description": "L'output del simplifier per lo stesso passo.",
-      "type": "object",
-      "properties": {
-        "passo_id": {
-          "type": "string",
-          "description": "Deve coincidere con passo_originale.passo_id."
-        },
-        "testo_semplificato": {
-          "type": "string",
-          "description": "Il testo prodotto dal simplifier."
-        },
-        "iterazione": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 2,
-          "description": "Giro di semplificazione."
-        },
-        "note_semplificazione": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Note del simplifier."
-        },
-        "modifiche_dal_feedback": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Correzioni al secondo giro."
-        }
-      },
-      "required": [
-        "passo_id",
-        "testo_semplificato",
-        "iterazione",
-        "note_semplificazione",
-        "modifiche_dal_feedback"
-      ],
-      "additionalProperties": false
+    "spiegazione": {
+      "description": "La versione in lingua semplice da verificare, prodotta dall'explainer.",
+      "$ref": "./explainer.output.json#/$defs/spiegazione"
     },
     "iterazione": {
-      "description": "Numero del giro di validazione per questo passo (1 o 2). Al secondo rifiuto l'orchestratore attiva HITL (G-08).",
+      "description": "Giro di verifica: 1 alla prima stesura, 2 dopo una riscrittura. Al secondo giro si riesegue il confronto per intero sul nuovo testo, perché la correzione può avere introdotto divergenze nuove; la soglia non si abbassa.",
       "type": "integer",
       "minimum": 1,
       "maximum": 2
+    },
+    "divergenze_giro_precedente": {
+      "description": "Divergenze contestate al primo giro, presenti solo se iterazione vale 2. Servono a dichiarare per ciascuna se è risolta, persistente o trasformata: non restringono il confronto a quelle soltanto.",
+      "type": "array",
+      "items": { "$ref": "./fidelity-validator.output.json#/$defs/divergenza" }
     }
   },
-  "required": [
-    "passo_originale",
-    "passo_semplificato",
-    "iterazione"
-  ],
-  "additionalProperties": false
+  "required": ["misura", "spiegazione", "iterazione"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "description": "La coppia deve riguardare la stessa misura: senza questo vincolo il confronto sarebbe fra oggetti diversi e il verdetto non significherebbe nulla.",
+      "if": { "required": ["misura", "spiegazione"] },
+      "then": {
+        "properties": {
+          "misura": { "required": ["misura_id"] },
+          "spiegazione": { "required": ["misura_id"] }
+        }
+      }
+    }
+  ]
 }

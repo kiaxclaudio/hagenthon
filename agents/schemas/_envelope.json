@@ -2,41 +2,70 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hagenthon/agents/schemas/_envelope.json",
   "title": "AgentOutputEnvelope",
-  "description": "Schema base condiviso da tutti gli output degli agenti (G-06, G-07). Definisce i quattro campi obbligatori di controllo e orchestrazione. Non usare direttamente: ogni output concreto estende questo schema via allOf e ridefinisce 'payload' con il proprio schema specifico.",
+  "description": "Schema base condiviso da tutti gli output degli agenti di \"A cosa ho diritto?\" (G-06, G-07). Definisce i quattro campi di controllo che l'orchestratore legge senza conoscere il dominio fiscale, piu le definizioni trasversali riusate dagli altri contratti ($defs). Non si usa da solo: ogni output concreto lo estende via allOf e ridefinisce 'payload'.",
   "type": "object",
   "properties": {
     "status": {
-      "description": "Esito dell'esecuzione dell'agente (G-06). 'ok' = output affidabile; 'degraded' = output parziale, da usare con cautela; 'hitl_required' = impossibile procedere senza intervento umano.",
+      "description": "Esito dell'esecuzione dell'agente (G-06). 'ok' = output affidabile; 'degraded' = output parziale dopo retry falliti o fonte incompleta, da usare con cautela; 'hitl_required' = non si puo procedere senza una persona (in Fase B significa rimando a CAF o commercialista).",
       "type": "string",
-      "enum": [
-        "ok",
-        "degraded",
-        "hitl_required"
-      ]
+      "enum": ["ok", "degraded", "hitl_required"]
     },
     "confidence": {
-      "description": "Stima di affidabilità dell'output, da 0 a 1 (G-06). L'orchestratore usa questo valore come gate: se < 0.6 su un passo che contiene importi, date o scadenze, attiva HITL (G-03, G-09).",
+      "description": "Stima di affidabilita dell'output, da 0 a 1 (G-06). Gate dell'orchestratore: sotto 0.6 su un output che contiene percentuali, importi, tetti o scadenze scatta HITL (G-03, G-09). Per eligibility sotto 0.6 significa non proporre nulla e rimandare a un CAF.",
       "type": "number",
       "minimum": 0.0,
       "maximum": 1.0
     },
     "source_refs": {
-      "description": "Riferimenti alle parti esatte della fonte da cui provengono le affermazioni (G-07). Array vuoto solo se l'agente non ha accesso ad alcuna fonte originale. Un output senza source_refs è una violazione di G-01.",
+      "description": "Riferimenti puntuali alle fonti ufficiali da cui provengono le affermazioni: articolo, sezione, pagina o campo del documento dell'Agenzia delle Entrate, dell'INPS o della norma (G-07). Un output che afferma un numero senza source_refs viola G-01 e non entra nel catalogo.",
       "type": "array",
       "items": {
+        "description": "Identificatore del punto esatto della fonte, nella forma '<fonte_id>#<localizzatore>' (es. 'ade-ristrutturazioni-2026#par-3.1').",
         "type": "string",
-        "description": "Identificatore del punto della fonte (es. sezione, pagina, ID campo)."
+        "minLength": 1
       }
     },
     "payload": {
-      "description": "Contenuto specifico dell'agente. L'unica parte che varia tra agenti; tutto il resto è uniforme così l'orchestratore può instradare senza conoscere il dominio.",
+      "description": "Contenuto specifico dell'agente. L'unica parte che varia; tutto il resto e uniforme cosi l'orchestratore instrada e applica i gate senza conoscere il dominio.",
       "type": "object"
     }
   },
-  "required": [
-    "status",
-    "confidence",
-    "source_refs",
-    "payload"
-  ]
+  "required": ["status", "confidence", "source_refs", "payload"],
+  "$defs": {
+    "disclaimer": {
+      "description": "Disclaimer obbligatorio, testo fisso e non riformulabile, su ogni output che raggiunge la persona (G-04). Il valore e vincolato con 'const' proprio perche nessun agente possa ammorbidirlo o accorciarlo.",
+      "type": "string",
+      "const": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista."
+    },
+    "testo_senza_consulenza": {
+      "description": "Testo destinato alla persona, vincolato a non contenere formule di consulenza (G-04). Il 'not/pattern' e la versione dichiarativa dell'hook PostToolUse: rende il divieto verificabile a livello di contratto, non solo di prompt.",
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "[Tt]i consiglio|[Tt]i suggerisco|[Tt]i raccomando|[Tt]i conviene|[Cc]onviene|[Dd]ovresti|[Mm]eglio scegliere|[Ll]a scelta migliore|[Ll]a soluzione migliore|[Cc]onsigliamo|[Rr]accomandiamo|[Ii]nvestire in"
+      }
+    },
+    "source_refs_obbligatori": {
+      "description": "Riferimenti alla fonte obbligatori: almeno uno. Si usa su ogni dato numerico (percentuale, importo, tetto, scadenza, numero di anni) e su ogni requisito, perche sono i dati che non possono venire dalla memoria del modello (G-01, G-03).",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "description": "Identificatore del punto esatto della fonte nella forma '<fonte_id>#<localizzatore>'.",
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "misura_id": {
+      "description": "Identificatore stabile di una misura di aiuto statale, in minuscolo con trattini (es. 'bonus-ristrutturazione', 'assegno-unico'). E la chiave che collega source-analyzer, explainer, fidelity-validator, catalogo, eligibility e navigator.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "timestamp": {
+      "description": "Istante in formato ISO 8601 con fuso orario.",
+      "type": "string",
+      "format": "date-time"
+    }
+  }
 }

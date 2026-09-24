@@ -2,41 +2,62 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hagenthon/agents/schemas/source-analyzer.input.json",
   "title": "SourceAnalyzerInput",
-  "description": "Input per l'agente source-analyzer. Contiene l'artefatto reale da destrutturare in passi. Nessun dato personale reale (G-17).",
+  "description": "Input dell'agente source-analyzer (Fase A, opus). Contiene una fonte ufficiale già scaricata, da destrutturare in misure. La fonte arriva come testo: l'agente non naviga il web durante l'analisi, così ogni source_ref prodotto punta a un contenuto che resta ispezionabile nel tempo. Nessun dato personale reale (G-17).",
   "type": "object",
   "properties": {
-    "artifact_id": {
-      "description": "Identificatore univoco dell'artefatto (es. codice documento, URL, hash). Usato come chiave per il source-model persistito.",
+    "fonte_id": {
+      "description": "Identificatore stabile della fonte, in minuscolo con trattini (es. 'ade-guida-ristrutturazioni-2026'). È il prefisso di ogni source_ref generato a partire da questo documento.",
       "type": "string",
-      "minLength": 1
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 3,
+      "maxLength": 64
     },
-    "artifact_format": {
-      "description": "Formato dell'artefatto sorgente, che guida la strategia di ingestione. TODO-TEMA: rivedere l'enum sul tema scelto.",
+    "ente": {
+      "description": "Ente che pubblica la fonte. Enum chiuso: una misura statale entra nel catalogo solo se proviene da una fonte istituzionale. Le fonti giornalistiche o divulgative non sono ammesse, perché non sono citabili come riferimento (G-07).",
       "type": "string",
       "enum": [
-        "html",
-        "pdf",
-        "testo",
-        "immagine",
-        "json",
-        "altro"
+        "agenzia_entrate",
+        "inps",
+        "mef",
+        "gazzetta_ufficiale",
+        "regione",
+        "comune",
+        "altro_ente_pubblico"
       ]
     },
-    "artifact_raw": {
-      "description": "Contenuto grezzo dell'artefatto: testo estratto, HTML, o JSON strutturato a seconda del formato. Per immagini: testo OCR pre-elaborato.",
+    "url_fonte": {
+      "description": "URL pubblico da cui la fonte è stata scaricata. Serve alla persona e all'operatore per risalire al documento originale.",
+      "type": "string",
+      "format": "uri"
+    },
+    "formato": {
+      "description": "Formato del contenuto grezzo, che guida la strategia di estrazione dei riferimenti. Per 'pdf' il localizzatore del source_ref è la pagina; per 'html' è l'ancora o il paragrafo.",
+      "type": "string",
+      "enum": ["html", "pdf", "testo", "json"]
+    },
+    "contenuto_grezzo": {
+      "description": "Testo integrale della fonte. Non riassunto e non pre-elaborato: il source-analyzer deve poter citare porzioni letterali, e un riassunto a monte renderebbe impossibile verificare la fedeltà a valle.",
       "type": "string",
       "minLength": 1
     },
-    "lingua": {
-      "description": "Lingua dell'artefatto, codice ISO 639-1. Opzionale.",
+    "data_consultazione": {
+      "description": "Data in cui la fonte è stata scaricata. Una misura fiscale cambia di anno in anno: senza questa data il catalogo non è databile e le scadenze non sono valutabili.",
       "type": "string",
-      "pattern": "^[a-z]{2}$"
+      "format": "date"
+    },
+    "anno_imposta": {
+      "description": "Anno di imposta a cui la fonte si riferisce, se il documento lo dichiara. Non si deduce dalla data di consultazione (G-01): una guida pubblicata a marzo può riguardare l'anno precedente.",
+      "type": "integer",
+      "minimum": 2000,
+      "maximum": 2100
+    },
+    "misure_attese": {
+      "description": "Elenco facoltativo di identificatori di misura che ci si aspetta di trovare nella fonte. Usato in Fase A per aggiornare una misura già a catalogo invece di riestrarre tutto. Se vuoto o assente, l'agente estrae ogni misura che la fonte contiene.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "./_envelope.json#/$defs/misura_id" }
     }
   },
-  "required": [
-    "artifact_id",
-    "artifact_format",
-    "artifact_raw"
-  ],
+  "required": ["fonte_id", "ente", "formato", "contenuto_grezzo", "data_consultazione"],
   "additionalProperties": false
 }

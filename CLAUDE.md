@@ -40,8 +40,9 @@ I conflitti si evitano **per costruzione**: ogni file ha un proprietario, e ness
 |---|---|---|
 | `agents/**` | Davide | cuore del punteggio |
 | `app/**` | Chiara | prototipo |
-| `presentation/**` | Chiara | HTML brand Accenture |
+| `presentation/**` | Davide | HTML brand Accenture |
 | `docs/validation/**` | Chiara | evidenza di validazione |
+| `docs/ux/**` | Davide | specifica UX, token, mockup |
 | `docs/process-note.md` | Davide | nota sul processo |
 | `docs/status-davide.md` | Davide | solo Davide scrive |
 | `docs/status-chiara.md` | Chiara | solo Chiara scrive |

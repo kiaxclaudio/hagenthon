@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/navigator.output.json",
+  "title": "NavigatorOutput",
+  "description": "Output dell'agente navigator (Fase B, haiku). Trasforma una misura di catalogo in passi operativi ordinati: che cosa fare, in che ordine, con quali documenti e dove si fa. Non valuta se la misura convenga e non sceglie fra misure diverse: quella domanda non appartiene a questo sistema (G-04). Ogni canale e ogni documento provengono dagli enum chiusi della misura verificata, quindi il navigator non può indicare uno sportello che la fonte non prevede. Usa l'envelope comune via allOf.",
+  "allOf": [
+    { "$ref": "./_envelope.json" }
+  ],
+  "properties": {
+    "payload": {
+      "description": "Percorso operativo per accedere a una misura.",
+      "type": "object",
+      "properties": {
+        "misura_id": { "$ref": "./_envelope.json#/$defs/misura_id" },
+        "primo_passo_concreto": {
+          "description": "La cosa da fare per prima, scritta come si direbbe a voce: è la risposta alla domanda cosa faccio domani mattina. Coincide con il passo di ordine 1, detto in una frase.",
+          "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+          "maxLength": 300
+        },
+        "passi": {
+          "description": "I passi in ordine di esecuzione. L'ordine è vincolante quando un passo è prerequisito di un altro: invertirli produce una procedura che non funziona, non una procedura meno elegante.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/passo" }
+        },
+        "documenti_necessari": {
+          "description": "Tutti i documenti che servono lungo il percorso, copiati dalla misura di catalogo con il loro nome ufficiale. È l'elenco che la persona può stampare prima di andare allo sportello.",
+          "type": "array",
+          "items": { "$ref": "./source-analyzer.output.json#/$defs/documento" }
+        },
+        "scadenza_da_rispettare": {
+          "description": "La scadenza della misura, ripetuta qui accanto ai passi perché è lì che serve. Copiata dalla misura verificata, mai ricalcolata.",
+          "$ref": "./source-analyzer.output.json#/$defs/scadenza"
+        },
+        "glossario": {
+          "description": "Termini tecnici che compaiono nei passi e nei documenti: cassetto fiscale, SPID, bonifico parlante. Solo quelli usati qui, più quelli che la persona ha dichiarato di non conoscere.",
+          "type": "array",
+          "items": { "$ref": "./explainer.output.json#/$defs/voce_glossario" }
+        },
+        "disclaimer": { "$ref": "./_envelope.json#/$defs/disclaimer" }
+      },
+      "required": ["misura_id", "primo_passo_concreto", "passi", "documenti_necessari", "glossario", "disclaimer"],
+      "additionalProperties": false
+    }
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "passo": {
+      "description": "Un singolo passo operativo: una azione sola, con un soggetto esplicito e un luogo in cui si compie.",
+      "type": "object",
+      "properties": {
+        "ordine": {
+          "description": "Posizione del passo nella sequenza, a partire da 1. Numeri consecutivi e senza salti.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "azione": {
+          "description": "Che cosa deve fare la persona, in una frase, con il verbo all'inizio e il soggetto chiaro. Niente gergo e nessuna formula di consulenza: il vincolo è nel pattern di testo_senza_consulenza, non solo nel prompt.",
+          "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+          "maxLength": 400
+        },
+        "dove": {
+          "description": "Canale in cui si compie il passo, scelto fra i canali di accesso della misura verificata.",
+          "$ref": "./source-analyzer.output.json#/$defs/canale"
+        },
+        "dove_dettaglio": {
+          "description": "Indicazione concreta del luogo: indirizzo del portale, nome della sezione, nome dell'ufficio. Deve comparire nella fonte: un sito plausibile ma non citato è una aggiunta non supportata.",
+          "type": "string",
+          "minLength": 1
+        },
+        "documenti_necessari": {
+          "description": "Documenti che servono in questo passo specifico, non nell'intera procedura. Permette alla persona di presentarsi con la cosa giusta al momento giusto.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "./source-analyzer.output.json#/$defs/tipo_documento" }
+        },
+        "dipende_da": {
+          "description": "Ordini dei passi che devono essere già conclusi. Vuoto per il primo passo. Rende esplicita la dipendenza invece di affidarla alla sola numerazione.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "integer", "minimum": 1 }
+        },
+        "source_refs": { "$ref": "./_envelope.json#/$defs/source_refs_obbligatori" }
+      },
+      "required": ["ordine", "azione", "dove", "documenti_necessari", "dipende_da", "source_refs"],
+      "additionalProperties": false
+    }
+  }
+}

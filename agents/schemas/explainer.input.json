@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/explainer.input.json",
+  "title": "ExplainerInput",
+  "description": "Input dell'agente explainer (Fase A, sonnet). Contiene la misura destrutturata da riscrivere in lingua semplice e, al secondo giro, le divergenze che il fidelity-validator ha contestato. L'explainer non vede la fonte grezza: lavora sulla misura strutturata, così non può reintrodurre dati che il source-analyzer non ha ancorato (G-01).",
+  "type": "object",
+  "properties": {
+    "misura": {
+      "description": "La misura da riscrivere, nella forma canonica prodotta dal source-analyzer.",
+      "$ref": "./source-analyzer.output.json#/$defs/misura"
+    },
+    "iterazione": {
+      "description": "Giro di riscrittura: 1 alla prima stesura, 2 dopo un rifiuto. Il limite è 2 per misura, poi la misura non entra in catalogo ed esce hitl_required (G-08).",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2
+    },
+    "divergenze_da_correggere": {
+      "description": "Divergenze rilevate dal fidelity-validator al giro precedente. Sono l'indirizzo della correzione: l'explainer le risolve una per una senza riscrivere da capo ciò che era stato approvato.",
+      "type": "array",
+      "items": { "$ref": "./fidelity-validator.output.json#/$defs/divergenza" }
+    },
+    "termini_da_glossare": {
+      "description": "Termini che le sessioni di Fase B hanno visto chiedere più spesso con Cosa significa?. Suggerimento, non vincolo: il glossario resta contestuale ai termini effettivamente usati nel testo.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 2 }
+    }
+  },
+  "required": ["misura", "iterazione"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "description": "Al secondo giro le divergenze da correggere sono obbligatorie: una riscrittura senza motivo contestato è una riscrittura a caso.",
+      "if": {
+        "properties": { "iterazione": { "const": 2 } },
+        "required": ["iterazione"]
+      },
+      "then": {
+        "required": ["divergenze_da_correggere"],
+        "properties": { "divergenze_da_correggere": { "minItems": 1 } }
+      }
+    }
+  ]
+}

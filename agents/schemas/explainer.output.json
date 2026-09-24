@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/explainer.output.json",
+  "title": "ExplainerOutput",
+  "description": "Output dell'agente explainer (Fase A, sonnet). Riscrive una misura in lingua semplice per chi parte da zero di alfabetizzazione fiscale, senza cambiare nessun numero, nessuna condizione e nessun obbligo. Aggiunge il glossario contestuale: si spiega solo ciò che compare nel testo, non tutto il vocabolario fiscale. Il risultato non raggiunge la persona finché il fidelity-validator non lo approva (G-02). Usa l'envelope comune via allOf (G-06, G-07).",
+  "allOf": [
+    { "$ref": "./_envelope.json" }
+  ],
+  "properties": {
+    "payload": { "$ref": "#/$defs/spiegazione" }
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "voce_glossario": {
+      "description": "Un termine tecnico spiegato in due righe. Il termine originale resta nel testo e la glossa si aggiunge: sostituirlo con un sinonimo approssimativo è una divergenza bloccante, perché la persona deve poter ripetere quella parola esatta allo sportello.",
+      "type": "object",
+      "properties": {
+        "termine": {
+          "description": "Il termine così come compare nel testo semplificato, ad esempio detrazione, ISEE, cassetto fiscale, bonifico parlante.",
+          "type": "string",
+          "minLength": 2
+        },
+        "spiegazione_semplice": {
+          "description": "Che cosa significa, in due righe e con parole comuni: detrazione = sconto sulle tasse che paghi. Limite di lunghezza voluto: una glossa lunga è una seconda spiegazione, non un aiuto.",
+          "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+          "maxLength": 300
+        },
+        "tipo_documento_collegato": {
+          "description": "Se il termine è uno dei documenti tipizzati, il valore corrispondente. Permette all'interfaccia di agganciare la stessa glossa ovunque quel documento compaia, senza riscriverla.",
+          "$ref": "./source-analyzer.output.json#/$defs/tipo_documento"
+        }
+      },
+      "required": ["termine", "spiegazione_semplice"],
+      "additionalProperties": false
+    },
+    "spiegazione": {
+      "description": "Versione in lingua semplice di una misura. Struttura fissa in cinque blocchi perché la persona ritrovi sempre le stesse cose nello stesso ordine.",
+      "type": "object",
+      "properties": {
+        "misura_id": { "$ref": "./_envelope.json#/$defs/misura_id" },
+        "titolo_semplice": {
+          "description": "Il nome della misura in parole comuni, ad esempio: sconto sulle tasse se ristrutturi casa. Non sostituisce il nome ufficiale, che resta nella misura di catalogo.",
+          "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+          "maxLength": 120
+        },
+        "cosa_e": {
+          "description": "Che cosa è la misura e a che cosa serve, in frasi brevi e con soggetti espliciti. Niente gergo: mai si decade dal beneficio, sempre perdi il diritto al rimborso se.",
+          "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+          "maxLength": 1200
+        },
+        "quanto_vale": {
+          "description": "Quanto si ottiene, in parole. Le cifre si riportano identiche a quelle del blocco beneficio: mai arrotondate, mai trasformate in circa o in qualche migliaio di euro (G-03).",
+          "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+          "maxLength": 600
+        },
+        "a_chi_spetta": {
+          "description": "Le condizioni di accesso, una per voce, nello stesso numero dei requisiti della misura. Una condizione che sparisce rende il testo più chiaro e la persona più esposta a un rifiuto: è la divergenza D-06.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "./_envelope.json#/$defs/testo_senza_consulenza" }
+        },
+        "attenzione": {
+          "description": "Limiti, esclusioni e conseguenze del mancato rispetto delle scadenze, dichiarati e non nascosti. Un elenco vuoto è ammesso solo se la fonte non prevede limiti.",
+          "type": "array",
+          "items": { "$ref": "./_envelope.json#/$defs/testo_senza_consulenza" }
+        },
+        "glossario": {
+          "description": "Glossario contestuale: solo i termini tecnici che compaiono in questa spiegazione. Ogni termine usato nel testo e non comune deve avere qui la sua voce, altrimenti resta una parola opaca.",
+          "type": "array",
+          "uniqueItems": false,
+          "items": { "$ref": "#/$defs/voce_glossario" }
+        },
+        "iterazione": {
+          "description": "Giro di riscrittura: 1 alla prima stesura, 2 dopo un rifiuto del fidelity-validator. Oltre il 2 non si va, si escala (G-08).",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2
+        },
+        "disclaimer": { "$ref": "./_envelope.json#/$defs/disclaimer" },
+        "source_refs": { "$ref": "./_envelope.json#/$defs/source_refs_obbligatori" }
+      },
+      "required": [
+        "misura_id",
+        "titolo_semplice",
+        "cosa_e",
+        "quanto_vale",
+        "a_chi_spetta",
+        "attenzione",
+        "glossario",
+        "iterazione",
+        "disclaimer",
+        "source_refs"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

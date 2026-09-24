@@ -1,12 +1,25 @@
 {
   "hooks": {
-    "PostToolUse": [
+    "PreToolUse": [
       {
-        "matcher": ".*",
+        "matcher": "Write|Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/validate_output.py"
+            "command": "python \"${CLAUDE_PROJECT_DIR}/agents/hooks/ownership_guard.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PROJECT_DIR}/agents/hooks/anti_consulenza.py\"",
+            "timeout": 10
           }
         ]
       }
@@ -16,10 +29,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/log_session.py"
+            "command": "python \"${CLAUDE_PROJECT_DIR}/agents/hooks/session_snapshot.py\"",
+            "timeout": 10
           }
         ]
       }
+    ]
+  },
+  "permissions": {
+    "deny": [
+      "Read(./.env)"
     ]
   }
 }

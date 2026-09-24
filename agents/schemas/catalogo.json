@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/catalogo.json",
+  "title": "Catalogo",
+  "description": "Artefatto persistito della Fase A (agents/state/catalogo.json): l'elenco delle misure di aiuto statale verificate, ognuna con i dati ancorati alla fonte, la spiegazione in lingua semplice approvata e l'esito della verifica di fedeltà. È l'unica cosa che la Fase B legge: gli agenti di runtime non vedono mai le fonti grezze, e questo è ciò che rende impossibile allucinare una percentuale durante una conversazione. Non è un output di agente e non usa l'envelope: è uno stato su disco (G-12).",
+  "type": "object",
+  "properties": {
+    "catalogo_id": {
+      "description": "Identificatore del catalogo, in minuscolo con trattini.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "versione": {
+      "description": "Versione del catalogo nella forma MAJOR.MINOR.PATCH. La Fase B la cita in eligibility e in run-state: se una misura cambia, si sa su quale versione la persona è stata orientata.",
+      "type": "string",
+      "pattern": "^[0-9]+[.][0-9]+[.][0-9]+$"
+    },
+    "generato_il": { "$ref": "./_envelope.json#/$defs/timestamp" },
+    "anno_imposta_riferimento": {
+      "description": "Anno di imposta a cui il catalogo nel suo insieme si riferisce. Le singole misure possono dichiararne uno diverso: in quel caso vince quello della misura.",
+      "type": "integer",
+      "minimum": 2000,
+      "maximum": 2100
+    },
+    "fonti": {
+      "description": "Fonti ufficiali da cui il catalogo è stato costruito. Serve a rendere il catalogo ricostruibile: ogni source_ref delle misure inizia con uno di questi fonte_id.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "fonte_id": {
+            "description": "Identificatore della fonte, prefisso dei source_refs che ne derivano.",
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "ente": { "$ref": "./source-analyzer.input.json#/properties/ente" },
+          "url_fonte": {
+            "description": "URL pubblico del documento originale, da mostrare a chi vuole verificare.",
+            "type": "string",
+            "format": "uri"
+          },
+          "data_consultazione": {
+            "description": "Data di scarico della fonte. Una misura fiscale invecchia: senza questa data il catalogo non è databile.",
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": ["fonte_id", "ente", "data_consultazione"],
+        "additionalProperties": false
+      }
+    },
+    "voci": {
+      "description": "Misure pubblicate, cioè quelle la cui spiegazione ha superato la verifica di fedeltà. Solo queste sono visibili alla Fase B.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/voce_catalogo" }
+    },
+    "misure_escluse": {
+      "description": "Misure incontrate nelle fonti ma non pubblicate. Si conservano nel catalogo invece di sparire: un'esclusione dichiarata è una consegna a una persona, un'esclusione silenziosa è una perdita.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/esclusione" }
+    }
+  },
+  "required": ["catalogo_id", "versione", "generato_il", "anno_imposta_riferimento", "fonti", "voci", "misure_escluse"],
+  "additionalProperties": false,
+  "$defs": {
+    "voce_catalogo": {
+      "description": "Una misura pubblicata: i dati verificati, la loro versione in lingua semplice e la traccia della verifica che le ha permesso di entrare. I tre blocchi restano distinti invece di essere fusi, così si vede sempre quale frase è della fonte e quale è della riscrittura.",
+      "type": "object",
+      "properties": {
+        "misura": {
+          "description": "I dati della misura, nella forma canonica prodotta dal source-analyzer: percentuali, tetti, requisiti, scadenza, recupero e documenti, ognuno con i propri source_refs.",
+          "$ref": "./source-analyzer.output.json#/$defs/misura"
+        },
+        "spiegazione": {
+          "description": "La versione in lingua semplice approvata, con il glossario contestuale e il disclaimer.",
+          "$ref": "./explainer.output.json#/$defs/spiegazione"
+        },
+        "verifica": {
+          "description": "Esito della verifica di fedeltà che ha ammesso questa voce. Si conserva insieme al contenuto: è l'evidenza di validazione del progetto, non un metadato di servizio.",
+          "type": "object",
+          "properties": {
+            "verdict": {
+              "description": "Sempre 'approved': una spiegazione respinta non entra nel catalogo. Il vincolo è const, così un catalogo che contenesse una voce non approvata sarebbe invalido e non solo sbagliato.",
+              "type": "string",
+              "const": "approved"
+            },
+            "iterazioni": {
+              "description": "Quanti giri explainer-validator sono serviti: 1 o 2. Un 2 segnala una misura difficile da riscrivere, utile da rivedere quando la fonte cambia.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2
+            },
+            "validato_il": { "$ref": "./_envelope.json#/$defs/timestamp" },
+            "confidence": {
+              "description": "Confidenza del confronto dichiarata dal validator. Sotto 0.6 la voce non si pubblica: il gate vale anche qui.",
+              "type": "number",
+              "minimum": 0.6,
+              "maximum": 1.0
+            },
+            "divergenze_residue": {
+              "description": "Divergenze non bloccanti rimaste al momento dell'approvazione. Restano visibili: sono il debito noto di questa voce.",
+              "type": "array",
+              "items": { "$ref": "./fidelity-validator.output.json#/$defs/divergenza" }
+            }
+          },
+          "required": ["verdict", "iterazioni", "validato_il", "confidence", "divergenze_residue"],
+          "additionalProperties": false
+        },
+        "pubblicata_il": { "$ref": "./_envelope.json#/$defs/timestamp" }
+      },
+      "required": ["misura", "spiegazione", "verifica", "pubblicata_il"],
+      "additionalProperties": false
+    },
+    "esclusione": {
+      "description": "Una misura che non è entrata nel catalogo, con il motivo. Alimenta la coda di lavoro umana della Fase A.",
+      "type": "object",
+      "properties": {
+        "misura_id": { "$ref": "./_envelope.json#/$defs/misura_id" },
+        "nome": {
+          "description": "Nome della misura come compare nella fonte, anche se i dati sono incompleti.",
+          "type": "string",
+          "minLength": 3
+        },
+        "motivo": {
+          "description": "Perché è esclusa. 'doppio_rifiuto_validator' = due riscritture respinte, limite di iterazione raggiunto; 'fonte_non_interpretabile' = il source-analyzer non ha potuto estrarre la misura; 'dati_numerici_mancanti' = la fonte non quantifica il beneficio e una misura non quantificabile non si presenta come tale; 'fuori_perimetro' = non è un aiuto statale alle persone fisiche.",
+          "type": "string",
+          "enum": ["doppio_rifiuto_validator", "fonte_non_interpretabile", "dati_numerici_mancanti", "fuori_perimetro"]
+        },
+        "divergenze_residue": {
+          "description": "Divergenze dell'ultimo giro, quando il motivo è il doppio rifiuto. È il dossier che l'operatore legge senza avere visto i giri precedenti.",
+          "type": "array",
+          "items": { "$ref": "./fidelity-validator.output.json#/$defs/divergenza" }
+        },
+        "escluso_il": { "$ref": "./_envelope.json#/$defs/timestamp" },
+        "source_refs": { "$ref": "./_envelope.json#/$defs/source_refs_obbligatori" }
+      },
+      "required": ["misura_id", "nome", "motivo", "escluso_il", "source_refs"],
+      "additionalProperties": false
+    }
+  }
+}

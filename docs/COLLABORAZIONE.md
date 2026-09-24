@@ -20,8 +20,8 @@ Questo, oltre a farci risparmiare tempo, è direttamente il criterio "coerenza t
 Niente pull request: in 5 ore sono troppo lente. Lavoriamo entrambi su `main`.
 Funziona solo se **nessuno scrive nei file dell'altro**. La mappa sta in `CLAUDE.md`, in sintesi:
 
-- Davide: `agents/**`, `docs/process-note.md`, `docs/status-davide.md`
-- Chiara: `app/**`, `presentation/**`, `docs/validation/**`, `docs/status-chiara.md`
+- Davide: `agents/**`, `presentation/**`, `docs/ux/**`, `docs/process-note.md`, `docs/status-davide.md`
+- Chiara: `app/**`, `docs/validation/**`, `docs/status-chiara.md`
 - Condivisi (si avvisa prima di toccarli): `README.md`, `CLAUDE.md`, `agents/schemas/**`
 
 Se ti serve una modifica in un file non tuo, **non farla**: scrivila nel tuo file di status.
@@ -43,7 +43,7 @@ si fa solo dicendolo.
 ## 4. Sincronizzazioni a orario fisso, non continue
 
 Chiamata Teams **aperta per tutte e 5 le ore**, microfono libero: la domanda da dieci secondi
-si fa a voce, non si scrive. Ma le sincronizzazioni vere sono tre, e sono brevi:
+si fa a voce, non si scrive. Ma le sincronizzazioni vere sono quattro, e sono brevi:
 
 | Quando | Durata | Cosa |
 |---|---|---|

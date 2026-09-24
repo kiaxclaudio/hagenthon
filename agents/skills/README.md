@@ -13,15 +13,14 @@ esplicitamente le sovrapposizioni tra file.
 
 | Skill | Caricata da | Condizione di caricamento | Peso | Perché non sta nel file dell'agente |
 |---|---|---|---|---|
-| `plain-language.md` | `subagents/simplifier.md` | passo A3, a ogni riscrittura di un passo e a ogni correzione dopo un rifiuto | 202 righe, 1.896 parole | Sono 14 regole più una checklist di 9 controlli: oltre cinque volte il file del `simplifier` (36 righe). Inline, verrebbero caricate anche quando il `simplifier` non gira, cioè in tutta la Fase B |
-| `fidelity-diff-taxonomy.md` | `subagents/fidelity-validator.md` | passo A4, a ogni verifica, compreso il secondo giro | 330 righe, 2.847 parole | La tassonomia serve a **classificare**, e classificare è un lavoro che fa solo il validator. Tenerla fuori dal `simplifier` è anche una scelta di separazione: chi scrive non deve conoscere in anticipo la griglia con cui verrà giudicato, o la ottimizza invece di rispettarla |
-| `hitl-escalation.md` | `orchestrator.md`; la sola sezione 4 anche da `subagents/intervener.md` | quando scatta uno dei gate HITL dichiarati in `orchestrator.md`, e al terzo intervento fallito per l'`intervener` | 219 righe, 2.344 parole | È il percorso eccezionale: nel caso normale non serve mai. Caricarla sempre significherebbe pagare in ogni invocazione un contenuto che riguarda una frazione dei casi |
+| `plain-language.md` | `subagents/explainer.md` | passo A2, a ogni riscrittura di una misura e a ogni correzione dopo un rifiuto | 207 righe, 1.962 parole | Sono 14 regole più una checklist di 9 controlli: quasi il doppio del file dell'`explainer` (115 righe). Inline, verrebbero caricate anche quando l'`explainer` non gira, cioè in tutta la Fase B |
+| `fidelity-diff-taxonomy.md` | `subagents/fidelity-validator.md` | passo A3, a ogni verifica, compreso il secondo giro | 349 righe, 3.008 parole | La tassonomia serve a **classificare**, e classificare è un lavoro che fa solo il validator. Tenerla fuori dall'`explainer` è anche una scelta di separazione: chi scrive non deve conoscere in anticipo la griglia con cui verrà giudicato, o la ottimizza invece di rispettarla |
+| `hitl-escalation.md` | `orchestrator.md` | quando scatta uno dei gate HITL dichiarati in `orchestrator.md`, in Fase A come in Fase B | 226 righe, 2.434 parole | È il percorso eccezionale: nel caso normale non serve mai. Caricarla sempre significherebbe pagare in ogni invocazione un contenuto che riguarda una frazione dei casi |
 
-Totale: **751 righe, 7.087 parole** (stima: circa 11.000 token; conteggi con `wc -lw`).
-I quattro file agente coinvolti ne contano insieme 202 e 1.192. Inline, le istruzioni degli
-agenti peserebbero **quasi sei volte tanto**, in ogni invocazione di ogni agente. Con il
-caricamento on-demand, nessuna invocazione ne carica più di una, e le invocazioni di Fase B non
-ne caricano nessuna.
+Totale: **782 righe, 7.404 parole** (conteggi con `wc -lw`; stima di circa 11.000 token).
+I tre file che le caricano ne contano insieme 361 e 2.629. Inline, le istruzioni peserebbero
+**più del triplo**, in ogni invocazione. Con il caricamento on-demand nessuna invocazione ne
+carica più di una, e le invocazioni di Fase B non ne caricano nessuna finché non scatta un gate.
 
 ## Agenti che non caricano alcuna skill
 
@@ -29,10 +28,10 @@ Dichiarato apposta: un agente senza skill è una scelta, non una dimenticanza.
 
 | Agente | Perché no |
 |---|---|
-| `profiler` | Normalizzazione su tassonomia chiusa, gira una volta per persona. La tassonomia sta nel suo schema di output, non in una skill |
-| `source-analyzer` | Produce struttura, non testo per la persona: le regole di linguaggio non lo riguardano |
-| `block-detector` | È il componente ad alta frequenza della Fase B. Aggiungergli contesto è esattamente ciò che la separazione in due fasi serve a evitare |
-| `intervener` | Carica una sola sezione di `hitl-escalation.md`, e solo al terzo intervento. Le sue uscite normali sono di una frase: `plain-language.md` costerebbe più di quanto renda |
+| `profiler` | Normalizzazione su tassonomia chiusa, gira una volta per sessione. La tassonomia sta nel suo file e nel suo schema di output, non in una skill |
+| `source-analyzer` | Produce struttura, non testo per la persona: le regole di linguaggio non lo riguardano. Le regole di estrazione sono i suoi passi, e sono otto righe |
+| `eligibility` | Non scrive contenuto nuovo: cita il catalogo già verificato. Le sue regole di dominio stanno tutte nei guardrail G-18..G-21 |
+| `navigator` | È il componente più frequente della Fase B e assembla materiale già verificato. Aggiungergli contesto è esattamente ciò che la separazione in due fasi serve a evitare |
 
 ## Convenzione: l'intestazione dichiara il caricamento
 
@@ -48,10 +47,10 @@ verificabile leggendo il file e non solo dichiarato a parole:
 4. **Perché non è caricata da altri** — la giustificazione del confine. È la riga che dimostra
    che il perimetro è stato scelto e non subìto.
 
-Il caricamento è un'operazione reale, non una figura retorica: i tre sub-agenti che caricano una
-skill (`simplifier`, `fidelity-validator`, `intervener`) hanno `Read` fra i `tools` dichiarati nel
-frontmatter, e aprono il file solo nel momento indicato nella riga "Quando". Chi non carica
-nessuna skill non legge nessuno di questi file.
+Il caricamento è un'operazione reale, non una figura retorica: i due sub-agenti che caricano una
+skill (`explainer`, `fidelity-validator`) hanno `Read` fra i `tools` dichiarati nel frontmatter,
+e aprono il file solo nel momento indicato nella riga "Quando". Chi non carica nessuna skill non
+legge nessuno di questi file.
 
 ## Regola di non sovrapposizione
 
@@ -64,8 +63,8 @@ di destra vuota, quel contenuto va cancellato dalla skill.
 
 Divisione delle responsabilità fra le tre, in una riga ciascuna:
 
-- `plain-language.md` dice **come si scrive** un passo (codici `PL-xx`);
-- `fidelity-diff-taxonomy.md` dice **come si giudica** un passo riscritto (codici `D-xx`);
+- `plain-language.md` dice **come si scrive** una misura in lingua semplice (codici `PL-xx`);
+- `fidelity-diff-taxonomy.md` dice **come si giudica** una misura riscritta (codici `D-xx`);
 - `hitl-escalation.md` dice **che cosa si fa quando non si può né scrivere né approvare**
   (codici `HE-xx`).
 
@@ -75,10 +74,10 @@ I tre insiemi di codici sono disgiunti e si citano a vicenda per riferimento: la
 
 ## Perché la mappa dei caricamenti sta qui e non nei file degli agenti
 
-Un solo punto di verità. Se ogni file agente elencasse le proprie skill, la stessa informazione
-vivrebbe in due posti e basterebbe una modifica per farli divergere. Il file dell'agente dichiara
-il **vincolo** ("numeri e date invariati"); la skill lo rende **eseguibile**; questa tabella dice
-**chi carica che cosa e quando**. Tre ruoli, tre posti, nessuna ripetizione.
+Un solo punto di verità sul **chi carica che cosa**. Il file dell'agente dichiara il **vincolo**
+("numeri e date invariati") e il passo in cui apre la skill; la skill rende il vincolo
+**eseguibile**; questa tabella dice **quanto pesa e perché non sta altrove**. Tre ruoli, tre
+posti, nessuna ripetizione.
 
 ## Aggiungere una skill
 

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/eligibility.input.json",
+  "title": "EligibilityInput",
+  "description": "Input dell'agente eligibility (Fase B, sonnet). Incrocia il profilo della persona con le misure già verificate del catalogo. Non riceve fonti e non riceve testo libero della conversazione (G-14): riceve due JSON, un profilo e un sottoinsieme di catalogo. Tutto ciò che non è nel catalogo non esiste, e questo è il motivo per cui l'agente non può inventare una misura.",
+  "type": "object",
+  "properties": {
+    "profilo": {
+      "description": "Profilo normalizzato della sessione, letto da agents/state/profilo.json.",
+      "$ref": "./profiler.output.json#/$defs/profilo"
+    },
+    "catalogo_versione": {
+      "description": "Versione del catalogo su cui si sta ragionando, riportata poi nell'output: se domani la misura cambia, resta scritto su quale versione la persona è stata orientata.",
+      "type": "string",
+      "pattern": "^[0-9]+[.][0-9]+[.][0-9]+$"
+    },
+    "misure_candidate": {
+      "description": "Voci di catalogo da valutare. L'orchestratore le pre-filtra sulle situazioni di vita del profilo prima di passarle: dare in pasto l'intero catalogo a ogni turno costerebbe token senza aggiungere nulla (G-13). Se il profilo contiene 'non_so' il filtro non si applica e passano tutte.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "./catalogo.json#/$defs/voce_catalogo" }
+    }
+  },
+  "required": ["profilo", "catalogo_versione", "misure_candidate"],
+  "additionalProperties": false
+}

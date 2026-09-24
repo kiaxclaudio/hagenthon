@@ -1,0 +1,47 @@
+# frasi-vietate.txt - pattern del controllo G-04 (nessun consiglio professionale).
+#
+# Letto da agents/hooks/anti_consulenza.py (hook PostToolUse). Sta qui e non
+# nel codice perche' la lista cresce mentre si scrive il catalogo: aggiungere
+# una formula non deve voler dire toccare un programma.
+#
+# Formato di ogni riga:   <regex Python> => <motivo breve>
+# - riga vuota o che inizia con # : ignorata
+# - confronto sempre senza distinzione fra maiuscole e minuscole
+# - una regex non valida viene segnalata e saltata, non ferma il controllo
+#
+# Criterio di ammissione di un pattern: deve distinguere il CONSIGLIO
+# ("dovresti scegliere X") dalla DESCRIZIONE ("la misura prevede X").
+# Se una formula compare normalmente in una descrizione neutra, non va qui:
+# un falso positivo ricorrente insegna a ignorare l'avviso.
+
+# --- raccomandazione diretta alla persona --------------------------------
+\bti consigli(o|amo)\b                 => raccomandazione diretta: il sistema orienta, non consiglia
+\ble consigli(o|amo)\b                 => raccomandazione diretta in forma di cortesia
+\bti suggerisc(o|iamo)\b               => suggerimento personale: sostituire con la descrizione della misura
+\bti invit(o|iamo) a\b                 => esortazione ad agire
+\bdovresti\b                           => prescrizione di un comportamento
+\bdovrebbe (scegliere|optare|investire|richiedere|aprire)\b => prescrizione in forma di cortesia
+\bio (al tuo posto|farei)\b            => opinione personale dell'agente
+\bnel tuo caso (conviene|meglio)\b     => consulenza personalizzata
+
+# --- giudizio di convenienza economica -----------------------------------
+\bti convien(e|ono)\b                  => giudizio di convenienza: e' una valutazione economica
+\bconviene (fare|scegliere|investire|aspettare|anticipare)\b => giudizio di convenienza
+\b(la|l')\s*(scelta|opzione|soluzione) (migliore|piu. conveniente|giusta) => classifica fra alternative
+\bmeglio (scegliere|optare|puntare|investire)\b => comparazione prescrittiva
+\bpunta su\b                           => indicazione di allocazione
+\binvesti (in|su)\b                    => indicazione di investimento
+\bti (fa|far.) risparmiare di piu.\b   => promessa comparativa di risparmio
+
+# --- promesse e garanzie -------------------------------------------------
+\bti garantis(co|ce|ciamo)\b           => garanzia di esito: nessun esito e' garantito
+\b(rendimento|guadagno|risparmio) garantito\b => promessa di risultato
+\bsicuramente (otterrai|avrai|prenderai|ricevi)\b => certezza su una pratica altrui
+\bsenza (alcun )?rischi(o|)\b          => minimizzazione del rischio
+\bal 100%\s*(sicuro|garantito)\b       => certezza assoluta
+\bnon (puoi|potete) sbagliare\b        => rassicurazione indebita
+
+# --- sostituzione del professionista -------------------------------------
+\bnon (serve|hai bisogno di) (un |il |andare dal )?(caf|commercialista|consulente) => scoraggia il rinvio al professionista
+\bfai da (te|solo)\b                   => scoraggia il rinvio al professionista
+\bnon serve (un|il) (consulente|professionista)\b => scoraggia il rinvio al professionista

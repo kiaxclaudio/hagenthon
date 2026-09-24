@@ -2,105 +2,112 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hagenthon/agents/schemas/profiler.output.json",
   "title": "ProfilerOutput",
-  "description": "Output dell'agente profiler. Profilo strutturato dei bisogni della persona, persistito in state/profile.json. Usa l'envelope comune via allOf (G-06, G-07).",
+  "description": "Output dell'agente profiler (Fase B, haiku). Normalizza le risposte a scelta multipla della persona in un profilo tipizzato, persistito in agents/state/profilo.json (G-12). Questo file è la fonte di verità degli enum di dominio del profilo: profiler.input, source-analyzer.output, eligibility e navigator li referenziano da qui invece di riscriverli. Usa l'envelope comune via allOf (G-06, G-07).",
   "allOf": [
-    {
-      "$ref": "./_envelope.json"
-    }
+    { "$ref": "./_envelope.json" }
   ],
   "properties": {
-    "payload": {
-      "description": "Profilo strutturato dei bisogni della persona.",
+    "payload": { "$ref": "#/$defs/profilo" }
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "situazione_vita": {
+      "description": "Situazione di vita dichiarata dalla persona allo Step 1 del flusso a scelta multipla. Enum chiuso: sono le sette opzioni mostrate a schermo, nessun valore libero. Il valore 'non_so' non è un dato mancante, è la scelta esplicita: non so da dove partire, mostrami tutto.",
+      "type": "string",
+      "enum": ["casa", "figlio", "lavoro", "spese_mediche", "auto", "under36", "non_so"]
+    },
+    "condizione_abitativa": {
+      "description": "Rapporto della persona con l'abitazione in cui vive (Step 2). Determina l'accesso a intere famiglie di misure: molte detrazioni edilizie spettano a chi sostiene la spesa sull'immobile, non a chi ci abita. Il valore 'non_so' si conserva, non si deduce (G-01).",
+      "type": "string",
+      "enum": ["proprietario", "affittuario", "ospite_familiari", "non_so"]
+    },
+    "tipo_reddito": {
+      "description": "Tipo di reddito dichiarato (Step 2). Discrimina fra misure che operano come detrazione in dichiarazione, che richiedono capienza fiscale, e misure erogate come contributo o assegno, che non la richiedono. Il valore 'nessun_reddito' è una risposta informativa, non un campo vuoto.",
+      "type": "string",
+      "enum": ["lavoro_dipendente", "pensione", "partita_iva", "nessun_reddito", "non_so"]
+    },
+    "timing": {
+      "description": "Momento in cui si trova la persona rispetto alla spesa o all'evento (Step 3). 'da_iniziare' = la spesa non è ancora stata sostenuta; 'in_corso' = già iniziata; 'gia_concluso' = conclusa, interessa il recupero degli anni passati. Filtra le misure per scadenza e attiva il blocco recupero della misura di catalogo.",
+      "type": "string",
+      "enum": ["da_iniziare", "in_corso", "gia_concluso"]
+    },
+    "caf": {
+      "description": "Presenza di un intermediario fiscale di riferimento (Step 2). Serve al navigator per scegliere il canale da indicare. Il valore 'non_so_cosa_e' attiva la spiegazione inline di due righe prevista dal flusso e aggiunge CAF al glossario contestuale.",
+      "type": "string",
+      "enum": ["si", "no", "non_so_cosa_e"]
+    },
+    "domanda_id": {
+      "description": "Identificatore della domanda del flusso a scelta multipla. Enum chiuso di cinque voci: sono tutte e sole le domande che il profiler può porre. L'orchestratore usa questi identificatori per sapere quale domanda manca ancora.",
+      "type": "string",
+      "enum": ["situazione_vita", "condizione_abitativa", "tipo_reddito", "timing", "caf"]
+    },
+    "profilo": {
+      "description": "Profilo normalizzato della persona, contenuto di agents/state/profilo.json. Nessun dato identificativo reale (G-17): solo le risposte alle cinque domande chiuse.",
       "type": "object",
       "properties": {
-        "livello_lettura": {
-          "description": "Livello di lettura stimato o dichiarato. 'base' = frasi brevi, parole comuni; 'intermedio' = testo standard; 'avanzato' = testo tecnico/burocratico; 'unknown' = non dichiarato (G-01: non stimare). TODO-TEMA: rivedere l'enum sul tema scelto.",
+        "profilo_id": {
+          "description": "Identificatore del profilo, coincidente con l'identificatore di sessione. Riferito da run-state.json e da eligibility.input.json.",
           "type": "string",
-          "enum": [
-            "base",
-            "intermedio",
-            "avanzato",
-            "unknown"
-          ]
+          "minLength": 1
         },
-        "modalita_preferita": {
-          "description": "Modalità di fruizione preferita per le istruzioni. 'testo' = testo scritto standard; 'audio' = indicazioni vocali/audio; 'visivo' = diagrammi o icone; 'semplificato' = testo con linguaggio facile; 'unknown' = non dichiarata. TODO-TEMA: rivedere l'enum sul tema scelto.",
-          "type": "string",
-          "enum": [
-            "testo",
-            "audio",
-            "visivo",
-            "semplificato",
-            "unknown"
-          ]
-        },
-        "vincoli_sensoriali": {
-          "description": "Elenco di vincoli sensoriali dichiarati dalla persona. Solo quelli esplicitamente dichiarati; quelli assenti restano fuori (G-01). TODO-TEMA: rivedere l'enum sul tema scelto.",
+        "creato_il": { "$ref": "./_envelope.json#/$defs/timestamp" },
+        "situazioni_vita": {
+          "description": "Situazioni di vita selezionate, una o più: lo Step 1 ammette scelta multipla. Se contiene 'non_so' la persona ha chiesto di vedere tutto e eligibility non restringe per situazione.",
           "type": "array",
-          "items": {
-            "type": "string",
-            "enum": [
-              "ipovisione",
-              "cecita",
-              "ipoacusia",
-              "sordita",
-              "unknown"
-            ]
-          },
-          "uniqueItems": true
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/situazione_vita" }
         },
-        "vincoli_motori": {
-          "description": "Elenco di vincoli motori dichiarati. Solo quelli esplicitamente dichiarati (G-01). TODO-TEMA: rivedere l'enum sul tema scelto.",
+        "condizione_abitativa": { "$ref": "#/$defs/condizione_abitativa" },
+        "tipo_reddito": { "$ref": "#/$defs/tipo_reddito" },
+        "timing": { "$ref": "#/$defs/timing" },
+        "caf": { "$ref": "#/$defs/caf" },
+        "termini_non_noti": {
+          "description": "Termini tecnici che la persona ha dichiarato di non conoscere, premendo Cosa significa? oppure rispondendo che non sa cosa siano. Alimenta il glossario contestuale di explainer e navigator: si spiega ciò che è stato chiesto, non tutto il vocabolario fiscale.",
           "type": "array",
+          "uniqueItems": true,
           "items": {
+            "description": "Termine così come compare a schermo, ad esempio CAF, ISEE, cassetto fiscale, detrazione.",
             "type": "string",
-            "enum": [
-              "difficolta_digitazione",
-              "uso_solo_tastiera",
-              "difficolta_mouse",
-              "unknown"
-            ]
-          },
-          "uniqueItems": true
+            "minLength": 1
+          }
         },
-        "vincoli_cognitivi": {
-          "description": "Elenco di vincoli cognitivi dichiarati (non diagnosi cliniche). Solo quelli esplicitamente dichiarati (G-01). TODO-TEMA: rivedere l'enum sul tema scelto.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": [
-              "memoria_breve_termine",
-              "difficolta_concentrazione",
-              "dislessia",
-              "unknown"
-            ]
-          },
-          "uniqueItems": true
-        },
-        "lingua": {
-          "description": "Lingua preferita dalla persona, codice ISO 639-1. 'unknown' se non dichiarata (G-01: non inferire).",
-          "type": "string"
-        },
-        "passo_singolo": {
-          "description": "Se true, la persona ha bisogno di ricevere un passo alla volta, senza anticipare quelli successivi.",
+        "completo": {
+          "description": "Vero se tutte e cinque le domande hanno una risposta. Un profilo incompleto non blocca eligibility, ma ne abbassa la confidence e può portare a escalation con motivo 'profilo_incompleto'.",
           "type": "boolean"
         },
-        "note": {
-          "description": "Note libere sul profilo, usate dal simplifier per calibrare il registro. Opzionale. Nessun dato identificativo reale (G-17).",
-          "type": "string"
+        "risposte_mancanti": {
+          "description": "Domande ancora senza risposta. Dice all'orchestratore quale domanda porre al turno successivo. Deve essere vuoto quando 'completo' è vero: il vincolo è espresso nell'if/then in fondo a questo schema, quindi è verificabile e non affidato al prompt.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/domanda_id" }
         }
       },
       "required": [
-        "livello_lettura",
-        "modalita_preferita",
-        "vincoli_sensoriali",
-        "vincoli_motori",
-        "vincoli_cognitivi",
-        "lingua",
-        "passo_singolo"
+        "profilo_id",
+        "creato_il",
+        "situazioni_vita",
+        "condizione_abitativa",
+        "tipo_reddito",
+        "timing",
+        "caf",
+        "termini_non_noti",
+        "completo",
+        "risposte_mancanti"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "description": "Coerenza interna verificabile: un profilo dichiarato completo non può avere domande senza risposta.",
+          "if": {
+            "properties": { "completo": { "const": true } },
+            "required": ["completo"]
+          },
+          "then": {
+            "properties": { "risposte_mancanti": { "maxItems": 0 } }
+          }
+        }
+      ]
     }
-  },
-  "unevaluatedProperties": false
+  }
 }

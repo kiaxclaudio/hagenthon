@@ -2,96 +2,152 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hagenthon/agents/schemas/fidelity-validator.output.json",
   "title": "FidelityValidatorOutput",
-  "description": "Output dell'agente fidelity-validator. Verdetto sulla fedeltà del passo semplificato rispetto all'originale, con elenco delle divergenze tipizzate e graduate.",
+  "description": "Output dell'agente fidelity-validator (Fase A, opus, solo Read). Confronta la spiegazione in lingua semplice con la misura destrutturata e dice se il significato è cambiato. Non riscrive e non giudica la leggibilità: separare chi produce da chi approva è una conseguenza dei permessi, non del prompt. Le regole di verdetto sono scritte come if/then in questo schema, quindi sono verificabili sull'output e non affidate al prompt (G-02, G-09). Usa l'envelope comune via allOf.",
   "allOf": [
+    { "$ref": "./_envelope.json" },
     {
-      "$ref": "./_envelope.json"
+      "description": "Una sola divergenza bloccante rende il verdetto 'rejected', a prescindere da quanto è buono il resto.",
+      "if": {
+        "properties": {
+          "payload": {
+            "properties": {
+              "divergenze": {
+                "contains": {
+                  "properties": { "gravita": { "const": "bloccante" } },
+                  "required": ["gravita"]
+                }
+              }
+            },
+            "required": ["divergenze"]
+          }
+        },
+        "required": ["payload"]
+      },
+      "then": {
+        "properties": {
+          "payload": { "properties": { "verdict": { "const": "rejected" } } }
+        }
+      }
+    },
+    {
+      "description": "Secondo rifiuto sulla stessa misura: la misura non entra nel catalogo e il caso passa a una persona. Il gate dell'architettura, scritto nel contratto.",
+      "if": {
+        "properties": {
+          "payload": {
+            "properties": {
+              "verdict": { "const": "rejected" },
+              "iterazione": { "const": 2 }
+            },
+            "required": ["verdict", "iterazione"]
+          }
+        },
+        "required": ["payload"]
+      },
+      "then": {
+        "properties": {
+          "status": { "const": "hitl_required" },
+          "payload": { "properties": { "esito_misura": { "const": "esclusa_hitl" } } }
+        }
+      }
     }
   ],
   "properties": {
     "payload": {
-      "description": "Verdetto e analisi delle divergenze tra originale e semplificato.",
+      "description": "Verdetto sulla fedeltà di una singola spiegazione.",
       "type": "object",
       "properties": {
-        "passo_id": {
-          "description": "Identificatore del passo valutato, identico all'input.",
-          "type": "string"
-        },
+        "misura_id": { "$ref": "./_envelope.json#/$defs/misura_id" },
         "verdict": {
-          "description": "Esito della validazione. 'approved' = il testo semplificato è fedele all'originale e può entrare nel journey; 'rejected' = presenza di divergenze che richiedono un nuovo giro dal simplifier.",
+          "description": "Esito del confronto. 'approved' = il significato è integro e la spiegazione può entrare nel catalogo; 'rejected' = almeno una divergenza bloccante, oppure due o più di gravità major. In dubbio si respinge.",
           "type": "string",
-          "enum": [
-            "approved",
-            "rejected"
-          ]
+          "enum": ["approved", "rejected"]
         },
         "iterazione": {
-          "description": "Numero del giro di validazione che ha prodotto questo output.",
+          "description": "Giro di verifica sulla stessa misura: 1 o 2. Al secondo rifiuto si escala, non si ritenta (G-08).",
           "type": "integer",
           "minimum": 1,
           "maximum": 2
         },
+        "inventario_completato": {
+          "description": "Vero se l'inventario delle unità di significato dell'originale è stato costruito per intero prima del confronto. Un inventario parziale produce zero divergenze e un 'approved' che non vale niente: per questo il campo è obbligatorio e finisce nel log di sessione.",
+          "type": "boolean"
+        },
         "divergenze": {
-          "description": "Elenco delle divergenze rilevate tra originale e semplificato. Array vuoto se verdict='approved'. Qualsiasi divergenza su importi, date, scadenze o obblighi è 'bloccante' (G-03).",
+          "description": "Tutte le differenze rilevate, comprese quelle non bloccanti: servono all'explainer al giro successivo e restano come evidenza di validazione. Un array vuoto è credibile solo con inventario_completato vero.",
           "type": "array",
-          "items": {
-            "type": "object",
-            "description": "Una singola divergenza rilevata dal validator.",
-            "properties": {
-              "tipo": {
-                "description": "Categoria della divergenza. 'omissione' = informazione presente nell'originale, assente nel semplificato; 'slittamento_senso' = significato alterato pur usando parole simili; 'obbligo_diventato_consiglio' = obbligo ammorbidito in facoltà; 'numero_cambiato' = importo, data o quantità diversa dall'originale (sempre bloccante, G-03); 'aggiunta_non_autorizzata' = informazione aggiunta non presente nell'originale (G-01); 'uncomparable' = impossibile confrontare per mancanza del testo originale.",
-                "type": "string",
-                "enum": [
-                  "omissione",
-                  "slittamento_senso",
-                  "obbligo_diventato_consiglio",
-                  "numero_cambiato",
-                  "aggiunta_non_autorizzata",
-                  "uncomparable"
-                ]
-              },
-              "gravita": {
-                "description": "Gravità della divergenza per la decisione di approvazione. 'bloccante' = rifiuto immediato, qualunque sia il resto (obbligatoria per numero_cambiato, obbligo_diventato_consiglio, uncomparable); 'major' = rifiuto probabile ma valutato nel contesto; 'minor' = segnalazione, non comporta necessariamente rifiuto.",
-                "type": "string",
-                "enum": [
-                  "bloccante",
-                  "major",
-                  "minor"
-                ]
-              },
-              "testo_originale": {
-                "description": "Frammento esatto dell'originale coinvolto nella divergenza.",
-                "type": "string"
-              },
-              "testo_semplificato": {
-                "description": "Frammento del testo semplificato corrispondente.",
-                "type": "string"
-              },
-              "descrizione": {
-                "description": "Spiegazione del problema: perché è una divergenza e cosa va corretto. Motivazione obbligatoria (G-05): 'non mi convince' non è valido.",
-                "type": "string",
-                "minLength": 5
-              }
-            },
-            "required": [
-              "tipo",
-              "gravita",
-              "testo_originale",
-              "testo_semplificato",
-              "descrizione"
-            ],
-            "additionalProperties": false
-          }
+          "items": { "$ref": "#/$defs/divergenza" }
+        },
+        "esito_misura": {
+          "description": "Che cosa succede alla misura dopo questo verdetto. 'pubblicabile' = entra nel catalogo; 'da_riscrivere' = torna all'explainer per il secondo e ultimo giro; 'esclusa_hitl' = due rifiuti, la misura non entra nel catalogo e il caso va a una persona.",
+          "type": "string",
+          "enum": ["pubblicabile", "da_riscrivere", "esclusa_hitl"]
         }
       },
-      "required": [
-        "passo_id",
-        "verdict",
-        "iterazione",
-        "divergenze"
-      ],
+      "required": ["misura_id", "verdict", "iterazione", "inventario_completato", "divergenze", "esito_misura"],
       "additionalProperties": false
     }
   },
-  "unevaluatedProperties": false
+  "unevaluatedProperties": false,
+  "$defs": {
+    "divergenza": {
+      "description": "Una differenza di significato fra la misura di partenza e la spiegazione. Tassonomia chiusa: un tipo fuori elenco non esiste, e una motivazione come non mi convince non è una divergenza.",
+      "type": "object",
+      "properties": {
+        "tipo": {
+          "description": "Tipo di divergenza. 'omissione' = un dato o una condizione sparisce; 'aggiunta_non_autorizzata' = la spiegazione afferma qualcosa che la fonte non dice; 'obbligo_diventato_consiglio' = cambia la forza di un obbligo o di un divieto; 'numero_cambiato' = una cifra, una percentuale o una data non è più la stessa; 'slittamento_senso' = perdita di una condizione, cambio di soggetto, ammorbidimento di una conseguenza, riferimento reso generico; 'uncomparable' = confronto impossibile perché l'originale manca o è illeggibile.",
+          "type": "string",
+          "enum": ["omissione", "aggiunta_non_autorizzata", "obbligo_diventato_consiglio", "numero_cambiato", "slittamento_senso", "uncomparable"]
+        },
+        "categoria_dato": {
+          "description": "Su che cosa cade la divergenza. Le prime sei categorie sono le informazioni che fanno agire la persona e sono sempre bloccanti: il vincolo è espresso nell'if/then in fondo a questa definizione, quindi un output che le dichiarasse minor non sarebbe valido. 'testo_esplicativo' è l'unica categoria che ammette gravità inferiore.",
+          "type": "string",
+          "enum": ["percentuale", "importo_o_tetto", "scadenza", "requisito", "obbligo", "riferimento", "testo_esplicativo"]
+        },
+        "gravita": {
+          "description": "Peso della divergenza. 'bloccante' = da sola causa il rifiuto; 'major' = cambia ciò che la persona capisce o fa, e due major causano il rifiuto; 'minor' = resta sul piano espositivo e si elenca senza rifiutare.",
+          "type": "string",
+          "enum": ["bloccante", "major", "minor"]
+        },
+        "campo": {
+          "description": "Puntatore JSON al campo della misura interessato, ad esempio /beneficio/tetto_massimo_euro oppure /requisiti/0/descrizione_fonte. Permette all'explainer di correggere il punto esatto invece di riscrivere tutto.",
+          "type": "string",
+          "pattern": "^/"
+        },
+        "testo_originale": {
+          "description": "Citazione letterale dalla misura destrutturata: la più breve che contenga il problema.",
+          "type": "string",
+          "minLength": 1
+        },
+        "testo_semplificato": {
+          "description": "Citazione letterale dalla spiegazione. Per una omissione si scrive la stringa: assente.",
+          "type": "string",
+          "minLength": 1
+        },
+        "descrizione": {
+          "description": "Motivazione, che si apre con il codice della tassonomia di dettaglio (da D-01 a D-10, oppure D-99 se non classificabile) e prosegue con l'effetto pratico sulla persona. Il pattern rende il codice obbligatorio: senza, la divergenza non è riconducibile alla regola di correzione.",
+          "type": "string",
+          "pattern": "^D-(0[1-9]|10|99) ",
+          "minLength": 20
+        }
+      },
+      "required": ["tipo", "categoria_dato", "gravita", "testo_originale", "testo_semplificato", "descrizione"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "description": "Percentuali, importi, tetti, scadenze, requisiti, obblighi e riferimenti: qualunque divergenza su questi è bloccante, senza eccezioni.",
+          "if": {
+            "properties": {
+              "categoria_dato": {
+                "enum": ["percentuale", "importo_o_tetto", "scadenza", "requisito", "obbligo", "riferimento"]
+              }
+            },
+            "required": ["categoria_dato"]
+          },
+          "then": {
+            "properties": { "gravita": { "const": "bloccante" } }
+          }
+        }
+      ]
+    }
+  }
 }

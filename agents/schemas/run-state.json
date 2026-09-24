@@ -2,120 +2,150 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hagenthon/agents/schemas/run-state.json",
   "title": "RunState",
-  "description": "Schema dello stato di sessione runtime (state/run-<id>.json). Persiste tutto lo stato necessario alla Fase B senza tenerlo in contesto (G-12). Contiene passo corrente, contatori di iterazione per i gate HITL e log degli interventi.",
+  "description": "Stato di una sessione di Fase B (agents/state/run-<id>.json). Tiene fuori dal contesto tutto ciò che deve sopravvivere fra un turno e l'altro: a che punto è la conversazione, quali misure sono già state proposte, se è scattata una escalation (G-12). Non contiene la trascrizione della conversazione (G-14) e non contiene dati personali (G-17). I contatori di intervento e di blocco sono spariti insieme agli agenti che li alimentavano: nel flusso a scelta multipla non esiste un utente bloccato su un campo, esiste una domanda ancora senza risposta, e quella sta nel profilo.",
   "type": "object",
   "properties": {
     "run_id": {
-      "description": "Identificatore univoco della sessione (UUID).",
+      "description": "Identificatore della sessione. Coincide con sessione_id in profiler.input e con profilo_id nel profilo.",
       "type": "string",
       "minLength": 1
     },
-    "journey_id": {
-      "description": "Identificatore del journey su cui si basa questa sessione.",
-      "type": "string"
-    },
-    "created_at": {
-      "description": "Timestamp ISO 8601 di apertura della sessione.",
+    "profilo_id": {
+      "description": "Profilo su cui la sessione sta lavorando, in agents/state/profilo.json.",
       "type": "string",
-      "format": "date-time"
+      "minLength": 1
     },
-    "updated_at": {
-      "description": "Timestamp ISO 8601 dell'ultimo aggiornamento dello stato.",
+    "catalogo_versione": {
+      "description": "Versione del catalogo letta in questa sessione. Se il catalogo viene rigenerato mentre la sessione è aperta, questo campo dice su quale versione la persona è stata orientata.",
       "type": "string",
-      "format": "date-time"
+      "pattern": "^[0-9]+[.][0-9]+[.][0-9]+$"
     },
+    "creato_il": { "$ref": "./_envelope.json#/$defs/timestamp" },
+    "aggiornato_il": { "$ref": "./_envelope.json#/$defs/timestamp" },
     "stato_sessione": {
-      "description": "Stato corrente della sessione. 'in_corso' = sessione attiva; 'completato' = tutti i passi obbligatori completati; 'abbandonato' = la persona ha abbandonato; 'hitl_escalated' = escalation umana attivata.",
+      "description": "Stato complessivo. 'in_corso' = conversazione attiva; 'completata' = la persona ha ricevuto scheda e passi operativi; 'abbandonata' = nessuna risposta e sessione chiusa dal timeout; 'hitl_escalated' = la sessione si è chiusa con un rimando a un CAF o a un commercialista.",
       "type": "string",
-      "enum": [
-        "in_corso",
-        "completato",
-        "abbandonato",
-        "hitl_escalated"
-      ]
+      "enum": ["in_corso", "completata", "abbandonata", "hitl_escalated"]
     },
-    "passo_corrente_index": {
-      "description": "Indice (0-based) del passo corrente nell'array journey.passi.",
-      "type": "integer",
-      "minimum": 0
-    },
-    "passo_corrente_id": {
-      "description": "Identificatore del passo corrente, ridondante con l'indice per leggibilità.",
-      "type": "string"
-    },
-    "interventi_passo_corrente": {
-      "description": "Quanti interventi dell'intervener sono stati effettuati sul passo corrente. Limite: 3. Al superamento l'orchestratore attiva HITL (G-08).",
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 3
-    },
-    "blocchi_consecutivi": {
-      "description": "Quanti blocchi consecutivi sono stati rilevati sul passo corrente dal block-detector. Limite: 3. Usato insieme a interventi_passo_corrente per il gate HITL.",
-      "type": "integer",
-      "minimum": 0
-    },
-    "tentativi_timeout_modello": {
-      "description": "Numero di retry per timeout del modello nella chiamata corrente. Limite: 3 con backoff esponenziale. Al superamento: status=degraded (G-16).",
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 3
+    "passo_corrente": {
+      "description": "Punto della conversazione. 'situazione_vita', 'profilo_base' e 'timing' sono i tre passi di raccolta a scelta multipla; 'scheda_misure' è la restituzione delle misure pertinenti; 'come_accedere' sono i passi operativi del navigator; 'chiusa' è la fine, con o senza escalation. Enum chiuso: l'orchestratore instrada su questo valore, non su una inferenza dal testo.",
+      "$ref": "#/$defs/passo_conversazione"
     },
     "passi_completati": {
-      "description": "Lista ordinata degli identificatori dei passi completati in questa sessione.",
+      "description": "Passi della conversazione già conclusi, nell'ordine in cui sono stati chiusi. Permette di riprendere una sessione senza rifare le domande e senza ricalcolare nulla.",
       "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/passo_conversazione" }
     },
-    "hitl_triggers": {
-      "description": "Log degli eventi di escalation HITL avvenuti in questa sessione. Utile per audit e per comunicare all'utente cosa sta succedendo (G-09).",
+    "misure_proposte": {
+      "description": "Misure già mostrate alla persona in questa sessione. Evita di riproporle e costituisce, insieme al profilo, il contenuto del log di fine sessione usato come evidenza di validazione.",
       "type": "array",
-      "items": {
-        "type": "object",
-        "description": "Un singolo evento di escalation HITL.",
-        "properties": {
-          "triggered_at": {
-            "description": "Timestamp ISO 8601 dell'escalation.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "passo_id": {
-            "description": "Passo su cui è avvenuta l'escalation.",
-            "type": "string"
-          },
-          "motivo": {
-            "description": "Causa dell'escalation. 'max_interventi' = 3 interventi falliti sullo stesso passo; 'max_blocchi' = 3 blocchi consecutivi sullo stesso passo; 'confidence_bassa' = confidence < 0.6 su passo con importi/date/scadenze; 'passo_hitl_required' = il passo era già marcato hitl_required in Fase A.",
-            "type": "string",
-            "enum": [
-              "max_interventi",
-              "max_blocchi",
-              "confidence_bassa",
-              "passo_hitl_required"
-            ]
-          }
-        },
-        "required": [
-          "triggered_at",
-          "passo_id",
-          "motivo"
-        ],
-        "additionalProperties": false
-      }
+      "items": { "$ref": "#/$defs/misura_proposta" }
+    },
+    "escalation": { "$ref": "#/$defs/escalation" },
+    "tentativi_timeout_modello": {
+      "description": "Retry consumati sulla chiamata in corso per timeout del modello. Limite 3 con backoff esponenziale; al superamento la risposta esce con status 'degraded' invece di non uscire (G-16).",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "ultimo_status": {
+      "description": "Status dell'ultimo output ricevuto da un agente in questa sessione. Copiato dall'envelope: l'interfaccia lo usa per mostrare l'avviso di risposta parziale senza dover conoscere il dominio.",
+      "type": "string",
+      "enum": ["ok", "degraded", "hitl_required"]
     }
   },
   "required": [
     "run_id",
-    "journey_id",
-    "created_at",
-    "updated_at",
+    "profilo_id",
+    "catalogo_versione",
+    "creato_il",
+    "aggiornato_il",
     "stato_sessione",
-    "passo_corrente_index",
-    "passo_corrente_id",
-    "interventi_passo_corrente",
-    "blocchi_consecutivi",
-    "tentativi_timeout_modello",
+    "passo_corrente",
     "passi_completati",
-    "hitl_triggers"
+    "misure_proposte",
+    "escalation",
+    "tentativi_timeout_modello",
+    "ultimo_status"
   ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "description": "Una escalation attiva chiude la sessione con il rimando a una persona: non si continua a proporre misure dopo avere dichiarato di non poterlo fare.",
+      "if": {
+        "properties": {
+          "escalation": {
+            "properties": { "attiva": { "const": true } },
+            "required": ["attiva"]
+          }
+        },
+        "required": ["escalation"]
+      },
+      "then": {
+        "properties": {
+          "stato_sessione": { "const": "hitl_escalated" },
+          "ultimo_status": { "const": "hitl_required" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "passo_conversazione": {
+      "description": "Uno dei sei punti in cui può trovarsi la conversazione di Fase B.",
+      "type": "string",
+      "enum": ["situazione_vita", "profilo_base", "timing", "scheda_misure", "come_accedere", "chiusa"]
+    },
+    "misura_proposta": {
+      "description": "Traccia di una misura mostrata alla persona.",
+      "type": "object",
+      "properties": {
+        "misura_id": { "$ref": "./_envelope.json#/$defs/misura_id" },
+        "nome": {
+          "description": "Nome ufficiale della misura, come nel catalogo.",
+          "type": "string",
+          "minLength": 3
+        },
+        "proposta_il": { "$ref": "./_envelope.json#/$defs/timestamp" },
+        "passi_generati": {
+          "description": "Vero se per questa misura il navigator ha già prodotto i passi operativi. Evita di richiamarlo sulla stessa misura.",
+          "type": "boolean"
+        }
+      },
+      "required": ["misura_id", "nome", "proposta_il", "passi_generati"],
+      "additionalProperties": false
+    },
+    "escalation": {
+      "description": "Rimando a una persona. Presente sempre, anche quando non è attiva: un campo che compare solo nei casi brutti è un campo che l'interfaccia dimentica di gestire.",
+      "type": "object",
+      "properties": {
+        "attiva": {
+          "description": "Vero se la sessione è stata rimandata a un CAF o a un commercialista.",
+          "type": "boolean"
+        },
+        "motivo": {
+          "description": "Motivo del rimando, con lo stesso enum chiuso di eligibility.output: i due campi si copiano, non si traducono.",
+          "$ref": "./eligibility.output.json#/properties/payload/properties/motivo_escalation"
+        },
+        "attivata_il": { "$ref": "./_envelope.json#/$defs/timestamp" },
+        "messaggio_mostrato": {
+          "description": "Il testo effettivamente letto dalla persona. Si conserva perché il log di sessione sia una evidenza di che cosa è stato detto, non una ricostruzione.",
+          "$ref": "./_envelope.json#/$defs/testo_senza_consulenza",
+          "maxLength": 600
+        }
+      },
+      "required": ["attiva"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "description": "Una escalation attiva porta sempre con sé il suo motivo, il momento e il messaggio mostrato: una escalation senza causa e senza destinatario è solo un arresto.",
+          "if": {
+            "properties": { "attiva": { "const": true } },
+            "required": ["attiva"]
+          },
+          "then": { "required": ["motivo", "attivata_il", "messaggio_mostrato"] }
+        }
+      ]
+    }
+  }
 }

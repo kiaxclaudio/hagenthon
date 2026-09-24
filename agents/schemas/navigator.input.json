@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/navigator.input.json",
+  "title": "NavigatorInput",
+  "description": "Input dell'agente navigator (Fase B, haiku). Riceve una sola misura, già verificata e già spiegata, e il profilo della persona. Una misura per volta e non l'intera scheda: il navigator è il modello più economico della catena e il suo compito è trasformare in passi ciò che qualcun altro ha già validato, non decidere che cosa presentare.",
+  "type": "object",
+  "properties": {
+    "profilo": {
+      "description": "Profilo della sessione. Serve per due sole scelte: il canale da indicare, che cambia se la persona ha già un CAF, e i termini da glossare.",
+      "$ref": "./profiler.output.json#/$defs/profilo"
+    },
+    "misura": {
+      "description": "La voce di catalogo su cui costruire i passi: i dati verificati e la spiegazione approvata.",
+      "$ref": "./catalogo.json#/$defs/voce_catalogo"
+    },
+    "documenti_gia_posseduti": {
+      "description": "Documenti che la persona ha dichiarato di avere già. Non cambiano i passi, ma evitano di far ripartire da capo chi ha già lo SPID o la CU in mano.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "./source-analyzer.output.json#/$defs/tipo_documento" }
+    }
+  },
+  "required": ["profilo", "misura"],
+  "additionalProperties": false
+}

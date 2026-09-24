@@ -2,26 +2,50 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hagenthon/agents/schemas/profiler.input.json",
   "title": "ProfilerInput",
-  "description": "Input per l'agente profiler. Descrive la persona concreta di cui costruire il profilo di bisogni. Nessun dato personale reale (G-17): usare descrizioni funzionali anonimizzate.",
+  "description": "Input dell'agente profiler (Fase B, haiku). Contiene le risposte grezze raccolte dalla chat a scelta multipla, non ancora normalizzate. Le opzioni sono tipizzate con gli stessi enum dell'output, referenziati da profiler.output.json: l'interfaccia non può inviare un valore che il profilo non sappia rappresentare. Nessun dato personale reale (G-17).",
   "type": "object",
   "properties": {
-    "persona_description": {
-      "description": "Descrizione in prosa della persona: età approssimativa, contesto d'uso, eventuali difficoltà dichiarate. Nessun dato identificativo reale (G-17).",
+    "sessione_id": {
+      "description": "Identificatore della sessione di conversazione. Diventa profilo_id nell'output e run_id in run-state.json.",
       "type": "string",
-      "minLength": 10
+      "minLength": 1
     },
-    "lingua_preferita": {
-      "description": "Lingua preferita della persona, codice ISO 639-1 (es. 'it', 'en'). Opzionale: se assente il profiler usa 'unknown'.",
+    "risposte": {
+      "description": "Risposte raccolte finora. Tutte le chiavi sono facoltative: il flusso è incrementale e il profiler viene invocato anche su un profilo parziale, per sapere che cosa manca ancora.",
+      "type": "object",
+      "properties": {
+        "situazione_vita": {
+          "description": "Opzioni selezionate allo Step 1, la domanda su cosa sta succedendo nella vita della persona. Scelta multipla.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "./profiler.output.json#/$defs/situazione_vita" }
+        },
+        "condizione_abitativa": { "$ref": "./profiler.output.json#/$defs/condizione_abitativa" },
+        "tipo_reddito": { "$ref": "./profiler.output.json#/$defs/tipo_reddito" },
+        "timing": { "$ref": "./profiler.output.json#/$defs/timing" },
+        "caf": { "$ref": "./profiler.output.json#/$defs/caf" }
+      },
+      "additionalProperties": false
+    },
+    "domande_poste": {
+      "description": "Domande già mostrate alla persona, anche se saltate. Evita che l'orchestratore riproponga una domanda a cui la persona ha scelto di non rispondere.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "./profiler.output.json#/$defs/domanda_id" }
+    },
+    "termini_chiesti": {
+      "description": "Termini per cui la persona ha premuto Cosa significa? durante la raccolta. Confluiscono in profilo.termini_non_noti e da lì nei glossari contestuali.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "testo_libero": {
+      "description": "Eventuale testo scritto dalla persona fuori dalle opzioni. Il profiler lo usa solo per assegnare uno degli enum esistenti: non crea categorie nuove e non deduce ciò che non è stato scelto (G-01). Nessun dato identificativo (G-17).",
       "type": "string",
-      "pattern": "^[a-z]{2}$"
-    },
-    "contesto_uso": {
-      "description": "Breve descrizione del contesto in cui la persona utilizzerà il percorso guidato (es. 'compilazione modulo online', 'sportello fisico'). Opzionale.",
-      "type": "string"
+      "maxLength": 500
     }
   },
-  "required": [
-    "persona_description"
-  ],
+  "required": ["sessione_id", "risposte", "domande_poste"],
   "additionalProperties": false
 }

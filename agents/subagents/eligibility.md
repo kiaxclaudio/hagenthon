@@ -51,8 +51,8 @@ JSON.
 
 Campi del `payload`: `misure_pertinenti[]` con `misura_id`, `nome`, `requisiti_soddisfatti[]`,
 `requisiti_da_verificare[]`, `motivo_pertinenza` e `confidence`; `misure_escluse[]` con il
-requisito che il profilo non soddisfa; `rinvio_caf` con `motivo_rinvio`; `disclaimer`;
-`source_refs` verso le voci di catalogo usate.
+requisito che il profilo non soddisfa; `motivo_escalation`, enum chiuso che `run-<id>.json`
+copia senza tradurre; `disclaimer`; `source_refs` verso le voci di catalogo usate.
 
 ## Passi
 
@@ -71,8 +71,9 @@ requisito che il profilo non soddisfa; `rinvio_caf` con `motivo_rinvio`; `discla
    hai dichiarato di essere proprietario dell'immobile", mai "ti conviene perché recuperi di più".
 6. Ordina l'elenco per asse del profilo dichiarato e, a parità, per nome della misura. Mai per
    importo, percentuale o beneficio: un ordinamento per valore è una raccomandazione implicita.
-7. Applica i gate: `confidence < 0.6` su una misura la esclude dall'elenco e la riporta in
-   `rinvio_caf` con il motivo; nessuna misura pertinente attiva `rinvio_caf` per intero.
+7. Applica i gate: `confidence < 0.6` su una misura la esclude dall'elenco e valorizza
+   `motivo_escalation` con `confidence_bassa`; nessuna misura pertinente vale
+   `caso_non_coperto`. In entrambi i casi la sessione rimanda a un CAF.
 8. Aggiorna `agents/state/run-<id>.json` con le misure proposte e restituisce il JSON.
 
 ## Vincoli
@@ -90,8 +91,8 @@ requisito che il profilo non soddisfa; `rinvio_caf` con `motivo_rinvio`; `discla
 ## Fallback
 
 Profilo con `completo: false` o `status: degraded`: restituisce le misure pertinenti alla sola
-`situazioni_vita`, tutte con `confidence` non superiore a 0.5, e imposta `rinvio_caf: true`
-dichiarando che il profilo è incompleto. Output valido, `status: "degraded"`, mai un errore.
+`situazioni_vita`, tutte con `confidence` non superiore a 0.5, e valorizza `motivo_escalation`
+con `profilo_insufficiente`, dichiarando che il profilo è incompleto. Output valido, `status: "degraded"`, mai un errore.
 
 ## Gate HITL (escalation umana)
 
@@ -99,7 +100,7 @@ Tre condizioni verificabili, tutte con lo stesso esito: la sessione dice alla pe
 rivolgersi a un CAF e dichiara il motivo.
 - `confidence < 0.6` su una misura: la misura non viene proposta.
 - Caso non coperto dal catalogo (nessuna misura pertinente, oppure richiesta su una misura
-  assente): `rinvio_caf: true`, motivo `caso_non_coperto`.
+  assente): `motivo_escalation: "caso_non_coperto"`.
 - Requisiti in conflitto fra loro nel catalogo per la stessa misura: `status: "hitl_required"`,
   motivo `catalogo_incoerente`, e la segnalazione va all'operatore, non alla persona.
 
@@ -112,8 +113,8 @@ profilo aggiornato dopo una ri-domanda: massimo 2 in tutto, poi si escala al CAF
 
 | Errore | Comportamento |
 |---|---|
-| timeout modello | retry con backoff, max 3, poi `status: "degraded"` con `rinvio_caf: true` |
+| timeout modello | retry con backoff, max 3, poi `status: "degraded"` e rimando a un CAF |
 | output non conforme allo schema | 1 ri-richiesta con lo schema in chiaro, poi HITL |
 | `agents/state/catalogo.json` assente o vuoto | `status: "hitl_required"`, motivo `catalogo_assente`: nessuna misura viene proposta |
-| voce di catalogo priva di `requisiti` | la misura non viene valutata e finisce in `misure_escluse` con motivo `requisiti_mancanti`, e attiva `rinvio_caf` |
+| voce di catalogo priva di `requisiti` | la misura non viene valutata e finisce in `misure_escluse`, e la sessione rimanda a un CAF |
 | `agents/state/run-<id>.json` non scrivibile | restituisce comunque il JSON con `status: "degraded"`: la sessione prosegue in memoria |
