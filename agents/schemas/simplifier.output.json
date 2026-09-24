@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/simplifier.output.json",
+  "title": "SimplifierOutput",
+  "description": "Output dell'agente simplifier. Un singolo passo riscritto nel linguaggio e nel formato del profilo della persona. Non entra nel journey finchÃ© non supera la validazione del fidelity-validator.",
+  "allOf": [
+    {
+      "$ref": "./_envelope.json"
+    }
+  ],
+  "properties": {
+    "payload": {
+      "description": "Il passo semplificato con metadati di tracciabilitÃ .",
+      "type": "object",
+      "properties": {
+        "passo_id": {
+          "description": "Identificatore del passo semplificato, identico al passo originale in input.",
+          "type": "string"
+        },
+        "testo_semplificato": {
+          "description": "Il testo del passo riscritto per il profilo. Numeri, importi, date e scadenze invariati (G-03). Nessuna informazione aggiunta o rimossa (G-01).",
+          "type": "string",
+          "minLength": 1
+        },
+        "iterazione": {
+          "description": "Numero del giro di semplificazione che ha prodotto questo output (1 o 2).",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2
+        },
+        "note_semplificazione": {
+          "description": "Note sulle scelte di semplificazione adottate, utili al fidelity-validator per valutare le decisioni del simplifier. Opzionale.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "modifiche_dal_feedback": {
+          "description": "Solo al secondo giro (iterazione=2): descrizione delle correzioni apportate rispetto al feedback del validator. Null al primo giro.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "passo_id",
+        "testo_semplificato",
+        "iterazione",
+        "note_semplificazione",
+        "modifiche_dal_feedback"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

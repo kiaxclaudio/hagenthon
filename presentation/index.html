@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hackathon Agentic Coding — presentazione</title>
+<!--
+  Presentazione a 8 sezioni, 5 minuti totali.
+  File singolo, nessuna dipendenza esterna: si apre offline con doppio clic.
+  Navigazione: frecce destra/sinistra, PagSu/PagGiu, barra spaziatrice, Home, Fine, o i pallini in basso.
+  I segnaposto di dominio vanno sostituiti dopo la scelta del tema e della persona.
+-->
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --purple:#A100FF;
+  --purple-light:#BE82FF;
+  --ink:#0A0014;
+  --bg:#050008;
+  --line:rgba(255,255,255,0.15);
+  --soft:rgba(255,255,255,0.05);
+  --muted:rgba(255,255,255,0.64);
+  --faint:rgba(255,255,255,0.25);
+}
+html,body{height:100%}
+body{
+  background:#050008;
+  color:#fff;
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(1100px 620px at 84% -14%, rgba(161,0,255,0.24), transparent 62%),
+    radial-gradient(760px 520px at -8% 110%, rgba(161,0,255,0.13), transparent 60%);
+}
+
+/* ---------- struttura ---------- */
+.deck{position:fixed;inset:0;z-index:1}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(70px,9vh,104px) clamp(26px,5vw,88px) clamp(80px,10vh,100px);
+  opacity:0;visibility:hidden;transform:translateY(10px);
+  transition:opacity .3s ease, transform .3s ease;
+  overflow-y:auto;
+}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.inner{width:100%;max-width:1260px;margin:0 auto}
+
+/* ---------- chrome ---------- */
+.chrome{position:fixed;left:0;right:0;z-index:5;pointer-events:none;
+  padding:0 clamp(26px,5vw,88px);display:flex;align-items:center;justify-content:space-between;gap:18px}
+.chrome.top{top:clamp(18px,3vh,34px)}
+.chrome.bot{bottom:clamp(16px,2.6vh,30px)}
+.logo{font-size:clamp(15px,1.5vw,19px);font-weight:700;letter-spacing:-0.01em;color:#fff}
+.logo i{font-style:normal;color:var(--purple)}
+.counter{font-size:12px;letter-spacing:.2em;color:var(--faint);font-variant-numeric:tabular-nums}
+.counter b{color:#fff;font-weight:600}
+.footnote{font-size:11px;text-transform:uppercase;letter-spacing:0.2em;color:rgba(255,255,255,0.25)}
+.nav{display:flex;align-items:center;gap:14px;pointer-events:auto}
+.dots{display:flex;gap:9px}
+.dot{width:9px;height:9px;padding:0;border-radius:999px;border:1px solid rgba(255,255,255,0.28);
+  background:transparent;cursor:pointer;transition:all .2s ease}
+.dot.on{background:var(--purple);border-color:var(--purple);box-shadow:0 0 0 4px rgba(161,0,255,0.18)}
+.navbtn{width:30px;height:30px;border-radius:999px;border:1px solid var(--line);background:var(--soft);
+  color:#fff;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center}
+.navbtn:hover{border-color:var(--purple)}
+
+/* ---------- tipografia ---------- */
+.eyebrow{display:inline-block;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);
+  border-radius:999px;font-size:11px;text-transform:uppercase;letter-spacing:0.25em;
+  padding:7px 16px 6px;color:rgba(255,255,255,0.74);margin-bottom:clamp(12px,2.1vh,24px)}
+h1,h2{background:linear-gradient(90deg,var(--purple-light),var(--purple));
+  -webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.06em}
+h1{font-size:clamp(38px,6.2vw,82px);line-height:1.04;letter-spacing:-0.03em;font-weight:700}
+h2{font-size:clamp(27px,3.9vw,50px);line-height:1.12;letter-spacing:-0.02em;font-weight:700;
+  margin-bottom:clamp(10px,1.8vh,20px)}
+h3{font-size:clamp(11px,1.05vw,13px);text-transform:uppercase;letter-spacing:0.2em;
+  color:var(--purple-light);font-weight:600;margin-bottom:10px}
+.lead{font-size:clamp(17px,1.62vw,24px);color:rgba(255,255,255,0.88);max-width:74ch}
+.body{font-size:clamp(14px,1.22vw,18px);color:var(--muted)}
+.small{font-size:clamp(12px,1.02vw,15px);color:rgba(255,255,255,0.5)}
+.mt{margin-top:clamp(12px,2vh,24px)}
+.mt2{margin-top:clamp(18px,3vh,34px)}
+strong{color:#fff;font-weight:600}
+code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:0.88em;color:var(--purple-light);
+  background:rgba(161,0,255,0.12);border:1px solid rgba(161,0,255,0.22);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.todo{color:var(--purple-light);background:rgba(190,130,255,0.08);
+  border-bottom:1px dashed rgba(190,130,255,0.55);border-radius:2px;padding:0 3px}
+
+ul.b{list-style:none}
+ul.b li{position:relative;padding-left:1.5em;margin-bottom:.5em;
+  font-size:clamp(14px,1.22vw,18px);color:var(--muted)}
+ul.b li::before{content:"\203A";position:absolute;left:0;top:-0.08em;color:var(--purple);font-size:1.3em;line-height:1.5}
+ul.b.tight li{margin-bottom:.3em}
+
+/* ---------- blocchi ---------- */
+.grid{display:grid;gap:clamp(12px,1.5vw,22px)}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.035);
+  border-radius:16px;padding:clamp(14px,1.6vw,24px)}
+.card.accent{border-color:rgba(161,0,255,0.45);background:rgba(161,0,255,0.09)}
+.note{border-left:3px solid var(--purple);padding:2px 0 2px 18px;color:#fff;
+  font-size:clamp(15px,1.45vw,21px);line-height:1.45}
+.num{font-size:clamp(22px,2.4vw,34px);font-weight:700;line-height:1;color:var(--purple);
+  font-variant-numeric:tabular-nums;margin-bottom:8px;display:block}
+.kv{display:grid;grid-template-columns:minmax(120px,32%) 1fr;gap:6px 16px;
+  font-size:clamp(13px,1.15vw,17px);color:var(--muted)}
+.kv dt{color:var(--purple-light);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:clamp(13px,1.14vw,17px)}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.2em;color:var(--purple-light);
+  font-weight:600;padding:0 0 10px;border-bottom:1px solid rgba(255,255,255,0.14)}
+td{padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.08);color:var(--muted);vertical-align:top}
+td:first-child{color:#fff;padding-right:26px;width:44%}
+
+/* ---------- diagramma ---------- */
+.arch{display:block;width:100%;height:auto;max-height:52vh;margin:0 auto}
+.arch text{font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.legend{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:12px;
+  font-size:clamp(11px,1vw,14px);color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.chip{width:13px;height:13px;border-radius:4px;display:inline-block}
+.chip.opus{background:var(--purple)}
+.chip.sonnet{border:1.5px solid var(--purple-light)}
+.chip.haiku{border:1.5px solid rgba(255,255,255,0.35)}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .g2,.g3{grid-template-columns:1fr}
+  .kv{grid-template-columns:1fr}
+  .arch{max-height:none}
+  td:first-child{width:auto}
+}
+@media print{
+  body{overflow:visible}
+  .chrome{display:none}
+  .slide{position:static;opacity:1;visibility:visible;transform:none;page-break-after:always;min-height:100vh}
+}
+</style>
+</head>
+<body>
+
+<div class="chrome top">
+  <div class="logo">Accenture<i>&gt;</i></div>
+  <div class="counter"><b id="cur">01</b> / <span id="tot">08</span></div>
+</div>
+
+<main class="deck" id="deck">
+
+<!-- ============================================================
+     SEZIONE 1 — COVER
+     TEMPO SUGGERITO: 0:15   ·   cumulato 0:15
+     ============================================================ -->
+<section class="slide" aria-label="Copertina">
+  <div class="inner">
+    <div class="eyebrow">Hackathon Agentic Coding · Application Engineering</div>
+    <h1><span class="todo">TODO-TEMA: nome del progetto, una o due parole</span></h1>
+    <p class="lead mt">Un sistema agentico che trasforma un artefatto reale in un percorso guidato,
+      riscritto per una persona precisa e verificato passo per passo prima di raggiungerla.</p>
+    <p class="body mt2">Team: Davide Polito, Chiara &nbsp;·&nbsp; Tema:
+      <span class="todo">TODO-TEMA: accessibilità digitale, inclusione finanziaria o educazione digitale inclusiva</span></p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SEZIONE 2 — IL PROBLEMA
+     TEMPO SUGGERITO: 0:35   ·   cumulato 0:50
+     ============================================================ -->
+<section class="slide" aria-label="Il problema">
+  <div class="inner">
+    <div class="eyebrow">01 · Il problema</div>
+    <h2>Il servizio esiste già. La persona si ferma lo stesso.</h2>
+    <p class="lead"><span class="todo">TODO-TEMA: il problema in due frasi — quale servizio reale, quale ostacolo concreto</span></p>
+    <div class="grid g2 mt2">
+      <div>
+        <h3>I fatti</h3>
+        <ul class="b">
+          <li><strong>Dove si blocca:</strong> <span class="todo">TODO-TEMA: il punto esatto del percorso in cui la persona si ferma oggi</span></li>
+          <li><strong>Quante persone:</strong> <span class="todo">TODO-TEMA: un dato di diffusione con la fonte citata</span></li>
+          <li><strong>Perché non basta riscrivere il testo una volta:</strong> gli artefatti cambiano, i bisogni
+            delle persone sono diversi e una riscrittura manuale non è verificata. Nessuno garantisce
+            che il testo semplificato dica ancora la stessa cosa dell'originale.</li>
+        </ul>
+      </div>
+      <div class="card accent">
+        <h3>Il punto</h3>
+        <p class="note" style="border:0;padding:0">Non manca il contenuto.
+          Manca la distanza fra il contenuto e la persona che deve usarlo.</p>
+        <p class="small mt">Semplificare è facile. Semplificare <strong>senza cambiare il significato</strong>
+          su importi, date, scadenze e obblighi è il vincolo vero: il sistema e costruito intorno a quel vincolo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SEZIONE 3 — UTENTE E SCENARIO
+     TEMPO SUGGERITO: 0:30   ·   cumulato 1:20
+     ============================================================ -->
+<section class="slide" aria-label="Utente e scenario">
+  <div class="inner">
+    <div class="eyebrow">02 · Utente e scenario</div>
+    <h2>Una persona concreta, un artefatto reale</h2>
+    <div class="grid g2 mt">
+      <div class="card">
+        <h3>La persona</h3>
+        <dl class="kv">
+          <dt>Chi</dt><dd><span class="todo">TODO-TEMA: nome di comodo, età, contesto in una riga</span></dd>
+          <dt>Bisogni dichiarati</dt><dd><span class="todo">TODO-TEMA: i bisogni di accesso rilevanti per lo scenario</span></dd>
+          <dt>Che cosa deve fare</dt><dd><span class="todo">TODO-TEMA: il task concreto e come si capisce che è riuscito</span></dd>
+          <dt>Artefatto reale</dt><dd><span class="todo">TODO-TEMA: il documento o il servizio vero su cui lavoriamo, e in che formato</span></dd>
+        </dl>
+      </div>
+      <div class="card">
+        <h3>Come il sistema la rappresenta</h3>
+        <p class="body">L'agente <code>profiler</code> produce <code>state/profile.json</code>:
+          quattro dimensioni su tassonomia chiusa.</p>
+        <ul class="b tight mt">
+          <li>livello di lettura</li>
+          <li>modalità preferita</li>
+          <li>vincoli sensoriali, motori, cognitivi</li>
+          <li>lingua</li>
+        </ul>
+        <p class="small mt">I bisogni non dichiarati restano <code>unknown</code>: il profiler non stima
+          e non inferisce diagnosi cliniche (G-01). Nessun dato personale reale nei file committati (G-17).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SEZIONE 4 — COME FUNZIONA LA SOLUZIONE
+     TEMPO SUGGERITO: 0:40   ·   cumulato 2:00
+     ============================================================ -->
+<section class="slide" aria-label="Come funziona la soluzione">
+  <div class="inner">
+    <div class="eyebrow">03 · Come funziona</div>
+    <h2>Dall'artefatto reale al percorso guidato</h2>
+    <div class="grid g3 mt">
+      <div class="card">
+        <span class="num">01</span>
+        <h3>Si parte dall'originale</h3>
+        <p class="body">Il sistema legge l'artefatto vero, non una versione semplificata scritta a mano.
+          Lo destruttura in passi: che cosa chiede, quale informazione serve, quali vincoli, dove si decide.</p>
+      </div>
+      <div class="card">
+        <span class="num">02</span>
+        <h3>Ogni passo riscritto e verificato</h3>
+        <p class="body">Ogni passo viene riscritto secondo il profilo, poi confrontato con l'originale da
+          un agente diverso da quello che lo ha scritto. Se il confronto non torna, il passo non viene mostrato.</p>
+      </div>
+      <div class="card">
+        <span class="num">03</span>
+        <h3>Durante l'uso, un intervento alla volta</h3>
+        <p class="body">A sessione aperta il sistema osserva il blocco sul passo corrente e propone il
+          suggerimento minimo che sblocca. Non completa l'azione al posto della persona.</p>
+      </div>
+    </div>
+    <p class="note mt2">Il percorso approvato è un file: <code>agents/state/journey.json</code>.
+      Si produce una volta per artefatto e si riusa a ogni sessione.</p>
+    <p class="small mt">Nella demo: <span class="todo">TODO-TEMA: il percorso end-to-end che mostriamo dal vivo, dall'input all'esito</span></p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SEZIONE 5 — DOVE INTERVIENE L'AGENTE AI (sezione principale)
+     TEMPO SUGGERITO: 1:30   ·   cumulato 3:30
+     ============================================================ -->
+<section class="slide" aria-label="Dove interviene l'agente AI">
+  <div class="inner">
+    <div class="eyebrow">04 · Dove interviene l'agente AI</div>
+    <h2 style="font-size:clamp(24px,3.1vw,40px);margin-bottom:6px">Un orchestratore, sei sub-agenti, due fasi con economie opposte</h2>
+    <p class="body" style="margin-bottom:14px">L'AI non è uno strato aggiunto sopra il prodotto: è il prodotto.
+      Ogni componente ha un verbo solo. Se due agenti potessero scambiarsi il lavoro, uno dei due sarebbe di troppo.</p>
+
+    <svg class="arch" viewBox="0 0 1240 600" role="img" aria-labelledby="archTitle archDesc" preserveAspectRatio="xMidYMid meet">
+      <title id="archTitle">Architettura agentica in due fasi</title>
+      <desc id="archDesc">Fase A offline: profiler su haiku, source-analyzer su opus, simplifier su sonnet in ciclo
+        con fidelity-validator su opus per un massimo di due giri, poi journey.json oppure gate HITL.
+        Fase B a runtime: block-detector su haiku, intervener su sonnet, massimo tre interventi sullo stesso
+        passo poi gate HITL. L'orchestratore su haiku esegue entrambe le fasi.</desc>
+
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#BE82FF"/>
+        </marker>
+        <marker id="ahd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="rgba(255,255,255,0.5)"/>
+        </marker>
+      </defs>
+
+      <!-- orchestratore -->
+      <rect x="856" y="12" width="360" height="32" rx="16" fill="rgba(161,0,255,0.14)" stroke="#A100FF" stroke-width="1"/>
+      <text x="1036" y="33" text-anchor="middle" font-size="13.5" fill="#ffffff">orchestrator · haiku-4.5 · instrada, applica limiti e gate</text>
+
+      <!-- ===== FASE A ===== -->
+      <text x="14" y="34" font-size="14" letter-spacing="2.4" fill="#BE82FF">FASE A · PREPARAZIONE — OFFLINE, UNA VOLTA PER ARTEFATTO</text>
+      <rect x="8" y="50" width="1224" height="254" rx="16" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.09)"/>
+
+      <!-- A1 profiler -->
+      <rect x="20" y="96" width="176" height="78" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
+      <text x="182" y="118" text-anchor="end" font-size="11.5" letter-spacing="1" fill="rgba(255,255,255,0.35)">A1</text>
+      <text x="36" y="136" font-size="17" font-weight="600" fill="#ffffff">profiler</text>
+      <rect x="36" y="146" width="84" height="22" rx="11" fill="none" stroke="rgba(255,255,255,0.3)"/>
+      <text x="78" y="161" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.7)">haiku-4.5</text>
+
+      <!-- A2 source-analyzer -->
+      <rect x="252" y="96" width="196" height="78" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
+      <text x="434" y="118" text-anchor="end" font-size="11.5" letter-spacing="1" fill="rgba(255,255,255,0.35)">A2</text>
+      <text x="268" y="136" font-size="17" font-weight="600" fill="#ffffff">source-analyzer</text>
+      <rect x="268" y="146" width="66" height="22" rx="11" fill="#A100FF"/>
+      <text x="301" y="161" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">opus-5</text>
+
+      <!-- A3 simplifier -->
+      <rect x="504" y="96" width="176" height="78" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
+      <text x="666" y="118" text-anchor="end" font-size="11.5" letter-spacing="1" fill="rgba(255,255,255,0.35)">A3</text>
+      <text x="520" y="136" font-size="17" font-weight="600" fill="#ffffff">simplifier</text>
+      <rect x="520" y="146" width="80" height="22" rx="11" fill="none" stroke="#BE82FF"/>
+      <text x="560" y="161" text-anchor="middle" font-size="12" fill="#BE82FF">sonnet-5</text>
+
+      <!-- A4 fidelity-validator -->
+      <rect x="736" y="96" width="208" height="78" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
+      <text x="930" y="118" text-anchor="end" font-size="11.5" letter-spacing="1" fill="rgba(255,255,255,0.35)">A4</text>
+      <text x="752" y="136" font-size="17" font-weight="600" fill="#ffffff">fidelity-validator</text>
+      <rect x="752" y="146" width="66" height="22" rx="11" fill="#A100FF"/>
+      <text x="785" y="161" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">opus-5</text>
+
+      <!-- A5 journey.json -->
+      <rect x="1016" y="96" width="200" height="78" rx="12" fill="rgba(161,0,255,0.12)" stroke="#BE82FF"/>
+      <text x="1202" y="118" text-anchor="end" font-size="11.5" letter-spacing="1" fill="rgba(255,255,255,0.35)">A5</text>
+      <text x="1032" y="136" font-size="17" font-weight="600" fill="#ffffff">journey.json</text>
+      <text x="1032" y="158" font-size="12.5" fill="rgba(255,255,255,0.6)">persistito su disco</text>
+
+      <!-- frecce fase A -->
+      <path d="M200,135 H248" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+      <path d="M452,135 H500" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+      <path d="M684,135 H732" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+      <path d="M948,135 H1012" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+      <text x="980" y="120" text-anchor="middle" font-size="12.5" fill="rgba(255,255,255,0.7)">approvato</text>
+
+      <!-- loop di rifiuto -->
+      <path d="M800,174 V214 H596 V180" stroke="#BE82FF" stroke-width="1.6" fill="none"
+            stroke-dasharray="6 4" marker-end="url(#ah)"/>
+      <text x="698" y="236" text-anchor="middle" font-size="13.5" fill="#BE82FF">respinto · massimo 2 giri</text>
+
+      <!-- gate HITL fase A -->
+      <path d="M890,174 V258 H1010" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" fill="none"
+            stroke-dasharray="5 4" marker-end="url(#ahd)"/>
+      <rect x="1016" y="222" width="200" height="72" rx="12" fill="rgba(255,255,255,0.03)"
+            stroke="rgba(255,255,255,0.4)" stroke-dasharray="5 4"/>
+      <text x="1032" y="246" font-size="14.5" font-weight="600" fill="#BE82FF">GATE HITL</text>
+      <text x="1032" y="266" font-size="12" fill="rgba(255,255,255,0.62)">al 2&#176; rifiuto</text>
+      <text x="1032" y="282" font-size="12" fill="rgba(255,255,255,0.62)">il passo non viene mostrato</text>
+
+      <!-- ===== FASE B ===== -->
+      <text x="14" y="352" font-size="14" letter-spacing="2.4" fill="#BE82FF">FASE B · SESSIONE GUIDATA — A OGNI EVENTO, SOLO MODELLI ECONOMICI</text>
+      <rect x="8" y="368" width="1224" height="214" rx="16" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.09)"/>
+
+      <!-- evento utente -->
+      <rect x="20" y="428" width="164" height="78" rx="12" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.11)"/>
+      <text x="36" y="462" font-size="16" font-weight="600" fill="rgba(255,255,255,0.8)">evento utente</text>
+      <text x="36" y="484" font-size="12.5" fill="rgba(255,255,255,0.45)">sul passo corrente</text>
+
+      <!-- B2 block-detector -->
+      <rect x="240" y="428" width="196" height="78" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
+      <text x="422" y="450" text-anchor="end" font-size="11.5" letter-spacing="1" fill="rgba(255,255,255,0.35)">B2</text>
+      <text x="256" y="468" font-size="17" font-weight="600" fill="#ffffff">block-detector</text>
+      <rect x="256" y="478" width="84" height="22" rx="11" fill="none" stroke="rgba(255,255,255,0.3)"/>
+      <text x="298" y="493" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.7)">haiku-4.5</text>
+
+      <!-- B3 intervener -->
+      <rect x="492" y="428" width="176" height="78" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
+      <text x="654" y="450" text-anchor="end" font-size="11.5" letter-spacing="1" fill="rgba(255,255,255,0.35)">B3</text>
+      <text x="508" y="468" font-size="17" font-weight="600" fill="#ffffff">intervener</text>
+      <rect x="508" y="478" width="80" height="22" rx="11" fill="none" stroke="#BE82FF"/>
+      <text x="548" y="493" text-anchor="middle" font-size="12" fill="#BE82FF">sonnet-5</text>
+
+      <!-- B1 passo successivo -->
+      <rect x="724" y="428" width="188" height="78" rx="12" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.11)"/>
+      <text x="898" y="450" text-anchor="end" font-size="11.5" letter-spacing="1" fill="rgba(255,255,255,0.35)">B1</text>
+      <text x="740" y="468" font-size="16" font-weight="600" fill="rgba(255,255,255,0.8)">passo successivo</text>
+      <text x="740" y="488" font-size="12.5" fill="rgba(255,255,255,0.45)">letto da journey.json</text>
+
+      <!-- gate HITL fase B -->
+      <rect x="968" y="428" width="248" height="78" rx="12" fill="rgba(255,255,255,0.03)"
+            stroke="rgba(255,255,255,0.4)" stroke-dasharray="5 4"/>
+      <text x="984" y="458" font-size="14.5" font-weight="600" fill="#BE82FF">GATE HITL</text>
+      <text x="984" y="478" font-size="12" fill="rgba(255,255,255,0.62)">dopo 3 interventi sullo stesso passo:</text>
+      <text x="984" y="494" font-size="12" fill="rgba(255,255,255,0.62)">si propone il contatto con una persona</text>
+
+      <!-- frecce fase B -->
+      <path d="M188,467 H236" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+      <path d="M440,467 H488" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+      <text x="464" y="452" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.7)">bloccato</text>
+      <path d="M672,467 H720" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+      <path d="M916,467 H964" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" fill="none"
+            stroke-dasharray="5 4" marker-end="url(#ahd)"/>
+      <path d="M338,428 V402 H818 V424" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+      <text x="578" y="396" text-anchor="middle" font-size="12.5" fill="rgba(255,255,255,0.7)">non bloccato</text>
+
+      <text x="20" y="546" font-size="13" fill="rgba(255,255,255,0.5)">Nessuna chiamata a opus-5 in Fase B: il runtime legge journey.json da disco.</text>
+      <text x="20" y="566" font-size="13" fill="rgba(255,255,255,0.5)">Stato della sessione in state/run-&lt;id&gt;.json, fuori dalla finestra di contesto (G-12).</text>
+    </svg>
+
+    <div class="legend">
+      <span><i class="chip haiku"></i> haiku-4.5 — classificazione e routing (3 componenti su 7)</span>
+      <span><i class="chip sonnet"></i> sonnet-5 — riscrittura vincolata (2 su 7)</span>
+      <span><i class="chip opus"></i> opus-5 — analisi e giudizio (2 su 7)</span>
+      <span>Fonte: <code>agents/orchestrator.md</code>, <code>agents/workflows/main-pipeline.md</code></span>
+    </div>
+
+    <div class="grid g3 mt">
+      <div class="card">
+        <h3>Chi scrive non approva</h3>
+        <p class="body"><code>simplifier</code> produce, <code>fidelity-validator</code> giudica, e sono
+          due agenti distinti su tier diversi. Il vincolo della sfida diventa una proprietà verificabile
+          del sistema invece di una raccomandazione dentro un prompt.</p>
+      </div>
+      <div class="card">
+        <h3>Due economie opposte</h3>
+        <p class="body">La Fase A usa i modelli capaci <strong>una volta per artefatto</strong> e persiste il
+          risultato. La Fase B, ad alta frequenza, usa solo haiku-4.5 e sonnet-5 e legge da file.
+          Il costo non cresce con l'uso.</p>
+      </div>
+      <div class="card">
+        <h3>Limiti dichiarati, non impliciti</h3>
+        <p class="body">2 giri <code>simplifier</code>&#8596;<code>fidelity-validator</code>;
+          3 interventi sullo stesso passo; 3 retry con backoff sui timeout, poi <code>status: degraded</code>.
+          Al limite si escala, non si ritenta.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SEZIONE 6 — QUALE MIGLIORAMENTO VIENE PRODOTTO
+     TEMPO SUGGERITO: 0:40   ·   cumulato 4:10
+     ============================================================ -->
+<section class="slide" aria-label="Il miglioramento prodotto">
+  <div class="inner">
+    <div class="eyebrow">05 · Il miglioramento</div>
+    <h2>Che cosa cambia, e per chi</h2>
+    <div class="grid g2 mt">
+      <div class="card accent">
+        <h3>Per la persona</h3>
+        <ul class="b">
+          <li><span class="todo">TODO-TEMA: la metrica prima/dopo che mostriamo nella demo, con il numero</span></li>
+          <li><span class="todo">TODO-TEMA: che cosa la persona riesce a fare da sola e prima non faceva</span></li>
+          <li>Nessun passo la raggiunge senza essere passato dal <code>fidelity-validator</code>.
+            Un passo che non supera la verifica non viene mostrato: viene segnalato a una persona.</li>
+          <li>Il sistema spiega che cosa significa una cosa, non dice che cosa fare: nessun consiglio
+            professionale, finanziario, legale, sanitario o fiscale (G-04).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Per il costo di esercizio</h3>
+        <ul class="b">
+          <li><strong>Il lavoro costoso si paga una volta.</strong> <code>source-analyzer</code> e
+            <code>fidelity-validator</code> (opus-5) girano solo in Fase A e il risultato è persistito.</li>
+          <li><strong>Il runtime non usa opus-5.</strong> La parte ad alta frequenza gira su
+            <code>block-detector</code> (haiku-4.5) e <code>intervener</code> (sonnet-5).</li>
+          <li><strong>Lo stato sta su disco, non in contesto.</strong> Quattro file:
+            <code>profile.json</code>, <code>source-model.json</code>, <code>journey.json</code>,
+            <code>run-&lt;id&gt;.json</code>.</li>
+          <li><strong>Gli agenti si passano JSON conforme a schema</strong>, non trascrizioni di
+            conversazione: contratti in <code>agents/schemas/</code> (G-05, G-14).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SEZIONE 7 — LIMITI E RISCHI
+     TEMPO SUGGERITO: 0:35   ·   cumulato 4:45
+     ============================================================ -->
+<section class="slide" aria-label="Limiti e rischi">
+  <div class="inner">
+    <div class="eyebrow">06 · Limiti e rischi</div>
+    <h2>Che cosa può andare storto, e che cosa gli abbiamo messo contro</h2>
+    <table class="mt">
+      <thead><tr><th>Rischio</th><th>Contromisura presente nel repository</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>La semplificazione cambia il significato.</td>
+          <td>Verifica avversariale affidata a un agente separato. Qualsiasi divergenza su importi, date,
+            scadenze o obblighi è bloccante. In dubbio respinge (G-02, G-03).</td>
+        </tr>
+        <tr>
+          <td>L'agente inventa un dato che nella fonte non c'è.</td>
+          <td>Ogni affermazione porta <code>source_refs</code> verso il punto esatto dell'originale.
+            Un dato mancante è <code>missing</code>, non stimato (G-01, G-07).</td>
+        </tr>
+        <tr>
+          <td>Il sistema scivola nel consiglio professionale.</td>
+          <td>Divieto esplicito per tutti gli agenti: spiega che cosa significa, non che cosa fare (G-04).</td>
+        </tr>
+        <tr>
+          <td>Il sistema insiste su una persona già bloccata.</td>
+          <td>Limiti numerici (2 giri, 3 interventi) e gate HITL che dichiarano all'utente che cosa sta
+            succedendo e propongono un'alternativa (G-08, G-09).</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="mt2">
+      <h3>Limiti che restano</h3>
+      <ul class="b tight">
+        <li>L'artefatto deve essere leggibile in modo automatico. Se non lo è, <code>source-analyzer</code>
+          esce <code>degraded</code> e la Fase A si ferma: non indovina il contenuto mancante.</li>
+        <li>La Fase A non è completamente autonoma: i passi marcati <code>hitl_required</code> richiedono
+          una persona prima di entrare nel percorso.</li>
+        <li>Il costo in token per agente non è ancora misurato su un run reale: è una voce aperta
+          dichiarata in <code>agents/README.md</code>.</li>
+        <li><span class="todo">TODO-TEMA: il rischio specifico del dominio scelto e come lo trattiamo</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SEZIONE 8 — CHIUSURA
+     TEMPO SUGGERITO: 0:15   ·   cumulato 5:00
+     ============================================================ -->
+<section class="slide" aria-label="Chiusura">
+  <div class="inner">
+    <div class="eyebrow">Chiusura</div>
+    <h2>Semplificare senza tradire non è una raccomandazione dentro un prompt.</h2>
+    <p class="lead">È un componente separato che può dire di no, con un limite di due giri
+      e un'escalation umana dichiarata.</p>
+    <div class="grid g2 mt2">
+      <div class="card">
+        <h3>Dove verificarlo nel repository</h3>
+        <ul class="b tight">
+          <li><code>agents/README.md</code> — i sette componenti e le tre decisioni architetturali</li>
+          <li><code>agents/orchestrator.md</code> — le due fasi, lo stato, i limiti, i gate HITL</li>
+          <li><code>agents/workflows/main-pipeline.md</code> — la sequenza eseguibile A1-A5 e B1-B3</li>
+          <li><code>agents/guardrails.md</code> — 17 regole numerate valide per tutti gli agenti</li>
+          <li><code>agents/schemas/</code> — i contratti JSON fra i componenti</li>
+        </ul>
+      </div>
+      <div class="card accent">
+        <h3>In una riga</h3>
+        <p class="note" style="border:0;padding:0">Un percorso che si ferma onestamente vale più di uno
+          che tira a indovinare su una pratica vera.</p>
+        <p class="small mt">Davide Polito, Chiara — Accenture Application Engineering</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="chrome bot">
+  <div class="footnote">Hackathon Agentic Coding · Application Engineering</div>
+  <div class="nav">
+    <button class="navbtn" id="prev" type="button" aria-label="Sezione precedente">&#8249;</button>
+    <div class="dots" id="dots" role="tablist" aria-label="Indice delle sezioni"></div>
+    <button class="navbtn" id="next" type="button" aria-label="Sezione successiva">&#8250;</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var dots = document.getElementById('dots');
+  var cur = document.getElementById('cur');
+  var i = 0;
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+  slides.forEach(function (s, n) {
+    var b = document.createElement('button');
+    b.className = 'dot';
+    b.type = 'button';
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-label', 'Sezione ' + (n + 1));
+    b.addEventListener('click', function () { go(n); });
+    dots.appendChild(b);
+  });
+  var buttons = Array.prototype.slice.call(dots.children);
+
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) {
+      s.classList.toggle('active', k === i);
+      s.setAttribute('aria-hidden', k === i ? 'false' : 'true');
+    });
+    buttons.forEach(function (b, k) {
+      b.classList.toggle('on', k === i);
+      b.setAttribute('aria-selected', k === i ? 'true' : 'false');
+    });
+    cur.textContent = pad(i + 1);
+    slides[i].scrollTop = 0;
+    if (history.replaceState) { history.replaceState(null, '', '#' + (i + 1)); }
+  }
+
+  document.addEventListener('keydown', function (e) {
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Spacebar') { go(i + 1); e.preventDefault(); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') { go(i - 1); e.preventDefault(); }
+    else if (k === 'Home') { go(0); e.preventDefault(); }
+    else if (k === 'End') { go(slides.length - 1); e.preventDefault(); }
+  });
+
+  document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+  document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+  document.getElementById('tot').textContent = pad(slides.length);
+
+  var h = parseInt(String(location.hash).replace('#', ''), 10);
+  go(isNaN(h) ? 0 : h - 1);
+})();
+</script>
+</body>
+</html>

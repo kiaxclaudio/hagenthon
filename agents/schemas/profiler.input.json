@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/profiler.input.json",
+  "title": "ProfilerInput",
+  "description": "Input per l'agente profiler. Descrive la persona concreta di cui costruire il profilo di bisogni. Nessun dato personale reale (G-17): usare descrizioni funzionali anonimizzate.",
+  "type": "object",
+  "properties": {
+    "persona_description": {
+      "description": "Descrizione in prosa della persona: etÃ  approssimativa, contesto d'uso, eventuali difficoltÃ  dichiarate. Nessun dato identificativo reale (G-17).",
+      "type": "string",
+      "minLength": 10
+    },
+    "lingua_preferita": {
+      "description": "Lingua preferita della persona, codice ISO 639-1 (es. 'it', 'en'). Opzionale: se assente il profiler usa 'unknown'.",
+      "type": "string",
+      "pattern": "^[a-z]{2}$"
+    },
+    "contesto_uso": {
+      "description": "Breve descrizione del contesto in cui la persona utilizzerÃ  il percorso guidato (es. 'compilazione modulo online', 'sportello fisico'). Opzionale.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "persona_description"
+  ],
+  "additionalProperties": false
+}

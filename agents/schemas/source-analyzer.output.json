@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/source-analyzer.output.json",
+  "title": "SourceAnalyzerOutput",
+  "description": "Output dell'agente source-analyzer. Artefatto reale destrutturato in una sequenza di passi, ognuno con cosa chiede, informazione necessaria, vincoli, gergo e source_refs. Persistito in state/source-model.json.",
+  "allOf": [
+    {
+      "$ref": "./_envelope.json"
+    }
+  ],
+  "properties": {
+    "payload": {
+      "description": "Modello strutturato dell'artefatto: metadati e sequenza di passi.",
+      "type": "object",
+      "properties": {
+        "artifact_id": {
+          "description": "Identificatore dell'artefatto analizzato, identico all'input.",
+          "type": "string"
+        },
+        "passi": {
+          "description": "Sequenza ordinata dei passi estratti dall'artefatto. Ogni passo corrisponde a un'azione o una decisione distinta richiesta all'utente.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "description": "Un singolo passo dell'artefatto: un'azione o decisione discreta.",
+            "properties": {
+              "passo_id": {
+                "description": "Identificatore univoco del passo all'interno di questo artefatto. Formato suggerito: 'P001', 'P002', ecc.",
+                "type": "string"
+              },
+              "cosa_chiede": {
+                "description": "Descrizione precisa di ciÃ² che l'artefatto chiede di fare in questo passo. Copiato o parafrasato strettamente dall'originale (G-01, G-03).",
+                "type": "string"
+              },
+              "informazione_necessaria": {
+                "description": "Dato o documento che la persona deve avere a portata di mano. Null se il passo non richiede informazioni specifiche.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "vincoli": {
+                "description": "Elenco di vincoli espliciti presenti nell'artefatto (es. scadenze, formati richiesti, obbligatorietÃ ). Copiati identici dalla fonte (G-03).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "gergo": {
+                "description": "Termini tecnici o burocratici presenti nel passo che potrebbero ostacolare la comprensione.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "source_refs": {
+                "description": "Riferimenti al punto esatto dell'artefatto originale da cui proviene questo passo (G-07). Obbligatorio: senza riferimento il passo non Ã¨ verificabile.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "leggibilita": {
+                "description": "Stato di leggibilitÃ  del passo nel sorgente. 'leggibile' = completamente interpretabile; 'parziale' = alcune parti ambigue o mancanti; 'unreadable' = impossibile interpretare, il passo non entra nel journey.",
+                "type": "string",
+                "enum": [
+                  "leggibile",
+                  "parziale",
+                  "unreadable"
+                ]
+              },
+              "obbligatorio": {
+                "description": "True se il passo Ã¨ obbligatorio secondo l'artefatto sorgente.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "passo_id",
+              "cosa_chiede",
+              "informazione_necessaria",
+              "vincoli",
+              "gergo",
+              "source_refs",
+              "leggibilita",
+              "obbligatorio"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "passi_unreadable_count": {
+          "description": "Numero di passi marcati 'unreadable'. Se > 0 e status='degraded', l'orchestratore attiva HITL.",
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "artifact_id",
+        "passi",
+        "passi_unreadable_count"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

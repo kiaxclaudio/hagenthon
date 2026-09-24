@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/simplifier.input.json",
+  "title": "SimplifierInput",
+  "description": "Input per l'agente simplifier. Un singolo passo del source-model piÃ¹ il profilo della persona. Al secondo giro include anche il feedback del fidelity-validator.",
+  "type": "object",
+  "properties": {
+    "passo": {
+      "description": "Il passo originale estratto da source-analyzer, con tutti i suoi campi (cosa_chiede, vincoli, gergo, source_refs, ecc.).",
+      "type": "object",
+      "properties": {
+        "passo_id": {
+          "type": "string",
+          "description": "Identificatore del passo."
+        },
+        "cosa_chiede": {
+          "type": "string",
+          "description": "Cosa chiede l'artefatto in questo passo."
+        },
+        "informazione_necessaria": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Dato/documento necessario."
+        },
+        "vincoli": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Vincoli espliciti del passo."
+        },
+        "gergo": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Termini tecnici del passo."
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Riferimenti alla fonte originale."
+        },
+        "leggibilita": {
+          "type": "string",
+          "enum": [
+            "leggibile",
+            "parziale",
+            "unreadable"
+          ],
+          "description": "LeggibilitÃ  nel sorgente."
+        },
+        "obbligatorio": {
+          "type": "boolean",
+          "description": "Se il passo Ã¨ obbligatorio."
+        }
+      },
+      "required": [
+        "passo_id",
+        "cosa_chiede",
+        "informazione_necessaria",
+        "vincoli",
+        "gergo",
+        "source_refs",
+        "leggibilita",
+        "obbligatorio"
+      ],
+      "additionalProperties": false
+    },
+    "profilo": {
+      "description": "Profilo della persona, dal payload dell'output del profiler (state/profile.json).",
+      "type": "object",
+      "properties": {
+        "livello_lettura": {
+          "type": "string",
+          "enum": [
+            "base",
+            "intermedio",
+            "avanzato",
+            "unknown"
+          ],
+          "description": "Livello di lettura della persona."
+        },
+        "modalita_preferita": {
+          "type": "string",
+          "enum": [
+            "testo",
+            "audio",
+            "visivo",
+            "semplificato",
+            "unknown"
+          ],
+          "description": "ModalitÃ  di fruizione preferita."
+        },
+        "vincoli_sensoriali": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Vincoli sensoriali dichiarati."
+        },
+        "vincoli_motori": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Vincoli motori dichiarati."
+        },
+        "vincoli_cognitivi": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Vincoli cognitivi dichiarati."
+        },
+        "lingua": {
+          "type": "string",
+          "description": "Lingua preferita, ISO 639-1."
+        },
+        "passo_singolo": {
+          "type": "boolean",
+          "description": "Se la persona necessita di un passo alla volta."
+        },
+        "note": {
+          "type": "string",
+          "description": "Note libere sul profilo."
+        }
+      },
+      "required": [
+        "livello_lettura",
+        "modalita_preferita",
+        "vincoli_sensoriali",
+        "vincoli_motori",
+        "vincoli_cognitivi",
+        "lingua",
+        "passo_singolo"
+      ],
+      "additionalProperties": false
+    },
+    "iterazione": {
+      "description": "Numero del giro corrente di semplificazione per questo passo (1 o 2). Il limite massimo Ã¨ 2 (G-08); al secondo rifiuto l'orchestratore attiva HITL.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2
+    },
+    "feedback_validator": {
+      "description": "Feedback del fidelity-validator dal giro precedente (solo se iterazione=2). Contiene le divergenze da correggere nel secondo tentativo. Null al primo giro.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "description": "Una singola divergenza segnalata dal fidelity-validator.",
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "omissione",
+              "slittamento_senso",
+              "obbligo_diventato_consiglio",
+              "numero_cambiato",
+              "aggiunta_non_autorizzata",
+              "uncomparable"
+            ],
+            "description": "Tipo di divergenza riscontrata."
+          },
+          "gravita": {
+            "type": "string",
+            "enum": [
+              "bloccante",
+              "major",
+              "minor"
+            ],
+            "description": "GravitÃ  della divergenza."
+          },
+          "descrizione": {
+            "type": "string",
+            "description": "Spiegazione della divergenza da correggere."
+          }
+        },
+        "required": [
+          "tipo",
+          "gravita",
+          "descrizione"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "passo",
+    "profilo",
+    "iterazione",
+    "feedback_validator"
+  ],
+  "additionalProperties": false
+}

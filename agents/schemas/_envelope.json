@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/_envelope.json",
+  "title": "AgentOutputEnvelope",
+  "description": "Schema base condiviso da tutti gli output degli agenti (G-06, G-07). Definisce i quattro campi obbligatori di controllo e orchestrazione. Non usare direttamente: ogni output concreto estende questo schema via allOf e ridefinisce 'payload' con il proprio schema specifico.",
+  "type": "object",
+  "properties": {
+    "status": {
+      "description": "Esito dell'esecuzione dell'agente (G-06). 'ok' = output affidabile; 'degraded' = output parziale, da usare con cautela; 'hitl_required' = impossibile procedere senza intervento umano.",
+      "type": "string",
+      "enum": [
+        "ok",
+        "degraded",
+        "hitl_required"
+      ]
+    },
+    "confidence": {
+      "description": "Stima di affidabilitÃ  dell'output, da 0 a 1 (G-06). L'orchestratore usa questo valore come gate: se < 0.6 su un passo che contiene importi, date o scadenze, attiva HITL (G-03, G-09).",
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "source_refs": {
+      "description": "Riferimenti alle parti esatte della fonte da cui provengono le affermazioni (G-07). Array vuoto solo se l'agente non ha accesso ad alcuna fonte originale. Un output senza source_refs Ã¨ una violazione di G-01.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Identificatore del punto della fonte (es. sezione, pagina, ID campo)."
+      }
+    },
+    "payload": {
+      "description": "Contenuto specifico dell'agente. L'unica parte che varia tra agenti; tutto il resto Ã¨ uniforme cosÃ¬ l'orchestratore puÃ² instradare senza conoscere il dominio.",
+      "type": "object"
+    }
+  },
+  "required": [
+    "status",
+    "confidence",
+    "source_refs",
+    "payload"
+  ]
+}

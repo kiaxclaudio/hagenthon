@@ -1,0 +1,14 @@
+.env
+.env.local
+*.key
+*.pem
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+build/
+.DS_Store
+Thumbs.db
+agents/state/run-*.json

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/source-analyzer.input.json",
+  "title": "SourceAnalyzerInput",
+  "description": "Input per l'agente source-analyzer. Contiene l'artefatto reale da destrutturare in passi. Nessun dato personale reale (G-17).",
+  "type": "object",
+  "properties": {
+    "artifact_id": {
+      "description": "Identificatore univoco dell'artefatto (es. codice documento, URL, hash). Usato come chiave per il source-model persistito.",
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_format": {
+      "description": "Formato dell'artefatto sorgente, che guida la strategia di ingestione. TODO-TEMA: rivedere l'enum sul tema scelto.",
+      "type": "string",
+      "enum": [
+        "html",
+        "pdf",
+        "testo",
+        "immagine",
+        "json",
+        "altro"
+      ]
+    },
+    "artifact_raw": {
+      "description": "Contenuto grezzo dell'artefatto: testo estratto, HTML, o JSON strutturato a seconda del formato. Per immagini: testo OCR pre-elaborato.",
+      "type": "string",
+      "minLength": 1
+    },
+    "lingua": {
+      "description": "Lingua dell'artefatto, codice ISO 639-1. Opzionale.",
+      "type": "string",
+      "pattern": "^[a-z]{2}$"
+    }
+  },
+  "required": [
+    "artifact_id",
+    "artifact_format",
+    "artifact_raw"
+  ],
+  "additionalProperties": false
+}

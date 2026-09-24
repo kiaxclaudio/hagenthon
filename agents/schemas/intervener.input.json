@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/intervener.input.json",
+  "title": "IntervenerInput",
+  "description": "Input per l'agente intervener. Diagnosi del blocco, passo corrente e profilo della persona. L'intervener produce un solo intervento mirato.",
+  "type": "object",
+  "properties": {
+    "diagnosi": {
+      "description": "Il payload dell'output del block-detector che ha rilevato il blocco.",
+      "type": "object",
+      "properties": {
+        "blocked": {
+          "type": "boolean",
+          "description": "Deve essere true per invocare l'intervener."
+        },
+        "cause": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "inattivita",
+            "ripetizione_input",
+            "input_non_valido",
+            "ritorno_indietro",
+            "richiesta_aiuto_esplicita",
+            "abbandono_imminente",
+            "unknown",
+            null
+          ],
+          "description": "Causa del blocco dalla tassonomia chiusa."
+        },
+        "passo_id": {
+          "type": "string",
+          "description": "Passo su cui Ã¨ avvenuto il blocco."
+        }
+      },
+      "required": [
+        "blocked",
+        "cause",
+        "passo_id"
+      ],
+      "additionalProperties": false
+    },
+    "passo_corrente": {
+      "description": "Il passo approvato del journey su cui si trova la persona.",
+      "type": "object",
+      "properties": {
+        "passo_id": {
+          "type": "string",
+          "description": "Identificatore del passo."
+        },
+        "testo_semplificato": {
+          "type": "string",
+          "description": "Testo semplificato mostrato alla persona."
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Riferimenti alla fonte."
+        },
+        "stato": {
+          "type": "string",
+          "enum": [
+            "approved",
+            "hitl_required"
+          ],
+          "description": "Stato nel journey."
+        }
+      },
+      "required": [
+        "passo_id",
+        "testo_semplificato",
+        "source_refs",
+        "stato"
+      ],
+      "additionalProperties": false
+    },
+    "profilo": {
+      "description": "Profilo della persona, per calibrare il registro dell'intervento.",
+      "type": "object",
+      "properties": {
+        "livello_lettura": {
+          "type": "string",
+          "enum": [
+            "base",
+            "intermedio",
+            "avanzato",
+            "unknown"
+          ],
+          "description": "Livello di lettura."
+        },
+        "modalita_preferita": {
+          "type": "string",
+          "enum": [
+            "testo",
+            "audio",
+            "visivo",
+            "semplificato",
+            "unknown"
+          ],
+          "description": "ModalitÃ  preferita."
+        },
+        "vincoli_sensoriali": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Vincoli sensoriali."
+        },
+        "vincoli_motori": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Vincoli motori."
+        },
+        "vincoli_cognitivi": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Vincoli cognitivi."
+        },
+        "lingua": {
+          "type": "string",
+          "description": "Lingua preferita."
+        },
+        "passo_singolo": {
+          "type": "boolean",
+          "description": "Se necessita di un passo alla volta."
+        },
+        "note": {
+          "type": "string",
+          "description": "Note libere sul profilo."
+        }
+      },
+      "required": [
+        "livello_lettura",
+        "modalita_preferita",
+        "vincoli_sensoriali",
+        "vincoli_motori",
+        "vincoli_cognitivi",
+        "lingua",
+        "passo_singolo"
+      ],
+      "additionalProperties": false
+    },
+    "intervento_numero": {
+      "description": "Quale intervento Ã¨ questo sul passo corrente (1, 2 o 3). Al terzo intervento fallito l'orchestratore attiva HITL (G-08).",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    }
+  },
+  "required": [
+    "diagnosi",
+    "passo_corrente",
+    "profilo",
+    "intervento_numero"
+  ],
+  "additionalProperties": false
+}

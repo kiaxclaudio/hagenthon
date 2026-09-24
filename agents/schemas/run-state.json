@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/run-state.json",
+  "title": "RunState",
+  "description": "Schema dello stato di sessione runtime (state/run-<id>.json). Persiste tutto lo stato necessario alla Fase B senza tenerlo in contesto (G-12). Contiene passo corrente, contatori di iterazione per i gate HITL e log degli interventi.",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "description": "Identificatore univoco della sessione (UUID).",
+      "type": "string",
+      "minLength": 1
+    },
+    "journey_id": {
+      "description": "Identificatore del journey su cui si basa questa sessione.",
+      "type": "string"
+    },
+    "created_at": {
+      "description": "Timestamp ISO 8601 di apertura della sessione.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "description": "Timestamp ISO 8601 dell'ultimo aggiornamento dello stato.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "stato_sessione": {
+      "description": "Stato corrente della sessione. 'in_corso' = sessione attiva; 'completato' = tutti i passi obbligatori completati; 'abbandonato' = la persona ha abbandonato; 'hitl_escalated' = escalation umana attivata.",
+      "type": "string",
+      "enum": [
+        "in_corso",
+        "completato",
+        "abbandonato",
+        "hitl_escalated"
+      ]
+    },
+    "passo_corrente_index": {
+      "description": "Indice (0-based) del passo corrente nell'array journey.passi.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "passo_corrente_id": {
+      "description": "Identificatore del passo corrente, ridondante con l'indice per leggibilitÃ .",
+      "type": "string"
+    },
+    "interventi_passo_corrente": {
+      "description": "Quanti interventi dell'intervener sono stati effettuati sul passo corrente. Limite: 3. Al superamento l'orchestratore attiva HITL (G-08).",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "blocchi_consecutivi": {
+      "description": "Quanti blocchi consecutivi sono stati rilevati sul passo corrente dal block-detector. Limite: 3. Usato insieme a interventi_passo_corrente per il gate HITL.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "tentativi_timeout_modello": {
+      "description": "Numero di retry per timeout del modello nella chiamata corrente. Limite: 3 con backoff esponenziale. Al superamento: status=degraded (G-16).",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "passi_completati": {
+      "description": "Lista ordinata degli identificatori dei passi completati in questa sessione.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hitl_triggers": {
+      "description": "Log degli eventi di escalation HITL avvenuti in questa sessione. Utile per audit e per comunicare all'utente cosa sta succedendo (G-09).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Un singolo evento di escalation HITL.",
+        "properties": {
+          "triggered_at": {
+            "description": "Timestamp ISO 8601 dell'escalation.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "passo_id": {
+            "description": "Passo su cui Ã¨ avvenuta l'escalation.",
+            "type": "string"
+          },
+          "motivo": {
+            "description": "Causa dell'escalation. 'max_interventi' = 3 interventi falliti sullo stesso passo; 'max_blocchi' = 3 blocchi consecutivi sullo stesso passo; 'confidence_bassa' = confidence < 0.6 su passo con importi/date/scadenze; 'passo_hitl_required' = il passo era giÃ  marcato hitl_required in Fase A.",
+            "type": "string",
+            "enum": [
+              "max_interventi",
+              "max_blocchi",
+              "confidence_bassa",
+              "passo_hitl_required"
+            ]
+          }
+        },
+        "required": [
+          "triggered_at",
+          "passo_id",
+          "motivo"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "run_id",
+    "journey_id",
+    "created_at",
+    "updated_at",
+    "stato_sessione",
+    "passo_corrente_index",
+    "passo_corrente_id",
+    "interventi_passo_corrente",
+    "blocchi_consecutivi",
+    "tentativi_timeout_modello",
+    "passi_completati",
+    "hitl_triggers"
+  ],
+  "additionalProperties": false
+}

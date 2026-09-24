@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/profiler.output.json",
+  "title": "ProfilerOutput",
+  "description": "Output dell'agente profiler. Profilo strutturato dei bisogni della persona, persistito in state/profile.json. Usa l'envelope comune via allOf (G-06, G-07).",
+  "allOf": [
+    {
+      "$ref": "./_envelope.json"
+    }
+  ],
+  "properties": {
+    "payload": {
+      "description": "Profilo strutturato dei bisogni della persona.",
+      "type": "object",
+      "properties": {
+        "livello_lettura": {
+          "description": "Livello di lettura stimato o dichiarato. 'base' = frasi brevi, parole comuni; 'intermedio' = testo standard; 'avanzato' = testo tecnico/burocratico; 'unknown' = non dichiarato (G-01: non stimare). TODO-TEMA: rivedere l'enum sul tema scelto.",
+          "type": "string",
+          "enum": [
+            "base",
+            "intermedio",
+            "avanzato",
+            "unknown"
+          ]
+        },
+        "modalita_preferita": {
+          "description": "ModalitÃ  di fruizione preferita per le istruzioni. 'testo' = testo scritto standard; 'audio' = indicazioni vocali/audio; 'visivo' = diagrammi o icone; 'semplificato' = testo con linguaggio facile; 'unknown' = non dichiarata. TODO-TEMA: rivedere l'enum sul tema scelto.",
+          "type": "string",
+          "enum": [
+            "testo",
+            "audio",
+            "visivo",
+            "semplificato",
+            "unknown"
+          ]
+        },
+        "vincoli_sensoriali": {
+          "description": "Elenco di vincoli sensoriali dichiarati dalla persona. Solo quelli esplicitamente dichiarati; quelli assenti restano fuori (G-01). TODO-TEMA: rivedere l'enum sul tema scelto.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ipovisione",
+              "cecita",
+              "ipoacusia",
+              "sordita",
+              "unknown"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "vincoli_motori": {
+          "description": "Elenco di vincoli motori dichiarati. Solo quelli esplicitamente dichiarati (G-01). TODO-TEMA: rivedere l'enum sul tema scelto.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "difficolta_digitazione",
+              "uso_solo_tastiera",
+              "difficolta_mouse",
+              "unknown"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "vincoli_cognitivi": {
+          "description": "Elenco di vincoli cognitivi dichiarati (non diagnosi cliniche). Solo quelli esplicitamente dichiarati (G-01). TODO-TEMA: rivedere l'enum sul tema scelto.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "memoria_breve_termine",
+              "difficolta_concentrazione",
+              "dislessia",
+              "unknown"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "lingua": {
+          "description": "Lingua preferita dalla persona, codice ISO 639-1. 'unknown' se non dichiarata (G-01: non inferire).",
+          "type": "string"
+        },
+        "passo_singolo": {
+          "description": "Se true, la persona ha bisogno di ricevere un passo alla volta, senza anticipare quelli successivi.",
+          "type": "boolean"
+        },
+        "note": {
+          "description": "Note libere sul profilo, usate dal simplifier per calibrare il registro. Opzionale. Nessun dato identificativo reale (G-17).",
+          "type": "string"
+        }
+      },
+      "required": [
+        "livello_lettura",
+        "modalita_preferita",
+        "vincoli_sensoriali",
+        "vincoli_motori",
+        "vincoli_cognitivi",
+        "lingua",
+        "passo_singolo"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

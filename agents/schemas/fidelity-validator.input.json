@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/fidelity-validator.input.json",
+  "title": "FidelityValidatorInput",
+  "description": "Input per l'agente fidelity-validator. Confronto tra il passo originale e la versione semplificata dal simplifier.",
+  "type": "object",
+  "properties": {
+    "passo_originale": {
+      "description": "Il passo originale estratto da source-analyzer, intoccato.",
+      "type": "object",
+      "properties": {
+        "passo_id": {
+          "type": "string",
+          "description": "Identificatore del passo."
+        },
+        "cosa_chiede": {
+          "type": "string",
+          "description": "Testo originale di ciÃ² che il passo chiede."
+        },
+        "informazione_necessaria": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Dato/documento necessario."
+        },
+        "vincoli": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Vincoli espliciti."
+        },
+        "gergo": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Termini tecnici."
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Riferimenti alla fonte."
+        },
+        "obbligatorio": {
+          "type": "boolean",
+          "description": "Se il passo Ã¨ obbligatorio."
+        }
+      },
+      "required": [
+        "passo_id",
+        "cosa_chiede",
+        "informazione_necessaria",
+        "vincoli",
+        "gergo",
+        "source_refs",
+        "obbligatorio"
+      ],
+      "additionalProperties": false
+    },
+    "passo_semplificato": {
+      "description": "L'output del simplifier per lo stesso passo.",
+      "type": "object",
+      "properties": {
+        "passo_id": {
+          "type": "string",
+          "description": "Deve coincidere con passo_originale.passo_id."
+        },
+        "testo_semplificato": {
+          "type": "string",
+          "description": "Il testo prodotto dal simplifier."
+        },
+        "iterazione": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2,
+          "description": "Giro di semplificazione."
+        },
+        "note_semplificazione": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Note del simplifier."
+        },
+        "modifiche_dal_feedback": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Correzioni al secondo giro."
+        }
+      },
+      "required": [
+        "passo_id",
+        "testo_semplificato",
+        "iterazione",
+        "note_semplificazione",
+        "modifiche_dal_feedback"
+      ],
+      "additionalProperties": false
+    },
+    "iterazione": {
+      "description": "Numero del giro di validazione per questo passo (1 o 2). Al secondo rifiuto l'orchestratore attiva HITL (G-08).",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2
+    }
+  },
+  "required": [
+    "passo_originale",
+    "passo_semplificato",
+    "iterazione"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hagenthon/agents/schemas/fidelity-validator.output.json",
+  "title": "FidelityValidatorOutput",
+  "description": "Output dell'agente fidelity-validator. Verdetto sulla fedeltÃ  del passo semplificato rispetto all'originale, con elenco delle divergenze tipizzate e graduate.",
+  "allOf": [
+    {
+      "$ref": "./_envelope.json"
+    }
+  ],
+  "properties": {
+    "payload": {
+      "description": "Verdetto e analisi delle divergenze tra originale e semplificato.",
+      "type": "object",
+      "properties": {
+        "passo_id": {
+          "description": "Identificatore del passo valutato, identico all'input.",
+          "type": "string"
+        },
+        "verdict": {
+          "description": "Esito della validazione. 'approved' = il testo semplificato Ã¨ fedele all'originale e puÃ² entrare nel journey; 'rejected' = presenza di divergenze che richiedono un nuovo giro dal simplifier.",
+          "type": "string",
+          "enum": [
+            "approved",
+            "rejected"
+          ]
+        },
+        "iterazione": {
+          "description": "Numero del giro di validazione che ha prodotto questo output.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2
+        },
+        "divergenze": {
+          "description": "Elenco delle divergenze rilevate tra originale e semplificato. Array vuoto se verdict='approved'. Qualsiasi divergenza su importi, date, scadenze o obblighi Ã¨ 'bloccante' (G-03).",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "Una singola divergenza rilevata dal validator.",
+            "properties": {
+              "tipo": {
+                "description": "Categoria della divergenza. 'omissione' = informazione presente nell'originale, assente nel semplificato; 'slittamento_senso' = significato alterato pur usando parole simili; 'obbligo_diventato_consiglio' = obbligo ammorbidito in facoltÃ ; 'numero_cambiato' = importo, data o quantitÃ  diversa dall'originale (sempre bloccante, G-03); 'aggiunta_non_autorizzata' = informazione aggiunta non presente nell'originale (G-01); 'uncomparable' = impossibile confrontare per mancanza del testo originale.",
+                "type": "string",
+                "enum": [
+                  "omissione",
+                  "slittamento_senso",
+                  "obbligo_diventato_consiglio",
+                  "numero_cambiato",
+                  "aggiunta_non_autorizzata",
+                  "uncomparable"
+                ]
+              },
+              "gravita": {
+                "description": "GravitÃ  della divergenza per la decisione di approvazione. 'bloccante' = rifiuto immediato, qualunque sia il resto (obbligatoria per numero_cambiato, obbligo_diventato_consiglio, uncomparable); 'major' = rifiuto probabile ma valutato nel contesto; 'minor' = segnalazione, non comporta necessariamente rifiuto.",
+                "type": "string",
+                "enum": [
+                  "bloccante",
+                  "major",
+                  "minor"
+                ]
+              },
+              "testo_originale": {
+                "description": "Frammento esatto dell'originale coinvolto nella divergenza.",
+                "type": "string"
+              },
+              "testo_semplificato": {
+                "description": "Frammento del testo semplificato corrispondente.",
+                "type": "string"
+              },
+              "descrizione": {
+                "description": "Spiegazione del problema: perchÃ© Ã¨ una divergenza e cosa va corretto. Motivazione obbligatoria (G-05): 'non mi convince' non Ã¨ valido.",
+                "type": "string",
+                "minLength": 5
+              }
+            },
+            "required": [
+              "tipo",
+              "gravita",
+              "testo_originale",
+              "testo_semplificato",
+              "descrizione"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "passo_id",
+        "verdict",
+        "iterazione",
+        "divergenze"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}
