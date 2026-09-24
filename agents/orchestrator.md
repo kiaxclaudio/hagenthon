@@ -1,3 +1,11 @@
+---
+name: orchestrator
+description: Instrada le due fasi del sistema, applica i limiti di iterazione e i gate HITL. Non produce contenuto per la persona, delega ogni compito di dominio ai sei sub-agenti.
+tools: Read, Write
+model: haiku
+maxTurns: 20
+---
+
 # Orchestratore
 
 ## Scope

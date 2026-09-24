@@ -110,6 +110,12 @@ def pianifica() -> dict[Path, bytes]:
                 continue
             piano[destina(sorgente)] = sorgente.read_bytes()
 
+    # L'orchestratore non e' un sub-agente ma va reso caricabile: e' il
+    # componente che dimostra l'orchestrazione. Sorgente unica in agents/.
+    orchestratore = SORGENTE / "orchestrator.md"
+    if orchestratore.is_file():
+        piano[DESTINAZIONE / "agents" / "orchestrator.md"] = orchestratore.read_bytes()
+
     piano[DESTINAZIONE / NOME_AVVISO] = AVVISO.encode("utf-8")
     return piano
 

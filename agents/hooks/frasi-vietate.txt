@@ -45,3 +45,7 @@
 \bnon (serve|hai bisogno di) (un |il |andare dal )?(caf|commercialista|consulente) => scoraggia il rinvio al professionista
 \bfai da (te|solo)\b                   => scoraggia il rinvio al professionista
 \bnon serve (un|il) (consulente|professionista)\b => scoraggia il rinvio al professionista
+
+# assorbiti da scripts/validate_output.py
+\bla scelta migliore\b => giudizio comparativo: il sistema non ordina le misure per convenienza
+\binvestire in\b => ambito investimenti: fuori perimetro, e' consulenza
