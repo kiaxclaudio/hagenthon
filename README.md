@@ -257,7 +257,7 @@ workflow.
 ### Tre skill — istruzioni lunghe caricate on-demand
 
 Documentate in [`agents/skills/README.md`](agents/skills/README.md), che dichiara per ognuna chi
-la carica, a quale passo e perché non sta nel file dell'agente (G-13). Sono 782 righe che non
+la carica, a quale passo e perché non sta nel file dell'agente (G-13). Sono 905 righe che non
 pesano finché non servono, e nessuna invocazione ne carica più di una.
 
 | Skill | Caricata da | Quando |
