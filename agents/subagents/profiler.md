@@ -85,7 +85,11 @@ Una domanda alla volta, mai due nello stesso messaggio.
 | `under36` | Ho meno di 36 anni e voglio sapere a cosa ho diritto |
 | `non_so` | Non so da dove partire, mostrami tutto |
 
-**2. Condizione abitativa** — "Riguardo alla casa in cui vivi:"
+**2. Condizione abitativa** — "Riguardo alla casa in cui vivi:" *(domanda condizionale)*
+
+Porre **solo** se `situazioni_vita` contiene `casa` o `under36`.
+Non porre se `situazioni_vita` contiene solo `figlio`, `lavoro`, `spese_mediche`, `auto` o `non_so`:
+la condizione abitativa non è rilevante per le misure del catalogo in quei casi.
 
 | Valore | Etichetta |
 |---|---|
@@ -141,8 +145,10 @@ come tale.
    tassonomia non ancora coperto; altrimenti lo ignora, e non lo ricopia nell'output.
 5. Compila `termini_non_noti` con i termini di `termini_chiesti` e, quando `caf` vale
    `non_so_cosa_e`, aggiunge `caf`: è il segnale che `navigator` usa per il glossario.
-6. Imposta `completo: true` solo se tutte e cinque le domande hanno una risposta. Calcola
-   `confidence` come frazione di assi valorizzati su cinque, arrotondata a due decimali.
+6. Imposta `completo: true` solo se tutte le domande in `domande_poste` hanno una risposta
+   (non necessariamente tutte e cinque: Q2 può non essere stata posta, vedi sezione domanda
+   condizionale). Calcola `confidence` come frazione di assi valorizzati su `len(domande_poste)`,
+   arrotondata a due decimali.
 7. Scrive `agents/state/profilo.json` e restituisce lo stesso JSON.
 
 ## Vincoli

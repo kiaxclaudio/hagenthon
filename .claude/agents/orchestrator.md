@@ -86,6 +86,16 @@ navigator (haiku)             come si accede, documenti, scadenze, glossario
    `agents/subagents/profiler.md`, accanto ai valori di enum che producono: una domanda alla
    volta, nell'ordine di quel file. L'orchestratore le pone, non le riscrive, e non le duplica
    qui: un'etichetta scritta in due posti diverge al primo ritocco.
+
+   **Domanda Q2 condizionale — condizione abitativa:** va posta **solo** se `situazioni_vita`
+   (risposta a Q1) contiene `casa` oppure `under36`. Per tutte le altre situazioni (`figlio`,
+   `lavoro`, `spese_mediche`, `auto`, `non_so`) saltare Q2 e passare direttamente a Q3.
+   Ragione: le misure del catalogo verificato attuale non dipendono dalla condizione abitativa
+   per situazioni di lavoro, salute e famiglia. Chiedere qualcosa che non serve all'analisi
+   è rumore per la persona.
+   Nella chiamata al profiler, includere in `domande_poste` solo le domande effettivamente
+   mostrate: se Q2 non è stata posta, non figura in `domande_poste` e non entra in
+   `risposte_mancanti`.
 7. Il punto in cui si trova la conversazione è `passo_corrente` in
    `agents/schemas/run-state.json`: `situazione_vita`, `profilo_base`, `timing`,
    `scheda_misure`, `come_accedere`, `chiusa`. L'orchestratore avanza solo su questi sei valori.
