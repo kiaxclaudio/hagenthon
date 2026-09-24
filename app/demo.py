@@ -194,12 +194,22 @@ def _navigator_dal_catalogo(voce: dict, profilo: dict) -> dict:
          'source_refs': riferimenti},
     ]
 
+    richiede_spid = canale in ('inps_online', 'agenzia_entrate_online', 'spid')
     payload = {
         'misura_id': misura.get('misura_id'),
         'primo_passo_concreto': 'Raccogli i documenti richiesti dalla fonte ufficiale.',
         'passi': passi,
         'documenti_necessari': documenti,
         'glossario': spiegazione.get('glossario', []),
+        'riquadro_spid': {
+            'necessario': richiede_spid,
+            'testo': (
+                'Non hai ancora lo SPID? Puoi attivarlo presso uno sportello di '
+                'Poste Italiane, in una banca abilitata oppure da app. Ti servono '
+                'un documento d\'identità valido e il tuo numero di telefono. '
+                'L\'attivazione è gratuita.'
+            ),
+        },
         'disclaimer': disclaimer(),
     }
     if misura.get('scadenza'):
