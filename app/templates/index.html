@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A cosa ho diritto?</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <h1>A cosa ho diritto?</h1>
+      <button id="btn-reset" onclick="resetSession()">Ricomincia</button>
+    </div>
+  </header>
+
+  <main id="main-container">
+    <!-- Chat panel -->
+    <section id="chat-panel">
+      <div id="messages"></div>
+      <div id="choices-container"></div>
+      <form id="chat-form" onsubmit="submitText(event)">
+        <input type="text" id="text-input" placeholder="Scrivi qui..." autocomplete="off">
+        <button type="submit">Invia</button>
+      </form>
+    </section>
+
+    <!-- Results panel (shown after pipeline) -->
+    <section id="results-panel" class="hidden">
+      <h2>I tuoi bonus</h2>
+      <div id="bonus-cards"></div>
+      <div id="next-step-banner"></div>
+      <div id="escalation-banner" class="hidden"></div>
+    </section>
+  </main>
+
+  <!-- Disclaimer sempre visibile -->
+  <footer id="disclaimer">
+    Queste informazioni sono orientative. Verifica le condizioni su
+    <a href="https://www.agenziaentrate.gov.it" target="_blank" rel="noopener">agenziaentrate.gov.it</a>
+    o rivolgiti a un CAF — spesso è gratuito.
+  </footer>
+
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="hidden">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <p id="loading-text">Sto analizzando il tuo profilo…</p>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

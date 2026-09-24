@@ -1,17 +1,17 @@
-# TODO NOME PROGETTO
+# A cosa ho diritto?
 
-TODO una riga: chi aiuta, a fare cosa, su quale servizio reale.
+Sistema multi-agente che aiuta persone con zero alfabetizzazione fiscale a scoprire quali bonus e aiuti statali italiani spettano loro — in linguaggio semplice, senza burocrazia.
 
 Hackathon Agentic Coding - Accenture Application Engineering.
-Team: Davide Polito, Chiara TODO. Tema TODO.
+Team: Davide Polito, Chiara Gario. Tema 02 — Inclusione Finanziaria.
 
 ## Il problema
 
-TODO: la persona concreta, il punto esatto in cui oggi si blocca, perché conta.
+Milioni di italiani non accedono a bonus e incentivi a cui hanno diritto perché non capiscono il linguaggio burocratico, non sanno da dove partire e non hanno mai aperto il cassetto fiscale. Il punto di blocco è l'alfabetizzazione fiscale: il problema non è la burocrazia in sé, ma il fatto che nessuno la traduce.
 
 ## La soluzione
 
-TODO: cosa fa il prototipo, in tre righe.
+Un sistema conversazionale a 4 agenti che raccoglie il profilo dell'utente in 5 domande a scelta multipla, identifica i bonus pertinenti, li spiega senza termini tecnici e guida l'utente passo per passo verso l'accesso — rimandando sempre a un CAF per le decisioni finali.
 
 ## Il sistema agentico
 
@@ -46,15 +46,22 @@ docs/           evidenza di validazione e nota sul processo
 
 ## Setup
 
-TODO: prerequisiti, installazione, avvio, con i comandi esatti.
-
 ```bash
+pip install -r requirements.txt
 cp .env.example .env    # inserire la propria ANTHROPIC_API_KEY
+python app/main.py      # apre http://localhost:5000
 ```
 
 ## Validazione
 
-TODO: cosa abbiamo verificato e come. Evidenze in [`docs/validation/`](docs/validation/).
+4 scenari testati end-to-end. Evidenze in [`docs/validation/`](docs/validation/).
+
+| Scenario | Bonus attesi |
+|---------|-------------|
+| Proprietario, dipendente, ristrutturazione | Bonus Ristrutturazione 50%, Ecobonus, Bonus Mobili |
+| Coppia con figlio appena nato | Assegno Unico, Bonus Nido |
+| Disoccupato under 36 | Naspi, Supporto Formazione Lavoro |
+| Pensionato con spese mediche | Detrazioni sanitarie 19%, esenzione ticket |
 
 ## Come abbiamo usato l'AI
 
