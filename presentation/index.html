@@ -137,11 +137,23 @@ table.tight td:first-child{width:46%;color:rgba(255,255,255,0.72)}
 
 /* ---------- responsive ---------- */
 @media (max-height:800px){
-  .dense .arch{max-height:38vh}
-  .dense .eyebrow{margin-bottom:10px}
-  .dense h2{font-size:clamp(20px,2.4vw,30px)}
-  .dense .card .body{font-size:12.5px}
-  .legend{font-size:11px;gap:4px 18px}
+  .dense{padding-top:52px;padding-bottom:56px}
+  .dense .arch{max-height:35vh}
+  .dense .eyebrow{margin-bottom:8px}
+  .dense h2{font-size:clamp(20px,2.4vw,30px);margin-bottom:4px}
+  .dense>.inner>.body{font-size:12.5px;margin-bottom:6px!important}
+  .dense .card{padding:10px 13px;border-radius:12px}
+  .dense .card .body{font-size:12px}
+  .dense .card h3{margin-bottom:6px}
+  .dense .mt{margin-top:9px}
+  .dense>.inner>.small{font-size:11.5px;line-height:1.45}
+  .dense .lead{font-size:15.5px}
+  .dense table{font-size:12.5px}
+  .dense th{padding-bottom:7px}
+  .dense td{padding:7px 0}
+  .dense ul.b li{font-size:12.5px;margin-bottom:.22em}
+  .dense .mt2{margin-top:12px}
+  .legend{font-size:11px;gap:3px 16px;margin-top:7px}
 }
 @media (max-width:900px){
   .g2,.g3{grid-template-columns:1fr}
@@ -535,7 +547,7 @@ table.tight td:first-child{width:46%;color:rgba(255,255,255,0.72)}
      SEZIONE 7 — LIMITI E RISCHI
      TEMPO ASSEGNATO: 0:35   ·   cumulato 4:45
      ============================================================ -->
-<section class="slide" aria-label="Limiti e rischi">
+<section class="slide dense" aria-label="Limiti e rischi">
   <div class="inner">
     <div class="eyebrow">06 · Limiti e rischi</div>
     <h2>Che cosa può andare storto, e che cosa gli abbiamo messo contro</h2>
@@ -579,8 +591,9 @@ table.tight td:first-child{width:46%;color:rgba(255,255,255,0.72)}
           questa persona. È una scelta di perimetro (G-18), non una funzione mancante.</li>
         <li>Nessun accesso ai sistemi reali: spiega come si arriva al cassetto fiscale, non ci entra,
           non compila moduli e non prenota appuntamenti.</li>
-        <li>Il prototipo in <code>app/</code> esegue oggi quattro dei sette componenti: la Fase A di
-          grounding del catalogo è specificata e non ancora eseguita end-to-end.</li>
+        <li>Le fonti ufficiali stanno nel repository e la Fase A gira su quelle, ma
+          <code>agents/state/catalogo.json</code> non è fra i file committati: il catalogo va
+          rigenerato su ogni macchina prima di una demo, e finché non c'è la Fase B non parte.</li>
         <li>Il costo in token per agente non è ancora misurato su un run reale: è una voce aperta
           dichiarata in <code>agents/README.md</code>.</li>
       </ul>

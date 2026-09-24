@@ -116,6 +116,12 @@ agents/            fonte unica del sistema agentico
   state/           stato esternalizzato a runtime (vuoto nel repository)
 .claude/           GENERATA da agents/ — vedi sotto. Solo settings.json e' scritto a mano
 app/               prototipo Flask che la persona usa
+  config.py        mappa agente -> tier, timeout/retry/backoff, soglie dei gate, percorsi
+  fase_a.py        Fase A eseguibile: dalle fonti al catalogo verificato
+  agents.py        Fase B: invocazione degli agenti, resilienza, gate HITL
+  validation.py    validazione degli output contro agents/schemas/, esiti degradati
+  catalogo.py      lettura e selezione delle misure dal catalogo
+  main.py          rotte Flask; session.py, templates/, static/
 docs/              specifica UX, mappa di valutazione, nota sul processo, evidenze
 presentation/      presentazione HTML, 8 sezioni, 5:00, file singolo offline
 tools/             check_repo.py (linter di consegna), sync_claude.py (generatore di .claude/)
@@ -156,7 +162,8 @@ che si modifica direttamente. Il promemoria sta in [`.claude/GENERATO.md`](.clau
 ### Dipendenze
 
 Da [`requirements.txt`](requirements.txt): `anthropic>=0.40.0`, `flask>=3.0.0`,
-`python-dotenv>=1.0.0`.
+`python-dotenv>=1.0.0` e `jsonschema>=4.21.0`, quest'ultima per validare gli output degli agenti
+contro i contratti in `agents/schemas/`.
 
 ```bash
 pip install -r requirements.txt
@@ -172,38 +179,50 @@ lettura del file da parte del modello.
 cp .env.example .env
 ```
 
-| Variabile | In `.env.example` | Usata da | Note |
-|---|---|---|---|
-| `ANTHROPIC_API_KEY` | sì | `app/agents.py` | obbligatoria per eseguire il prototipo |
-| `ANTHROPIC_MODEL_CHEAP` | sì | — | tier economico dichiarato per la configurazione |
-| `ANTHROPIC_MODEL_WORK` | sì | — | tier di lavoro |
-| `ANTHROPIC_MODEL_DEEP` | sì | — | tier di analisi e giudizio |
-| `LLM_TIMEOUT_S` | sì | — | timeout per chiamata, previsto da G-16 |
-| `LLM_MAX_RETRIES` | sì | — | retry con backoff, previsto da G-16 |
-| `FLASK_PORT` | no | `app/main.py` | default 5000 |
-| `FLASK_DEBUG` | no | `app/main.py` | default `false` |
-| `FLASK_SECRET_KEY` | no | `app/main.py` | ha un default di sviluppo |
+Tutte le variabili sono lette in un solo posto, [`app/config.py`](app/config.py), che tiene anche
+la mappa esplicita agente → tier: il model tiering si verifica leggendo quel file, senza inseguire
+le chiamate.
 
-**Limite aperto, dichiarato:** oggi `app/agents.py` legge da `.env` solo `ANTHROPIC_API_KEY`;
-gli identificatori di modello, il timeout e il numero di retry sono costanti nel codice invece
-di venire dalle tre variabili `ANTHROPIC_MODEL_*` e dalle due `LLM_*`. Le tre variabili
-`FLASK_*` sono lette dal codice ma non compaiono in `.env.example`. È una divergenza fra
-configurazione dichiarata e configurazione applicata, non ancora chiusa.
+| Variabile | Obbligatoria | A che cosa serve |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | sì, per eseguire il prototipo | chiave del modello |
+| `ANTHROPIC_MODEL_CHEAP` | no, ha un default | tier haiku: `orchestrator`, `profiler`, `navigator` |
+| `ANTHROPIC_MODEL_WORK` | no, ha un default | tier sonnet: `explainer`, `eligibility` |
+| `ANTHROPIC_MODEL_DEEP` | no, ha un default | tier opus: `source-analyzer`, `fidelity-validator` |
+| `LLM_TIMEOUT_S` | no, default 60 | timeout per chiamata (G-16) |
+| `LLM_MAX_RETRIES` | no, default 3 | numero di retry (G-16) |
+| `LLM_BACKOFF_BASE_S` | no, default 1 | attesa del primo retry, poi raddoppia |
+| `LLM_BACKOFF_MAX_S` | no, default 20 | tetto dell'attesa fra due tentativi |
+| `FLASK_SECRET_KEY` | no | se manca, ne viene generato uno casuale a ogni avvio |
+| `FLASK_PORT` | no, default 5000 | porta del server |
+| `FLASK_DEBUG` | no, default `false` | modalità di sviluppo |
+
+Gli identificativi di modello non sono mai scritti nel codice come segreti o come valori di
+configurazione nascosti: `app/config.py` li legge da `.env` e porta solo un default allineato,
+perché la demo non si rompa se una variabile manca.
 
 ### Avvio
 
 ```bash
-python app/main.py          # stampa l'indirizzo e serve su http://localhost:5000
+python tools/sync_claude.py   # rigenera .claude/ da agents/: i prompt si caricano da li'
+python app/fase_a.py          # FASE A: costruisce agents/state/catalogo.json dalle fonti
+python app/main.py            # FASE B: stampa l'indirizzo e serve su http://localhost:5000
 ```
 
-Il prototipo espone una pagina e tre endpoint (`/api/chat`, `/api/reset`,
-`/api/session/<id>`), carica i prompt degli agenti da `.claude/agents/` — quindi la
-sincronizzazione va fatta prima — e mantiene la sessione in memoria di processo.
+**La Fase A va eseguita prima della Fase B**, una volta sola: senza
+`agents/state/catalogo.json` la conversazione non parte, perché le misure verrebbero dalla
+memoria del modello invece che da una fonte verificata (G-19). Le fonti ufficiali di partenza —
+pagine di Agenzia delle Entrate e circolari INPS — sono committate sotto `agents/state/fonti/`;
+`python app/fase_a.py --fonti CARTELLA` ne usa un'altra.
 
-**Limite aperto, dichiarato:** il prototipo esegue oggi quattro dei sette componenti
-(`orchestrator`, `eligibility`, `explainer`, `navigator`). La Fase A di grounding del catalogo
-è specificata in `agents/` e non ancora eseguita end-to-end, e `agents/state/` non contiene
-ancora un `catalogo.json`.
+Il prototipo serve una pagina e quattro endpoint (`/api/chat`, `/api/reset`,
+`/api/session/<id>`, `/api/diagnostica`), ascolta su `127.0.0.1` e mantiene la sessione in
+memoria di processo. Quando il modello non risponde o un contratto non è rispettato, la rotta
+non restituisce un errore 500: restituisce un esito con `status: "degraded"` e il rimando al CAF.
+
+**Limite aperto, dichiarato:** `agents/state/catalogo.json` non è fra i file committati, quindi
+va rigenerato con il comando sopra su ogni macchina. La sua copertura è quella delle fonti
+presenti in `agents/state/fonti/`, non l'insieme delle misure italiane.
 
 ---
 
@@ -283,11 +302,14 @@ Gli scenari previsti per la prova end-to-end sono quattro, descritti in
 [`docs/inbox/chiara-idea.md`](docs/inbox/chiara-idea.md): proprietario che ristruttura, coppia
 con figlio appena nato, disoccupato under 36, pensionato con spese mediche.
 
-**Stato dichiarato:** [`docs/validation/`](docs/validation/) è oggi vuota. Le evidenze di
-sessione sono prodotte automaticamente dall'hook `session_snapshot.py` a ogni chiusura di
-sessione Claude Code, ma nessuno snapshot è stato ancora committato, e non è committato alcun
-output reale di agente. La robustezza è oggi specificata e non ancora dimostrata da un caso di
-rottura catturato.
+**Stato dichiarato:** [`docs/validation/`](docs/validation/) contiene oggi solo `.gitkeep`. Le
+evidenze di sessione sono prodotte automaticamente dall'hook `session_snapshot.py` a ogni
+chiusura di sessione Claude Code, ma nessuno snapshot è stato ancora committato, e nessun
+artefatto di `agents/state/` — catalogo, profilo, stati di sessione — è fra i file versionati.
+La robustezza è oggi specificata e non ancora dimostrata da un caso di rottura catturato.
+
+Il repository cambia durante la gara: se questa riga e i file non concordano, vale
+`python tools/check_repo.py`, che misura lo stato nel momento in cui lo si esegue.
 
 - [`docs/EVALUATION-MAP.md`](docs/EVALUATION-MAP.md) — ogni criterio di giudizio collegato al
   file e alla sezione che lo soddisfa, con una sezione "Cosa manca" scritta apposta per essere
