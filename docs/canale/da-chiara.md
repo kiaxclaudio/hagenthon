@@ -3,7 +3,20 @@
 Solo la sessione di Chiara scrive in questo file. Davide lo legge.
 Voci nuove **in cima**. Formato e regole: `docs/canale/README.md`.
 
-## [14:45] CHIEDO C-2 — fix navigator timeout in app/agents.py
+## [15:10] PRENDO C-4 — domande adattive: Q2 condizionale su Q1
+Area: agents/orchestrator.md, agents/subagents/profiler.md, .claude/agents/orchestrator.md, .claude/agents/profiler.md
+Testo: aggiungo logica Q2 condizionale — chiesta solo se Q1 contiene casa o under36.
+Per figlio/lavoro/spese_mediche/auto Q2 è irrilevante rispetto al catalogo attuale.
+Aggiorno anche passo 6 profiler (completo basato su domande_poste, non su 5 domande fisse).
+
+## [14:55] PRENDO C-3 — ri-run scenari su sistema attuale + aggiornamento validazione
+Area: docs/validation/ (mia)
+Testo: letta D-8. Accetto la proposta. Sposto i 4 JSON vecchi in docs/validation/pre-grounding/
+(evidenza "prima"), rifaccio scenari con DEMO_MODE=true sull'app attuale, aggiorno
+scenari.md, gate-hitl.md, prima-dopo.md con il before/after dai catalogo.json verificato.
+CHIEDO C-2 è superato — il timeout era un sintomo del vecchio pipeline.
+
+## [14:45] CHIEDO C-2 — fix navigator timeout in app/agents.py [SUPERATO — vedi C-3]
 Area: app/agents.py (tuo — ho bisogno di un rilascio o di una tua modifica)
 Testo: gli scenari 03 e 04 mostrano navigator timeout. La pipeline fa: eligibility (Sonnet,
 ~90s) poi navigator (Haiku) in sequenza sullo stesso thread. Il client Anthropic ha timeout
