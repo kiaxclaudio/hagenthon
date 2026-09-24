@@ -20,8 +20,8 @@ Questo, oltre a farci risparmiare tempo, è direttamente il criterio "coerenza t
 Niente pull request: in 5 ore sono troppo lente. Lavoriamo entrambi su `main`.
 Funziona solo se **nessuno scrive nei file dell'altro**. La mappa sta in `CLAUDE.md`, in sintesi:
 
-- Davide: `agents/**`, `presentation/**`, `docs/ux/**`, `docs/process-note.md`, `docs/status-davide.md`
-- Chiara: `app/**`, `docs/validation/**`, `docs/status-chiara.md`
+- Davide: `agents/**`, `app/**`, `presentation/**`, `docs/ux/**`, `docs/process-note.md`, `docs/status-davide.md`
+- Chiara: `docs/validation/**` (evidenze e scenari di test), `docs/status-chiara.md`
 - Condivisi (si avvisa prima di toccarli): `README.md`, `CLAUDE.md`, `agents/schemas/**`
 
 Se ti serve una modifica in un file non tuo, **non farla**: scrivila nel tuo file di status.

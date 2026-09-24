@@ -39,7 +39,7 @@ I conflitti si evitano **per costruzione**: ogni file ha un proprietario, e ness
 | Area | Proprietario | Note |
 |---|---|---|
 | `agents/**` | Davide | cuore del punteggio |
-| `app/**` | Chiara | prototipo |
+| `app/**` | Davide | prototipo |
 | `presentation/**` | Davide | HTML brand Accenture |
 | `docs/validation/**` | Chiara | evidenza di validazione |
 | `docs/ux/**` | Davide | specifica UX, token, mockup |

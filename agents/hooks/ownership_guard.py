@@ -53,7 +53,7 @@ PROPRIETA: list[tuple[str, str]] = [
     ("agents/", "davide"),
     ("docs/process-note.md", "davide"),
     ("docs/status-davide.md", "davide"),
-    ("app/", "chiara"),
+    ("app/", "davide"),
     ("presentation/", "davide"),
     ("docs/ux/", "davide"),
     ("docs/validation/", "chiara"),
