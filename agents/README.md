@@ -54,6 +54,32 @@ una detrazione vera.
 
 ## Economia dei token
 
+I numeri, prima delle leve. Costo **fisso** che ogni componente porta in contesto a ogni
+invocazione — le sue istruzioni più le skill che carica. Misurato con
+[`tools/misura_token.py`](../tools/misura_token.py), riproducibile con un comando; il metodo
+(conteggio esatto via API se c'è la chiave, stima dichiarata altrimenti) è stampato nel report.
+
+| Componente | Fase | Tier | Token di istruzioni |
+|---|---|---|---:|
+| `fidelity-validator` | A | opus | 8.162 |
+| `orchestrator` | A + B | haiku | 6.736 |
+| `explainer` | A | sonnet | 5.924 |
+| `eligibility` | B | sonnet | 2.489 |
+| `source-analyzer` | A | opus | 2.079 |
+| `profiler` | B | haiku | 1.851 |
+| `navigator` | B | haiku | 1.843 |
+| **Fase A** | | | **16.165** |
+| **Fase B** | | | **6.183** |
+
+La Fase A costa **2,6 volte** la Fase B e usa i due modelli più capaci, ma gira **una volta per
+catalogo**, non per conversazione. Dettaglio e debiti dichiarati in
+[`docs/token-budget.md`](../docs/token-budget.md) — compreso quello che non ci fa comodo:
+l'orchestratore è più pesante di quanto il suo compito richieda.
+
+Una misura sul percorso vero, non sulle istruzioni: il pre-filtro del catalogo ha portato
+l'input di `eligibility` da **9.652 a 1.969 token**, meno 80%, perché gli passavamo l'intera voce
+di catalogo compreso il verdetto del validator, che non gli serve.
+
 Tre leve, tutte verificabili leggendo i file e non solo dichiarate qui:
 
 - **Tiering per compito, non per abitudine.** Dei sette componenti, tre girano su Haiku
