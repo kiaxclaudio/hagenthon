@@ -30,14 +30,41 @@ I telecomandi da presentazione inviano PagSu/PagGiu e funzionano senza configura
 | 1 | Copertina | — | 0:10 | 0:10 |
 | 2 | Il problema — Marco e la detrazione che non chiede | problema / utente | 0:30 | 0:40 |
 | 3 | Perché è Tema 02 | aderenza al tema | 0:35 | 1:15 |
-| 4 | Dove interviene l'agente AI (architettura) | come funziona / dove interviene | 1:00 | 2:15 |
-| 5 | La prova, e i limiti | miglioramento / limiti e rischi | 0:35 | 2:50 |
+| 4 | Dove interviene l'AI — il lavoro difficile si fa una volta sola | come funziona / dove interviene | 1:00 | 2:15 |
+| 5 | La prova — su sei misure il controllo ne ha fermate quattro | miglioramento / limiti e rischi | 0:35 | 2:50 |
 | 6 | Adesso il prodotto (passaggio alla demo) | — | 0:10 | 3:00 |
 
 Il tempo assegnato è ripetuto in un commento HTML all'inizio di ogni sezione; la somma è **3:00**.
 La sezione 4 è volutamente la più lunga: è dove stanno i due criteri più pesanti (profondità
 agentica 24%, qualità delle istruzioni 19%) e contiene il diagramma dell'architettura in SVG
 inline, senza immagini esterne.
+
+## Registro linguistico
+
+Le slide sono scritte per chi non ha letto il repository e ha tre minuti. Regola applicata:
+**ogni slide deve poter essere letta in silenzio in dieci secondi.**
+
+Dal testo a schermo sono spariti i codici dei guardrail (G-04, G-18…), i nomi degli hook, le
+parole *schema JSON*, *tier*, *envelope*, e i percorsi dei file. Gli agenti non sono più soggetti
+di frase con il loro nome tecnico: sul diagramma sono **cosa fanno** ("legge ed estrae i numeri",
+"li riscrive", "controlla che non sia cambiato niente"). I sette nomi propri restano una volta
+sola, in una riga piccola in fondo alla sezione 4, per chi vorrà incrociarli con il repository.
+
+L'architettura si racconta in quattro frasi:
+
+1. un agente legge le pagine ufficiali di Agenzia delle Entrate e INPS e ne tira fuori i numeri;
+2. un secondo agente li riscrive in parole che capisce chiunque;
+3. un terzo controlla che riscrivendo non sia cambiato niente — **e non ha il permesso di
+   riscrivere**: può solo approvare o respingere;
+4. quando la persona arriva, tre agenti leggeri fanno cinque domande, cercano nell'elenco già
+   verificato e spiegano come fare.
+
+Frase che chiude il senso: *il lavoro difficile si fa una volta sola, prima; quando arriva la
+persona il sistema legge un elenco già controllato.* Per questo è veloce e per questo non inventa.
+
+Il diagramma della sezione 4 è pensato per essere capito in tre secondi: **due righe, una per
+tempo**, cinque riquadri ciascuna, due parole per riquadro, nessuna legenda e nessun badge di
+modello.
 
 ## Il rapporto con la demo
 
@@ -64,14 +91,13 @@ lettera. La tesi, in breve:
   economica reale;
 - il documento che rendiamo leggibile è un documento finanziario, allo stesso titolo della bolletta
   e dell'estratto conto che il tema cita come esempi;
-- il divieto di consulenza del tema è rispettato alla lettera e **codificato**: G-04, il
-  `fidelity-validator` in Fase A, l'hook `PostToolUse` a runtime;
-- la capability software non è la riscrittura del testo — che il tema mette fra le cose da evitare —
-  ma la pipeline di ancoraggio alla fonte con verifica di fedeltà separata.
+- il divieto di consulenza del tema è rispettato alla lettera, e sulla slide si dice in una riga:
+  «non diciamo mai cosa conviene fare: spieghiamo, e per le decisioni mandiamo al CAF».
 
-La stessa sezione indica dove stanno i tre deliverable che il tema chiede per nome: *User Difficulty
-Statement* (`docs/ux/ux-spec.md` §1, `docs/validation/scenari.md`), *Before/After Simplicity
-Evidence* (`docs/validation/prima-dopo.md`), *Risk & Clarity Note* (`docs/validation/gate-hitl.md`,
+I tre deliverable che il tema chiede per nome non sono più citati con il titolo inglese e il
+percorso: la slide chiude con una riga piccola che dice che nel repository ci sono la difficoltà
+dell'utente (`docs/ux/ux-spec.md`, `docs/validation/scenari.md`), il confronto prima/dopo su quattro
+casi (`docs/validation/prima-dopo.md`) e la nota su rischi e chiarezza (`docs/validation/gate-hitl.md`,
 `agents/guardrails.md`).
 
 ## Coerenza con il repository
@@ -80,11 +106,9 @@ Nomi dei componenti, model tier, fasi, limiti di iterazione e soglie dei gate so
 `agents/ARCHITETTURA.md`, che è il file canonico — sette componenti, due fasi — e verificabili anche
 in `agents/orchestrator.md`, `agents/workflows/main-pipeline.md` e `agents/guardrails.md`.
 
-Le cifre della sezione 5 (6 misure lavorate, 8 giri di verifica, 4 divergenze bloccanti, 1 misura
-esclusa) e le tre divergenze citate con il testo originale sono copiate da
-`agents/state/verifica-fase-a.json` senza arrotondamenti. I numeri di Fase A e Fase B in token
-vengono da `docs/token-budget.md`. Gli altri numeri a schermo — sette componenti, 24 guardrail,
-15 contratti JSON Schema, tre hook, tre skill — sono contabili sui file.
+Le cifre della sezione 5 (6 misure lavorate, 8 controlli, 4 errori gravi, 1 misura esclusa) e i tre
+errori citati con il testo della fonte sono copiati da `agents/state/verifica-fase-a.json` senza
+arrotondamenti.
 
 ## Brand ed estetica
 

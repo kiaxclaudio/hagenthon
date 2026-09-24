@@ -294,9 +294,9 @@ table.tri th:first-child{padding-right:26px}
     </div>
     <p class="note mt2">Non manca l'informazione: è pubblica, gratuita e corretta.
       Manca la distanza fra l'informazione e la persona che dovrebbe usarla.</p>
-    <p class="small mt">Il conto è nostro, su questa slide, e sta nei limiti dell'IRPEF dovuta.
-      Il sistema non calcola quanto spetta a una persona: è fuori perimetro per scelta (G-18).
-      Marco è una composizione dei quattro profili di <code>docs/validation/scenari.md</code>.</p>
+    <p class="small mt">Il conto &egrave; nostro, su questa slide, e sta nei limiti dell&rsquo;IRPEF
+      dovuta: il sistema non calcola quanto spetta a una persona. Marco mette insieme i quattro
+      profili su cui abbiamo provato il prodotto.</p>
   </div>
 </section>
 
@@ -306,51 +306,40 @@ table.tri th:first-child{padding-right:26px}
      ============================================================ -->
 <section class="slide dense" aria-label="Aderenza al Tema 02">
   <div class="inner">
-    <div class="eyebrow">02 · Perché è Tema 02</div>
-    <h2>Abbiamo scelto il fisco perché è finanza personale nella forma più concreta che esista</h2>
-    <div class="quote mt">«Supportare l'educazione alla finanza personale di base, aiutando le persone
+    <div class="eyebrow">02 &middot; Perch&eacute; &egrave; Tema 02</div>
+    <h2>Il fisco &egrave; finanza personale. &Egrave; la parte che costa soldi veri.</h2>
+    <div class="quote mt">&laquo;Supportare l&rsquo;educazione alla finanza personale di base, aiutando le persone
       con bassa alfabetizzazione finanziaria a comprendere concetti e gestire meglio le proprie
-      finanze quotidiane.»<cite>Tema 02 — testo della traccia</cite></div>
+      finanze quotidiane.&raquo;<cite>Tema 02 &mdash; testo della traccia</cite></div>
 
-    <div class="grid g2w mt">
-      <div>
-        <h3>Gli scenari che il tema elenca, e i nostri</h3>
-        <table class="tri">
-          <tbody>
-            <tr>
-              <td>«comprensione di un concetto finanziario di base»</td>
-              <td><strong>Detrazione, IRPEF, aliquota, imponibile, ISEE.</strong> Chi non sa cos'è una
-                detrazione non legge la propria busta paga: sono concetti di base, non tecnicismi da
-                addetti ai lavori.</td>
-            </tr>
-            <tr>
-              <td>«comprensione di costi e commissioni»</td>
-              <td>Il tetto di spesa, la quota annuale, <strong>la parte eccedente i 129,11 euro</strong>:
-                sono le condizioni che decidono quanto torna davvero, ed è lì che la persona si sbaglia
-                sul proprio denaro.</td>
-            </tr>
-            <tr>
-              <td>«lettura di un estratto conto o di una bolletta»</td>
-              <td>«36% su un massimo di 96.000 euro per unità immobiliare, in 10 quote annuali» è
-                <strong>lo stesso problema di lettura di una bolletta</strong>, con in più la conseguenza
-                economica: il documento che rendiamo leggibile è un documento finanziario.</td>
-            </tr>
-            <tr>
-              <td>«simulazione di una scelta quotidiana di risparmio»</td>
-              <td>Entro il 2026 o dal 2028 cambiano aliquota e tetto (36% su 96.000, poi 30% su 48.000).
-                Glielo <strong>spieghiamo</strong>; non lo decidiamo noi.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <p class="small mt">I tre deliverable che il tema chiede per nome, nel repository:
-      <strong>User Difficulty Statement</strong> &rarr; <code>docs/ux/ux-spec.md</code> §1 e
-      <code>docs/validation/scenari.md</code> &nbsp;·&nbsp;
-      <strong>Before/After Simplicity Evidence</strong> &rarr; <code>docs/validation/prima-dopo.md</code>,
-      quattro casi con i testi originali citati alla lettera &nbsp;·&nbsp;
-      <strong>Risk &amp; Clarity Note</strong> &rarr; <code>docs/validation/gate-hitl.md</code> e
-      <code>agents/guardrails.md</code>, 24 regole numerate.</p>
+    <h3 class="mt">Gli scenari che il tema chiede, e i nostri</h3>
+    <table class="tri">
+      <tbody>
+        <tr>
+          <td>&laquo;comprensione di un concetto finanziario di base&raquo;</td>
+          <td><strong>Detrazione, IRPEF, aliquota, ISEE.</strong> Chi non sa cos&rsquo;&egrave; una detrazione
+            non capisce la propria busta paga.</td>
+        </tr>
+        <tr>
+          <td>&laquo;comprensione di costi e commissioni&raquo;</td>
+          <td>Il tetto di spesa, la quota annuale, <strong>i primi 129,11 euro che restano fuori</strong>.
+            &Egrave; l&igrave; che ci si sbaglia sui propri soldi.</td>
+        </tr>
+        <tr>
+          <td>&laquo;lettura di un estratto conto o di una bolletta&raquo;</td>
+          <td>&laquo;36% su un massimo di 96.000 euro per unit&agrave; immobiliare, in 10 quote annuali&raquo;.
+            <strong>Stesso problema di lettura di una bolletta</strong> &mdash; e qui sbagliare costa.</td>
+        </tr>
+        <tr>
+          <td>&laquo;simulazione di una scelta quotidiana di risparmio&raquo;</td>
+          <td>Entro il 2026 o dal 2028 cambiano percentuale e tetto.
+            Glielo <strong>spieghiamo</strong>; non scegliamo noi.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note mt">Non diciamo mai cosa conviene fare. Spieghiamo, e per le decisioni mandiamo al CAF.</p>
+    <p class="small mt">Nel repository, per chi vorr&agrave; guardarli dopo: la difficolt&agrave; dell&rsquo;utente,
+      il confronto prima/dopo su quattro casi e la nota su rischi e chiarezza.</p>
   </div>
 </section>
 
@@ -360,181 +349,101 @@ table.tri th:first-child{padding-right:26px}
      ============================================================ -->
 <section class="slide dense" aria-label="Architettura agentica">
   <div class="inner">
-    <div class="eyebrow">03 · Dove interviene l'agente AI</div>
-    <h2>Un orchestratore, sei sub-agenti, due fasi con economie opposte</h2>
-    <p class="body" style="margin-bottom:9px">Ogni componente ha un verbo solo: se due agenti potessero
-      scambiarsi il lavoro, uno dei due sarebbe di troppo. La separazione fra chi scrive e chi approva
-      è una conseguenza dei permessi, non una raccomandazione dentro un prompt.</p>
+    <div class="eyebrow">03 &middot; Dove interviene l&rsquo;AI</div>
+    <h2>Il lavoro difficile si fa una volta sola, prima</h2>
+    <p class="lead" style="margin-bottom:4px">Quando arriva la persona, il sistema legge un elenco
+      gi&agrave; controllato. Per questo &egrave; veloce, e per questo non inventa.</p>
 
-    <svg class="arch" viewBox="0 0 1240 444" role="img" aria-labelledby="archTitle archDesc" preserveAspectRatio="xMidYMid meet">
-      <title id="archTitle">Architettura agentica in due fasi</title>
-      <desc id="archDesc">Fase A, offline e una volta per fonte: source-analyzer su opus-5 destruttura la pagina ufficiale,
-        explainer su sonnet-5 riscrive ogni misura, fidelity-validator su opus-5 la confronta con l&#8217;originale usando solo Read;
-        se respinge si torna all&#8217;explainer per un massimo di due giri, poi scatta il gate HITL e la misura non entra nel catalogo.
-        Le misure approvate finiscono in catalogo.json, persistito su disco.
-        Fase B, a runtime e a ogni sessione: profiler su haiku-4.5 normalizza le risposte a scelta multipla,
-        eligibility su sonnet-5 incrocia profilo e catalogo, navigator su haiku-4.5 compone i passi di accesso;
-        con confidence sotto 0,6 o caso non coperto si rimanda al CAF. L&#8217;orchestratore su haiku-4.5 esegue entrambe le fasi.</desc>
-
+    <svg class="arch" viewBox="0 0 1240 318" role="img" aria-labelledby="archTitle archDesc" preserveAspectRatio="xMidYMid meet">
+      <title id="archTitle">Come funziona, in due tempi</title>
+      <desc id="archDesc">Prima, una volta sola: un agente legge le pagine ufficiali di Agenzia delle Entrate e INPS
+        ed estrae percentuali, tetti e scadenze; un secondo agente le riscrive in parole semplici; un terzo agente
+        controlla che riscrivendo non sia cambiato niente e puo solo approvare o respingere, non riscrivere.
+        Ne esce un elenco verificato. Poi, quando arriva la persona: cinque domande a scelta multipla,
+        un agente capisce la situazione, un altro cerca nell&#8217;elenco verificato, un altro spiega come fare passo per passo.</desc>
       <defs>
         <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M0,0 L10,5 L0,10 z" fill="#BE82FF"/>
         </marker>
-        <marker id="ahd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" fill="rgba(255,255,255,0.5)"/>
-        </marker>
       </defs>
 
-      <!-- orchestratore: governa entrambe le fasi -->
-      <rect x="856" y="4" width="360" height="30" rx="15" fill="rgba(161,0,255,0.14)" stroke="#A100FF"/>
-      <text x="1036" y="24" text-anchor="middle" font-size="13" fill="#ffffff">orchestrator · haiku-4.5 · instrada, applica limiti e gate</text>
+      <text x="6" y="15" font-size="15" letter-spacing="2.4" font-weight="600" fill="#BE82FF">PRIMA &#183; UNA VOLTA SOLA</text>
+      <text x="318" y="15" font-size="14" fill="rgba(255,255,255,0.58)">si prepara l&#8217;elenco delle misure</text>
 
-      <!-- ===================== FASE A ===================== -->
-      <text x="14" y="24" font-size="13.5" letter-spacing="2.2" fill="#BE82FF">FASE A · GROUNDING DEL CATALOGO — OFFLINE, UNA VOLTA PER FONTE</text>
-      <rect x="8" y="42" width="1224" height="180" rx="16" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.09)"/>
+      <rect x="4" y="28" width="176" height="78" rx="13" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.13)"/>
+      <text x="22" y="60" font-size="17" font-weight="600" fill="rgba(255,255,255,0.88)">Pagine ufficiali</text>
+      <text x="22" y="84" font-size="14" fill="rgba(255,255,255,0.55)">Agenzia Entrate, INPS</text>
 
-      <!-- input: la fonte ufficiale -->
-      <rect x="20" y="66" width="150" height="70" rx="12" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.11)"/>
-      <text x="36" y="100" font-size="15" font-weight="600" fill="rgba(255,255,255,0.82)">fonte ufficiale</text>
-      <text x="36" y="120" font-size="12" fill="rgba(255,255,255,0.55)">scaricata e datata</text>
+      <rect x="216" y="28" width="228" height="78" rx="13" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.18)"/>
+      <text x="234" y="60" font-size="18" font-weight="600" fill="#ffffff">Legge ed estrae i numeri</text>
+      <text x="234" y="84" font-size="14" fill="rgba(255,255,255,0.62)">percentuali, tetti, scadenze</text>
 
-      <!-- A1 source-analyzer -->
-      <rect x="206" y="66" width="196" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="386" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">A1</text>
-      <text x="222" y="104" font-size="16.5" font-weight="600" fill="#ffffff">source-analyzer</text>
-      <rect x="222" y="112" width="66" height="20" rx="10" fill="#8A00DB"/>
-      <text x="255" y="126" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">opus-5</text>
+      <rect x="480" y="28" width="228" height="78" rx="13" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.18)"/>
+      <text x="498" y="60" font-size="18" font-weight="600" fill="#ffffff">Li riscrive</text>
+      <text x="498" y="84" font-size="14" fill="rgba(255,255,255,0.62)">in parole che capisce chiunque</text>
 
-      <!-- A2 explainer -->
-      <rect x="438" y="66" width="176" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="598" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">A2</text>
-      <text x="454" y="104" font-size="16.5" font-weight="600" fill="#ffffff">explainer</text>
-      <rect x="454" y="112" width="80" height="20" rx="10" fill="none" stroke="#BE82FF"/>
-      <text x="494" y="126" text-anchor="middle" font-size="11.5" fill="#BE82FF">sonnet-5</text>
+      <rect x="744" y="28" width="268" height="78" rx="13" fill="rgba(161,0,255,0.17)" stroke="#BE82FF" stroke-width="1.8"/>
+      <text x="762" y="58" font-size="18" font-weight="600" fill="#ffffff">Controlla che non sia</text>
+      <text x="762" y="82" font-size="18" font-weight="600" fill="#ffffff">cambiato niente</text>
 
-      <!-- A3 fidelity-validator: solo Read -->
-      <rect x="650" y="66" width="208" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="842" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">A3</text>
-      <text x="666" y="104" font-size="16.5" font-weight="600" fill="#ffffff">fidelity-validator</text>
-      <rect x="666" y="112" width="66" height="20" rx="10" fill="#8A00DB"/>
-      <text x="699" y="126" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">opus-5</text>
-      <text x="742" y="126" font-size="11.5" fill="#BE82FF">solo Read</text>
+      <rect x="1048" y="28" width="188" height="78" rx="13" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.13)"/>
+      <text x="1066" y="60" font-size="17" font-weight="600" fill="#ffffff">Elenco verificato</text>
+      <text x="1066" y="84" font-size="14" fill="rgba(255,255,255,0.55)">pronto all&#8217;uso</text>
 
-      <!-- A4 catalogo.json -->
-      <rect x="1016" y="66" width="200" height="70" rx="12" fill="rgba(161,0,255,0.12)" stroke="#BE82FF"/>
-      <text x="1200" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">A4</text>
-      <text x="1032" y="104" font-size="16.5" font-weight="600" fill="#ffffff">catalogo.json</text>
-      <text x="1032" y="124" font-size="12" fill="rgba(255,255,255,0.68)">persistito su disco</text>
+      <path d="M184,67 H212" stroke="#BE82FF" stroke-width="1.8" fill="none" marker-end="url(#ah)"/>
+      <path d="M448,67 H476" stroke="#BE82FF" stroke-width="1.8" fill="none" marker-end="url(#ah)"/>
+      <path d="M712,67 H740" stroke="#BE82FF" stroke-width="1.8" fill="none" marker-end="url(#ah)"/>
+      <path d="M1016,67 H1044" stroke="#BE82FF" stroke-width="1.8" fill="none" marker-end="url(#ah)"/>
 
-      <path d="M174,101 H202" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
-      <path d="M406,101 H434" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
-      <path d="M618,101 H646" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
-      <path d="M862,101 H1012" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
-      <text x="937" y="90" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.72)">approvata</text>
-
-      <!-- ciclo di rifiuto: il validator rimanda all'explainer, massimo 2 giri -->
-      <path d="M700,136 V166 H526 V142" stroke="#BE82FF" stroke-width="1.6" fill="none"
+      <path d="M820,106 V128 H594 V110" stroke="#BE82FF" stroke-width="1.6" fill="none"
             stroke-dasharray="6 4" marker-end="url(#ah)"/>
-      <text x="613" y="184" text-anchor="middle" font-size="13" fill="#BE82FF">respinta · massimo 2 giri</text>
+      <text x="707" y="147" text-anchor="middle" font-size="15" fill="#BE82FF">se &#232; cambiato qualcosa, si rif&#224;</text>
+      <text x="1236" y="147" text-anchor="end" font-size="15" fill="rgba(255,255,255,0.8)">non pu&#242; riscrivere: solo approvare o respingere</text>
 
-      <!-- gate HITL di fase A -->
-      <path d="M830,136 V191 H1012" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" fill="none"
-            stroke-dasharray="5 4" marker-end="url(#ahd)"/>
-      <rect x="1016" y="162" width="200" height="58" rx="12" fill="rgba(255,255,255,0.03)"
-            stroke="rgba(255,255,255,0.4)" stroke-dasharray="5 4"/>
-      <text x="1032" y="181" font-size="13.5" font-weight="600" fill="#BE82FF">GATE HITL</text>
-      <text x="1032" y="197" font-size="11.5" fill="rgba(255,255,255,0.68)">al 2&#176; rifiuto: la misura</text>
-      <text x="1032" y="212" font-size="11.5" fill="rgba(255,255,255,0.68)">non entra nel catalogo</text>
+      <text x="6" y="200" font-size="15" letter-spacing="2.4" font-weight="600" fill="#BE82FF">POI &#183; QUANDO ARRIVA LA PERSONA</text>
+      <text x="410" y="200" font-size="14" fill="rgba(255,255,255,0.58)">si legge l&#8217;elenco, non si torna alle fonti</text>
 
-      <!-- ===================== FASE B ===================== -->
-      <text x="14" y="250" font-size="13.5" letter-spacing="2.2" fill="#BE82FF">FASE B · CONVERSAZIONE — A OGNI SESSIONE, SOLO MODELLI ECONOMICI</text>
-      <rect x="8" y="262" width="1224" height="176" rx="16" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.09)"/>
+      <rect x="4" y="213" width="176" height="78" rx="13" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.13)"/>
+      <text x="22" y="245" font-size="17" font-weight="600" fill="rgba(255,255,255,0.88)">5 domande</text>
+      <text x="22" y="269" font-size="14" fill="rgba(255,255,255,0.55)">a scelta multipla</text>
 
-      <rect x="20" y="282" width="164" height="70" rx="12" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.11)"/>
-      <text x="36" y="310" font-size="15" font-weight="600" fill="rgba(255,255,255,0.82)">5 risposte a</text>
-      <text x="36" y="328" font-size="15" font-weight="600" fill="rgba(255,255,255,0.82)">scelta multipla</text>
+      <rect x="216" y="213" width="228" height="78" rx="13" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.18)"/>
+      <text x="234" y="245" font-size="18" font-weight="600" fill="#ffffff">Capisce la situazione</text>
+      <text x="234" y="269" font-size="14" fill="rgba(255,255,255,0.62)">casa, figli, lavoro, salute</text>
 
-      <!-- B1 profiler -->
-      <rect x="208" y="282" width="176" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="368" y="300" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">B1</text>
-      <text x="224" y="320" font-size="16.5" font-weight="600" fill="#ffffff">profiler</text>
-      <rect x="224" y="328" width="84" height="20" rx="10" fill="none" stroke="rgba(255,255,255,0.32)"/>
-      <text x="266" y="342" text-anchor="middle" font-size="11.5" fill="rgba(255,255,255,0.78)">haiku-4.5</text>
+      <rect x="480" y="213" width="228" height="78" rx="13" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.18)"/>
+      <text x="498" y="245" font-size="18" font-weight="600" fill="#ffffff">Cerca nell&#8217;elenco</text>
+      <text x="498" y="269" font-size="14" fill="rgba(255,255,255,0.62)">solo misure gi&#224; verificate</text>
 
-      <!-- B2 eligibility -->
-      <rect x="408" y="282" width="186" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="578" y="300" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">B2</text>
-      <text x="424" y="320" font-size="16.5" font-weight="600" fill="#ffffff">eligibility</text>
-      <rect x="424" y="328" width="80" height="20" rx="10" fill="none" stroke="#BE82FF"/>
-      <text x="464" y="342" text-anchor="middle" font-size="11.5" fill="#BE82FF">sonnet-5</text>
+      <rect x="744" y="213" width="268" height="78" rx="13" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.18)"/>
+      <text x="762" y="245" font-size="18" font-weight="600" fill="#ffffff">Spiega come fare</text>
+      <text x="762" y="269" font-size="14" fill="rgba(255,255,255,0.62)">passo per passo, e cosa serve</text>
 
-      <!-- B3 navigator -->
-      <rect x="618" y="282" width="176" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="778" y="300" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">B3</text>
-      <text x="634" y="320" font-size="16.5" font-weight="600" fill="#ffffff">navigator</text>
-      <rect x="634" y="328" width="84" height="20" rx="10" fill="none" stroke="rgba(255,255,255,0.32)"/>
-      <text x="676" y="342" text-anchor="middle" font-size="11.5" fill="rgba(255,255,255,0.78)">haiku-4.5</text>
+      <rect x="1048" y="213" width="188" height="78" rx="13" fill="rgba(161,0,255,0.12)" stroke="#BE82FF"/>
+      <text x="1066" y="245" font-size="17" font-weight="600" fill="#ffffff">La sua scheda</text>
+      <text x="1066" y="269" font-size="14" fill="rgba(255,255,255,0.62)">con il rimando al CAF</text>
 
-      <!-- output: la scheda -->
-      <rect x="818" y="282" width="174" height="70" rx="12" fill="rgba(161,0,255,0.12)" stroke="#BE82FF"/>
-      <text x="834" y="310" font-size="15" font-weight="600" fill="#ffffff">scheda misure</text>
-      <text x="834" y="330" font-size="12" fill="rgba(255,255,255,0.68)">passi, glossario,</text>
-      <text x="834" y="344" font-size="12" fill="rgba(255,255,255,0.68)">rimando al CAF</text>
-
-      <!-- gate HITL di fase B -->
-      <rect x="1012" y="282" width="204" height="74" rx="12" fill="rgba(255,255,255,0.03)"
-            stroke="rgba(255,255,255,0.4)" stroke-dasharray="5 4"/>
-      <text x="1028" y="303" font-size="13.5" font-weight="600" fill="#BE82FF">GATE HITL</text>
-      <text x="1028" y="320" font-size="11.5" fill="rgba(255,255,255,0.68)">la misura non si propone:</text>
-      <text x="1028" y="335" font-size="11.5" fill="rgba(255,255,255,0.68)">rimando al CAF, dichiarando</text>
-      <text x="1028" y="350" font-size="11.5" fill="rgba(255,255,255,0.68)">il perch&#233;</text>
-
-      <path d="M188,317 H204" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
-      <path d="M388,317 H404" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
-      <path d="M598,317 H614" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
-      <path d="M798,317 H814" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
-      <path d="M501,352 V386 H1114 V360" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" fill="none"
-            stroke-dasharray="5 4" marker-end="url(#ahd)"/>
-      <text x="790" y="381" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.72)">confidence &lt; 0,6 oppure caso non coperto dal catalogo</text>
-
-      <text x="20" y="410" font-size="12.5" fill="rgba(255,255,255,0.55)">Nessuna chiamata a opus-5 in Fase B: il runtime legge catalogo.json da disco.</text>
-      <text x="20" y="428" font-size="12.5" fill="rgba(255,255,255,0.55)">Stato della sessione in state/run-&lt;id&gt;.json, fuori dalla finestra di contesto (G-12).</text>
+      <path d="M184,252 H212" stroke="#BE82FF" stroke-width="1.8" fill="none" marker-end="url(#ah)"/>
+      <path d="M448,252 H476" stroke="#BE82FF" stroke-width="1.8" fill="none" marker-end="url(#ah)"/>
+      <path d="M712,252 H740" stroke="#BE82FF" stroke-width="1.8" fill="none" marker-end="url(#ah)"/>
+      <path d="M1016,252 H1044" stroke="#BE82FF" stroke-width="1.8" fill="none" marker-end="url(#ah)"/>
     </svg>
 
-    <div class="legend">
-      <span><i class="chip haiku"></i> haiku-4.5 — instradamento e assemblaggio (3 componenti su 7)</span>
-      <span><i class="chip sonnet"></i> sonnet-5 — riscrittura e incrocio vincolati (2 su 7)</span>
-      <span><i class="chip opus"></i> opus-5 — lettura della fonte e giudizio (2 su 7)</span>
-      <span>Fonte: <code>agents/ARCHITETTURA.md</code></span>
-    </div>
-
-    <div class="grid g3 mt">
+    <div class="grid g2 mt">
       <div class="card">
-        <h3>Chi scrive non approva</h3>
-        <p class="body"><code>explainer</code> riformula, <code>fidelity-validator</code> giudica, e il
-          giudice ha <strong>solo <code>Read</code></strong> fra i suoi strumenti: non può riscrivere
-          ciò che respinge. È un permesso, non un'istruzione.</p>
+        <h3>Il pezzo che conta</h3>
+        <p class="body">Il terzo agente esiste per <strong>dare torto al secondo</strong>. Qui usiamo il
+          modello pi&ugrave; bravo che abbiamo: &egrave; il punto dove sbagliare fa danno.</p>
       </div>
-      <div class="card">
-        <h3>Due economie opposte</h3>
-        <p class="body">Fase A: 16.165 token di istruzioni e i due modelli più capaci,
-          <strong>una volta per catalogo</strong>. Fase B: 6.183 token e tre invocazioni economiche su un
-          JSON già verificato. Il costo cresce con le misure, non con le conversazioni
-          (<code>docs/token-budget.md</code>).</p>
-      </div>
-      <div class="card">
-        <h3>L'escalation è una funzionalità</h3>
-        <p class="body">Condizioni numeriche, non impressioni: 2 giri
-          <code>explainer</code>&#8596;<code>fidelity-validator</code>, <code>confidence &lt; 0,6</code>,
-          3 retry con backoff poi <code>status: degraded</code>. Al limite si escala dichiarandolo,
-          non si ritenta in silenzio.</p>
+      <div class="card flat">
+        <h3>Perch&eacute; &egrave; veloce</h3>
+        <p class="body">Leggere e verificare le fonti costa, e si fa <strong>una volta sola</strong>.
+          Alla persona rispondono tre agenti leggeri che leggono un elenco gi&agrave; pronto.</p>
       </div>
     </div>
-    <p class="small mt">Rendono deterministica la disciplina tre hook — <code>PreToolUse</code> sulla
-      proprietà dei file, <code>PostToolUse</code> anti-consulenza, <code>Stop</code> per lo snapshot di
-      sessione — accanto a <strong>24 guardrail</strong> numerati e citati per codice dentro gli agenti,
-      <strong>15 contratti JSON Schema</strong> in <code>agents/schemas/</code> e <strong>3 skill</strong>
-      caricate on-demand, mai più di una per invocazione (G-13).</p>
+    <p class="small mt">Sette agenti in tutto, uno per compito: nel repository ognuno &egrave; un file con
+      le sue istruzioni, i suoi permessi e i suoi limiti &mdash; source-analyzer, explainer,
+      fidelity-validator, orchestrator, profiler, eligibility, navigator.</p>
   </div>
 </section>
 
@@ -544,63 +453,52 @@ table.tri th:first-child{padding-right:26px}
      ============================================================ -->
 <section class="slide dense" aria-label="La prova e i limiti">
   <div class="inner">
-    <div class="eyebrow">04 · La prova, e i limiti</div>
-    <h2>Un agente il cui unico lavoro è smentire l'altro. Su sei misure l'ha fermato quattro volte.</h2>
+    <div class="eyebrow">04 &middot; La prova</div>
+    <h2>Su sei misure, il controllo ne ha fermate quattro</h2>
     <div class="figs">
-      <div class="fig"><b>6</b><span>misure lavorate, da 8 fonti ufficiali datate di Agenzia delle
-        Entrate e INPS</span></div>
-      <div class="fig"><b>8</b><span>giri di verifica eseguiti: tre misure sono passate al primo,
-        tre hanno dovuto rifarlo</span></div>
-      <div class="fig"><b>4</b><span>divergenze bloccanti trovate e corrette prima che qualcuno le
-        leggesse</span></div>
-      <div class="fig"><b>1</b><span>misura mai pubblicata: la fonte si contraddice, e lo diciamo
-        invece di indovinare</span></div>
+      <div class="fig"><b>6</b><span>misure lavorate, da 8 pagine ufficiali</span></div>
+      <div class="fig"><b>8</b><span>controlli fatti: tre misure sono passate subito, tre no</span></div>
+      <div class="fig"><b>4</b><span>errori gravi trovati prima che qualcuno li leggesse</span></div>
+      <div class="fig"><b>1</b><span>misura mai pubblicata: la fonte si contraddice</span></div>
     </div>
 
-    <table class="tri mt">
-      <thead><tr><th>Quello che dice la fonte</th><th>Quello che aveva scritto l'explainer</th><th>Che cosa sarebbe successo alla persona</th></tr></thead>
+    <table class="d3 mt">
+      <thead><tr><th>La fonte dice</th><th>Era diventato</th><th>Cosa sarebbe successo</th></tr></thead>
       <tbody>
         <tr>
-          <td class="was">«Su un massimo di 96.000 euro <strong>per unità immobiliare</strong>»</td>
-          <td class="bad">«Il limite massimo di spesa è 96.000 euro.»</td>
-          <td>Chi ristruttura due unità crede di avere un tetto unico e presenta una spesa destinata
-            a essere ridimensionata.</td>
+          <td class="was">96.000 euro <strong>per unit&agrave; immobiliare</strong></td>
+          <td class="bad">96.000 euro</td>
+          <td>Chi ristruttura due case crede di avere un tetto unico.</td>
         </tr>
         <tr>
-          <td class="was">«il 19% delle spese sanitarie <strong>per la parte eccedente</strong> l'importo di 129,11 euro»</td>
-          <td class="bad">«il 19% delle spese sanitarie che superano 129,11 euro»</td>
-          <td>Il 19% sembra calcolarsi sull'intera spesa: si aspetta uno sconto più grande di quello
-            che riceverà.</td>
+          <td class="was">il 19% <strong>della parte che supera</strong> 129,11 euro</td>
+          <td class="bad">il 19% delle spese che superano 129,11 euro</td>
+          <td>Si aspetta uno sconto pi&ugrave; grande di quello che avr&agrave;.</td>
         </tr>
         <tr>
-          <td class="was">«entro il 30 aprile <strong>dell'anno successivo a quello a cui si riferiscono
-            le mensilità</strong>»</td>
-          <td class="bad">«Devi caricare i documenti entro il 30 aprile 2027.»</td>
-          <td>Una data che nella fonte non esiste: chi chiede mensilità di un altro anno perde il termine.</td>
+          <td class="was">entro il 30 aprile <strong>dell&rsquo;anno dopo le mensilit&agrave;</strong></td>
+          <td class="bad">entro il 30 aprile 2027</td>
+          <td>Una data che nella fonte non esiste: si perde il termine.</td>
         </tr>
       </tbody>
     </table>
 
     <div class="grid g2 mt">
       <div class="card">
-        <h3>La misura che non è entrata</h3>
-        <p class="body">La detrazione sui canoni di locazione per i 20-30 anni: la stessa riga della
-          fonte dice «età compresa tra i 20 e 30 anni» e «nel limite del compimento dei 31 anni».
-          Il perimetro anagrafico è un requisito, quindi sempre bloccante. Lo scenario «under 36»
-          resta senza misura a catalogo: <strong>è un buco dichiarato, non nascosto</strong>.</p>
+        <h3>La misura che non &egrave; entrata</h3>
+        <p class="body">Una detrazione sull&rsquo;affitto per i giovani: la stessa riga dice &laquo;dai 20 ai 30
+          anni&raquo; e &laquo;fino ai 31&raquo;. Non abbiamo scelto la lettura pi&ugrave; probabile.
+          <strong>Manca, e lo diciamo.</strong></p>
       </div>
       <div class="card flat">
-        <h3>Gli altri limiti, dichiarati</h3>
+        <h3>Cosa non fa</h3>
         <ul class="b tight">
-          <li>Nessun calcolo sul caso concreto: non stimiamo l'ISEE né quanto spetta (G-18).</li>
-          <li>Nessun accesso ai sistemi reali: spieghiamo come si arriva al cassetto fiscale, non ci entriamo.</li>
-          <li>Fase A eseguita a mano seguendo alla lettera i file degli agenti: gli artefatti sono
-            veri, il meccanismo di invocazione no. Lo dichiariamo nel repository.</li>
+          <li>Non calcola l&rsquo;ISEE e non dice quanto spetta a te.</li>
+          <li>Non entra nei portali: spiega come arrivarci.</li>
+          <li>Se una misura non &egrave; nell&rsquo;elenco, non la nomina: manda al CAF.</li>
         </ul>
       </div>
     </div>
-    <p class="small mt">Ogni cifra di questa slide sta in <code>agents/state/verifica-fase-a.json</code>,
-      con testo originale e testo respinto per ogni divergenza.</p>
   </div>
 </section>
 
@@ -611,34 +509,32 @@ table.tri th:first-child{padding-right:26px}
      ============================================================ -->
 <section class="slide" aria-label="Passaggio alla demo">
   <div class="inner">
-    <div class="eyebrow">05 · Adesso il prodotto</div>
-    <h2>Due minuti sull'applicazione vera</h2>
-    <p class="lead">Non un video, non un mockup: <code>python app/main.py</code> in esecuzione su questa
-      macchina, che legge <code>agents/state/catalogo.json</code> verificato in Fase A.</p>
+    <div class="eyebrow">05 &middot; Adesso il prodotto</div>
+    <h2>Due minuti sull&rsquo;applicazione vera</h2>
+    <p class="lead">Non un video e non un finto prodotto: gira su questa macchina, e legge l&rsquo;elenco
+      verificato di cui abbiamo appena parlato.</p>
     <div class="grid g3 mt2">
       <div class="card">
         <h3>Che cosa vedete</h3>
-        <p class="body">Il percorso di Marco: cinque domande a scelta multipla, la scheda delle misure
-          pertinenti, i passi per accedere, il glossario. Dall'inizio alla fine, senza tagli.</p>
+        <p class="body">Il percorso di Marco, dall&rsquo;inizio alla fine: cinque domande, le misure che lo
+          riguardano, i passi da fare.</p>
       </div>
       <div class="card accent">
         <h3>Dove guardare</h3>
         <ul class="b tight">
-          <li>Ogni cifra porta <strong>la fonte e la data</strong> di consultazione.</li>
-          <li>«Per unità immobiliare» e «parte eccedente» <strong>ci sono</strong>: è il
-            <code>fidelity-validator</code> che li ha rimessi.</li>
-          <li>Il rimando al CAF è <strong>un campo dell'output</strong>, non una frase gentile.</li>
-          <li>Chiuderemo su un caso che il sistema <strong>rifiuta</strong> di trattare.</li>
+          <li>Ogni cifra porta la sua <strong>fonte e la data</strong>.</li>
+          <li>&laquo;Per unit&agrave; immobiliare&raquo; e &laquo;la parte che supera&raquo;: <strong>ci sono</strong>.</li>
+          <li>Il rimando al CAF c&rsquo;&egrave; sempre.</li>
+          <li>Chiudiamo su un caso che il sistema <strong>rifiuta</strong>.</li>
         </ul>
       </div>
       <div class="card flat">
         <h3>Che cosa non vedrete</h3>
-        <p class="body">Un numero che il sistema non sa da dove viene. Se non è in catalogo, non
-          compare: compare il rimando a una persona.</p>
+        <p class="body">Un numero di cui non si sappia da dove viene.</p>
       </div>
     </div>
-    <p class="note mt2">Una percentuale sbagliata su un bonus non è un refuso: è un danno a una
-      persona che presenta una pratica vera. Da qui discende tutto il resto.</p>
+    <p class="note mt2">Una percentuale sbagliata su un bonus non &egrave; un refuso: &egrave; un danno a una
+      persona che presenta una pratica vera. Da qui viene tutto il resto.</p>
   </div>
 </section>
 
@@ -734,6 +630,9 @@ table.tri td:last-child strong{color:#fff}
   table.tri td:last-child{border-left:0;padding-left:16px;padding-bottom:18px;
     border-bottom:1px solid rgba(255,255,255,.09)}
 }
+table.d3 td:first-child{width:30%;padding-right:22px}
+table.d3 td:nth-child(2){width:28%;padding-right:22px;color:#F5B85C}
+table.d3 td:last-child{color:#D0CCD3}
 </style>
 </body>
 </html>
