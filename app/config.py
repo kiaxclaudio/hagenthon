@@ -102,6 +102,15 @@ BACKOFF_MAX_S: float = _decimale('LLM_BACKOFF_MAX_S', 20.0)
 API_KEY: str | None = os.getenv('ANTHROPIC_API_KEY') or None
 
 # --------------------------------------------------------------------------
+# Modalita demo (B3: il percorso di demo non dipende da servizi esterni)
+# --------------------------------------------------------------------------
+
+# Con DEMO_MODE=true nessuna chiamata all'API: gli output degli agenti vengono
+# da app/demo/ e passano per la stessa validazione del percorso reale.
+DEMO_MODE: bool = os.getenv('DEMO_MODE', 'false').strip().lower() in ('1', 'true', 'yes', 'si')
+DEMO_DIR = Path(__file__).resolve().parent / 'demo'
+
+# --------------------------------------------------------------------------
 # Limiti di iterazione e gate HITL (D2, D3, D4)
 # --------------------------------------------------------------------------
 

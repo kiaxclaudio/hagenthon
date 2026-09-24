@@ -1,6 +1,27 @@
 let sessionId = null;
 
+// La modalita demo si dichiara: un valutatore deve sapere che cosa sta vedendo.
+async function mostraModalita() {
+  try {
+    const resp = await fetch('/api/diagnostica');
+    const d = await resp.json();
+    const banner = document.getElementById('demo-banner');
+    if (d.demo_mode) {
+      banner.textContent =
+        'Modalita demo: nessuna chiamata al modello. Le risposte degli agenti sono registrate in app/demo/ '
+        + 'e passano per la stessa validazione del percorso reale; misure, importi e fonti vengono dal catalogo verificato'
+        + (d.catalogo_presente ? ` (versione ${d.catalogo_versione}).` : ' (catalogo non ancora presente: il sistema rimanda al CAF).');
+      banner.classList.remove('hidden');
+    } else {
+      banner.classList.add('hidden');
+    }
+  } catch (e) {
+    /* la diagnostica non e' essenziale al percorso */
+  }
+}
+
 async function init() {
+  mostraModalita();
   const resp = await fetch('/api/reset', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
   const data = await resp.json();
   sessionId = data.session_id;

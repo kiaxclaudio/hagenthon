@@ -21,7 +21,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from agents import call_explainer, call_fidelity_validator, esegui_agente
+from agents import call_explainer, call_fidelity_validator, e_fallback, esegui_agente
 import catalogo as catalogo_mod
 from config import FONTI_DIR, MAX_GIRI_FIDELITY, MISURE_GREZZE_PATH, assicura_state_dir
 from validation import ora
@@ -83,7 +83,7 @@ def costruisci_voce(misura: dict) -> tuple[dict | None, dict | None]:
             'iterazione': giro,
             'divergenze_da_correggere': divergenze,
         })
-        if uscita_explainer.get('status') != 'ok':
+        if e_fallback(uscita_explainer):
             return None, _esclusione(misura, 'dati_numerici_mancanti', divergenze)
 
         ultima_spiegazione = uscita_explainer['payload']
@@ -94,7 +94,7 @@ def costruisci_voce(misura: dict) -> tuple[dict | None, dict | None]:
             'iterazione': giro,
             'divergenze_giro_precedente': divergenze,
         })
-        if uscita_validator.get('status') != 'ok':
+        if e_fallback(uscita_validator):
             return None, _esclusione(misura, 'fonte_non_interpretabile', divergenze)
 
         verdetto = uscita_validator['payload']
@@ -142,7 +142,7 @@ def costruisci_catalogo(cartella_fonti: Path, anno: int, versione: str) -> int:
     if not fonti_file:
         print(
             f'Nessuna fonte in {cartella_fonti}.\n'
-            'Salva li\' le pagine ufficiali (Agenzia delle Entrate, INPS) come .txt o '
+            'Salva lì le pagine ufficiali (Agenzia delle Entrate, INPS) come .txt o '
             '.html e rilancia. Senza fonti non si costruisce un catalogo: i numeri '
             'non si prendono dalla memoria del modello.'
         )
@@ -155,7 +155,7 @@ def costruisci_catalogo(cartella_fonti: Path, anno: int, versione: str) -> int:
         meta = _metadati(percorso)
         uscita = analizza_fonte(percorso, anno)
 
-        if uscita.get('status') != 'ok':
+        if e_fallback(uscita) or uscita.get('status') == 'hitl_required':
             # Gate HITL: fonte non interpretabile, la Fase A si ferma su questa fonte.
             print(f"  ! saltata: {uscita.get('payload', {}).get('motivo_tecnico', uscita.get('status'))}")
             continue

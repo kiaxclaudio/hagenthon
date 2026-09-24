@@ -11,8 +11,9 @@ import secrets
 from flask import Flask, jsonify, render_template, request
 
 import catalogo as catalogo_mod
+import demo
 from agents import call_orchestrator, esegui_profilazione, run_full_pipeline, vista_interfaccia
-from config import MODELLI_PER_TIER, TIER_PER_AGENTE
+from config import DEMO_MODE, MODELLI_PER_TIER, TIER_PER_AGENTE
 from session import (
     add_message,
     conversazione,
@@ -95,6 +96,11 @@ def chat():
         if not esito_chat.get('risposte'):
             return jsonify(risposta), 200
 
+        # Il JSON con cui l'orchestratore chiude il questionario non si mostra.
+        risposta['message'] = (
+            'Ho raccolto le tue risposte. Sto controllando il catalogo verificato.'
+        )
+
         # Passo 2: profiler normalizza le risposte sulla tassonomia chiusa.
         profilo, escalation = esegui_profilazione(
             session_id, esito_chat['risposte'], DOMANDE_POSTE
@@ -129,7 +135,7 @@ def chat():
         app.logger.exception('errore non previsto su /api/chat')
         return jsonify(_risposta_degradata(
             session_id,
-            'Si e\' verificato un problema tecnico. ' + MESSAGGIO_CAF,
+            'Si è verificato un problema tecnico. ' + MESSAGGIO_CAF,
             f'{type(errore).__name__}',
         )), 200
 
@@ -157,6 +163,8 @@ def diagnostica():
     catalogo = catalogo_mod.carica()
     return jsonify({
         'chiave_api_configurata': bool(os.getenv('ANTHROPIC_API_KEY')),
+        'demo_mode': DEMO_MODE,
+        'scenari_demo': demo.elenco_scenari() if DEMO_MODE else [],
         'tier_per_agente': TIER_PER_AGENTE,
         'modelli_per_tier': MODELLI_PER_TIER,
         'catalogo_presente': catalogo is not None,

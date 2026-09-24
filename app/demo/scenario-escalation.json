@@ -1,0 +1,57 @@
+{
+  "id": "escalation",
+  "etichetta": "Caso non risolvibile: rimando al CAF",
+  "descrizione": "Situazione non riconducibile a una misura del catalogo: il gate HITL ferma la risposta e rimanda a una persona.",
+  "innesco": [
+    "non so",
+    "mostrami tutto",
+    "auto",
+    "altro"
+  ],
+  "conversazione": [
+    "Va bene, partiamo da zero. Ti faccio qualche domanda per capire la tua situazione.\n\nGrazie. Dove abiti in questo momento?\n- Sono proprietario di casa\n- Sono in affitto\n- Sono ospite di familiari\n- Non so cosa rispondere",
+    "Da dove arriva il tuo reddito principale?\n- Lavoro dipendente\n- Pensione\n- Partita IVA\n- Nessun reddito in questo momento",
+    "A che punto sei?\n- Devo ancora iniziare\n- È in corso\n- È già concluso",
+    "Ultima domanda: ti sei mai rivolto a un CAF?\n- Sì\n- No\n- Non so cosa sia un CAF",
+    "{\"risposte\": {\"situazione_vita\": [\"non_so\"], \"condizione_abitativa\": \"ospite_familiari\", \"tipo_reddito\": \"partita_iva\", \"timing\": \"gia_concluso\", \"caf\": \"non_so_cosa_e\"}}"
+  ],
+  "profiler": {
+    "status": "ok",
+    "confidence": 0.92,
+    "source_refs": [
+      "catalogo-verificato"
+    ],
+    "payload": {
+      "profilo_id": "profilo-demo-escalation",
+      "creato_il": "2026-01-15T09:00:00+00:00",
+      "situazioni_vita": [
+        "non_so"
+      ],
+      "condizione_abitativa": "ospite_familiari",
+      "tipo_reddito": "partita_iva",
+      "timing": "gia_concluso",
+      "caf": "non_so_cosa_e",
+      "termini_non_noti": [],
+      "completo": true,
+      "risposte_mancanti": []
+    }
+  },
+  "eligibility": {
+    "status": "hitl_required",
+    "confidence": 0.45,
+    "source_refs": [
+      "catalogo-verificato"
+    ],
+    "payload": {
+      "profilo_id": "profilo-demo-escalation",
+      "catalogo_versione": "@catalogo_versione@",
+      "misure_pertinenti": [],
+      "misure_escluse": [],
+      "escalation": true,
+      "ambito_escalation": "sessione",
+      "motivo_escalation": "confidence_bassa",
+      "spiegazione_escalation": "Le risposte descrivono una situazione che il catalogo verificato non copre con certezza: reddito da partita IVA, spese già concluse e nessuna situazione di vita riconosciuta. Preferiamo non mostrare misure incerte.",
+      "disclaimer": "Queste informazioni servono solo a orientarti e non sono una consulenza. Verifica le scadenze su agenziaentrate.gov.it e per la tua situazione specifica rivolgiti a un CAF o a un commercialista."
+    }
+  }
+}

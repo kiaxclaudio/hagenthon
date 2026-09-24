@@ -1,0 +1,45 @@
+{
+  "id": "spese-mediche",
+  "etichetta": "Pensionato con spese mediche",
+  "descrizione": "Pensionato proprietario, spese mediche già sostenute.",
+  "innesco": [
+    "medich",
+    "salute",
+    "pension",
+    "farmac"
+  ],
+  "conversazione": [
+    "Parliamo delle spese mediche. Ti faccio qualche domanda per capire la tua situazione.\n\nGrazie. Dove abiti in questo momento?\n- Sono proprietario di casa\n- Sono in affitto\n- Sono ospite di familiari\n- Non so cosa rispondere",
+    "Da dove arriva il tuo reddito principale?\n- Lavoro dipendente\n- Pensione\n- Partita IVA\n- Nessun reddito in questo momento",
+    "A che punto sei?\n- Devo ancora iniziare\n- È in corso\n- È già concluso",
+    "Ultima domanda: ti sei mai rivolto a un CAF?\n- Sì\n- No\n- Non so cosa sia un CAF",
+    "{\"risposte\": {\"situazione_vita\": [\"spese_mediche\"], \"condizione_abitativa\": \"proprietario\", \"tipo_reddito\": \"pensione\", \"timing\": \"gia_concluso\", \"caf\": \"si\"}}"
+  ],
+  "profiler": {
+    "status": "ok",
+    "confidence": 0.92,
+    "source_refs": [
+      "catalogo-verificato"
+    ],
+    "payload": {
+      "profilo_id": "profilo-demo-mediche",
+      "creato_il": "2026-01-15T09:00:00+00:00",
+      "situazioni_vita": [
+        "spese_mediche"
+      ],
+      "condizione_abitativa": "proprietario",
+      "tipo_reddito": "pensione",
+      "timing": "gia_concluso",
+      "caf": "si",
+      "termini_non_noti": [],
+      "completo": true,
+      "risposte_mancanti": []
+    }
+  },
+  "eligibility": {
+    "sorgente": "catalogo"
+  },
+  "navigator": {
+    "sorgente": "catalogo"
+  }
+}

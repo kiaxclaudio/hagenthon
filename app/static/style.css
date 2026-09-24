@@ -316,3 +316,15 @@ footer#disclaimer a { color: #f59e0b; }
   line-height: 1.45;
   color: var(--text-muted);
 }
+
+/* Banner della modalita demo: dichiarato, leggibile, non invadente. */
+#demo-banner {
+  margin: 0 auto;
+  max-width: 1100px;
+  padding: 10px 16px;
+  background: #451a03;
+  color: #fbbf24;
+  border-bottom: 1px solid var(--warning);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}

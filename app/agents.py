@@ -20,8 +20,10 @@ from typing import Any
 import anthropic
 
 import catalogo as catalogo_mod
+import demo
 from config import (
     API_KEY,
+    DEMO_MODE,
     BACKOFF_BASE_S,
     BACKOFF_MAX_S,
     MAX_MISURE_NAVIGATOR,
@@ -167,6 +169,11 @@ def _chiama(agente: str, messaggi: list[dict], sistema: str) -> str:
     Alza ErroreModello quando ha finito i tentativi o quando l'errore non e'
     ritentabile. Non restituisce mai una stringa vuota.
     """
+    if DEMO_MODE:
+        # Stessa funzione, sorgente diversa: da qui in poi il percorso e'
+        # identico a quello reale, validazione di schema compresa.
+        return demo.risposta_registrata(agente, messaggi)
+
     modello = modello_di(agente)
     ultimo: ErroreModello | None = None
 
@@ -296,8 +303,16 @@ def esegui_agente(agente: str, contenuto_utente: Any, *, valida: bool = True) ->
     return degradato(agente, 'esaurite le ri-richieste')
 
 
-def _degradato(uscita: dict) -> bool:
-    return uscita.get('status') != 'ok'
+def e_fallback(uscita: dict) -> bool:
+    """Distingue il fallback tecnico dall'esito legittimo.
+
+    Un agente che restituisce 'hitl_required' sta facendo il suo lavoro: ha un
+    payload conforme e dichiara che serve una persona. Il fallback costruito da
+    questo modulo, invece, non ha contenuto di dominio e si riconosce da
+    'motivo_tecnico'. Trattarli allo stesso modo farebbe sparire i gate dietro
+    un messaggio di errore.
+    """
+    return 'motivo_tecnico' in (uscita.get('payload') or {})
 
 
 # --------------------------------------------------------------------------
@@ -337,15 +352,54 @@ def call_orchestrator(conversation_history: list) -> dict:
     return {'text': testo, 'risposte': risposte, 'status': 'ok'}
 
 
-def call_profiler(sessione_id: str, risposte: dict, domande_poste: list[str]) -> dict:
-    """Normalizza le risposte nella tassonomia chiusa di profiler.output.json."""
+CAMPI_RISPOSTA = ('situazione_vita', 'condizione_abitativa', 'tipo_reddito', 'timing', 'caf')
+
+
+def _valori_ammessi(campo: str) -> set[str]:
+    """Valori della tassonomia chiusa, letti dallo schema (E5)."""
+    return set(schema_di('profiler.output')['$defs'][campo]['enum'])
+
+
+def _ingresso_profiler(sessione_id: str, risposte: dict, domande_poste: list[str]) -> dict:
+    """Prepara l'input del profiler separando la tassonomia dal testo libero.
+
+    profiler.input.json accetta solo valori della tassonomia nei campi tipizzati
+    e ha un campo apposta, 'testo_libero', per quello che la persona ha scritto
+    o scelto in altre parole. Cosi' l'input resta conforme e il profiler ha
+    comunque il materiale da normalizzare, che e' il suo mestiere.
+    """
+    tipizzate: dict[str, object] = {}
+    residui: list[str] = []
+
+    for campo in CAMPI_RISPOSTA:
+        valore = risposte.get(campo)
+        if valore is None:
+            continue
+        ammessi = _valori_ammessi(campo)
+        if campo == 'situazione_vita':
+            elenco = valore if isinstance(valore, list) else [valore]
+            validi = [v for v in elenco if v in ammessi]
+            residui += [str(v) for v in elenco if v not in ammessi]
+            if validi:
+                tipizzate[campo] = sorted(set(validi))
+        elif isinstance(valore, str) and valore in ammessi:
+            tipizzate[campo] = valore
+        else:
+            residui.append(f'{campo}: {valore}')
+
     ingresso = {
         'sessione_id': sessione_id,
-        'risposte': {k: v for k, v in risposte.items() if k in (
-            'situazione_vita', 'condizione_abitativa', 'tipo_reddito', 'timing', 'caf'
-        )},
+        'risposte': tipizzate,
         'domande_poste': domande_poste or ['situazione_vita'],
     }
+    if residui:
+        ingresso['testo_libero'] = ' | '.join(residui)[:2000]
+    return ingresso
+
+
+def call_profiler(sessione_id: str, risposte: dict, domande_poste: list[str]) -> dict:
+    """Normalizza le risposte nella tassonomia chiusa di profiler.output.json."""
+    ingresso = _ingresso_profiler(sessione_id, risposte, domande_poste)
     errori_ingresso = valida_input('profiler', ingresso)
     if errori_ingresso:
         # Input non conforme: non si spreca una chiamata, si degrada subito.
@@ -364,7 +418,7 @@ def esegui_profilazione(sessione_id: str, risposte: dict,
     ultimo: dict | None = None
     for invocazione in (1, 2):
         uscita = call_profiler(sessione_id, risposte, domande_poste)
-        if _degradato(uscita):
+        if e_fallback(uscita):
             ultimo = uscita
             continue
         profilo = uscita.get('payload', {})
@@ -465,7 +519,7 @@ def run_full_pipeline(profilo: dict, sessione_id: str = 'sessione') -> dict:
 
     uscita_eligibility = call_eligibility(profilo, candidate, versione)
 
-    if _degradato(uscita_eligibility):
+    if e_fallback(uscita_eligibility):
         motivo = 'requisiti_non_verificabili'
         return _escalation(
             motivo,
@@ -483,9 +537,9 @@ def run_full_pipeline(profilo: dict, sessione_id: str = 'sessione') -> dict:
     if confidence < SOGLIA_CONFIDENCE:
         motivo = 'confidence_bassa'
         messaggio = (
-            f'Il sistema non e\' abbastanza sicuro della lettura del tuo caso '
-            f'(affidabilita\' {confidence:.2f}, soglia {SOGLIA_CONFIDENCE}). '
-            'Preferiamo non mostrarti misure incerte: un CAF puo\' verificare la '
+            f'Il sistema non è abbastanza sicuro della lettura del tuo caso '
+            f'(affidabilità {confidence:.2f}, soglia {SOGLIA_CONFIDENCE}). '
+            'Preferiamo non mostrarti misure incerte: un CAF può verificare la '
             'tua posizione con i tuoi documenti.'
         )
         return _escalation(
@@ -505,6 +559,27 @@ def run_full_pipeline(profilo: dict, sessione_id: str = 'sessione') -> dict:
         )
         return _escalation(motivo, messaggio, eligibility=uscita_eligibility)
 
+    # Gate per singola misura: quella sotto soglia non si propone, le altre si'
+    # (agents/schemas/eligibility.output.json, ambito_escalation 'misura').
+    sotto_soglia = [
+        m for m in misure if float(m.get('confidence', 1.0)) < SOGLIA_CONFIDENCE
+    ]
+    misure = [m for m in misure if m not in sotto_soglia]
+    if not misure:
+        motivo = 'confidence_bassa'
+        messaggio = (
+            'Le misure emerse hanno un margine di incertezza troppo alto per '
+            'essere mostrate. Un CAF o un commercialista possono verificarle '
+            'con i tuoi documenti.'
+        )
+        return _escalation(
+            motivo, messaggio,
+            eligibility=degradato_eligibility(
+                payload.get('profilo_id', profilo.get('profilo_id', sessione_id)),
+                versione, motivo, messaggio, status='hitl_required',
+            ),
+        )
+
     # Limite di iterazione: al massimo tre misure guidate per sessione.
     misure = misure[:MAX_MISURE_NAVIGATOR]
 
@@ -514,7 +589,8 @@ def run_full_pipeline(profilo: dict, sessione_id: str = 'sessione') -> dict:
         if voce is None:
             continue
         uscita_navigator = call_navigator(profilo, voce)
-        if _degradato(uscita_navigator):
+        # Gate: un percorso senza passi non si mostra, la misura si salta.
+        if e_fallback(uscita_navigator) or not uscita_navigator.get('payload', {}).get('passi'):
             continue
         percorsi.append(uscita_navigator)
 
@@ -620,7 +696,7 @@ def vista_interfaccia(esito: dict) -> dict:
         'prossimo_passo_prioritario': primo,
         'riquadro_spid': {'mostra': _serve_spid(esito), 'testo': (
             'Molte pratiche si aprono solo con SPID, CIE o CNS. Se non li hai, '
-            'un CAF puo\' aiutarti a ottenerli.'
+            'un CAF può aiutarti a ottenerli.'
         )},
     }
     return vista

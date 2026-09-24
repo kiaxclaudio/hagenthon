@@ -133,7 +133,7 @@ def envelope(
 MESSAGGIO_CAF = (
     'Non siamo riusciti a completare questo passaggio in modo affidabile. '
     'Per la tua situazione rivolgiti a un CAF o a un commercialista: '
-    'il servizio di un CAF e\' spesso gratuito.'
+    'il servizio di un CAF è spesso gratuito.'
 )
 
 
@@ -154,9 +154,13 @@ def degradato(agente: str, motivo: str, *, status: str = 'degraded') -> dict:
 
 
 def degradato_eligibility(profilo_id: str, catalogo_versione: str, motivo: str,
-                          spiegazione: str, *, status: str = 'degraded') -> dict:
+                          spiegazione: str, *, status: str = 'hitl_required') -> dict:
     """Degradato di eligibility: qui il payload completo resta esprimibile,
-    perche' 'nessuna misura proposta' e' un contenuto legittimo (escalation)."""
+    perche' 'nessuna misura proposta' e' un contenuto legittimo (escalation).
+
+    Lo schema lo impone: con escalation a true lo status e' hitl_required e le
+    misure pertinenti sono zero. Meta' risposta piu' un rimando e' la forma
+    peggiore, e il contratto la vieta."""
     return envelope(
         {
             'profilo_id': profilo_id,
@@ -164,6 +168,8 @@ def degradato_eligibility(profilo_id: str, catalogo_versione: str, motivo: str,
             'misure_pertinenti': [],
             'misure_escluse': [],
             'escalation': True,
+            # L'ambito dichiara che si ferma l'intera sessione, non una misura.
+            'ambito_escalation': 'sessione',
             'motivo_escalation': motivo,
             'spiegazione_escalation': spiegazione,
             'disclaimer': disclaimer(),
