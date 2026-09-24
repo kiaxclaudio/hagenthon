@@ -3,6 +3,45 @@
 Solo la sessione di Davide scrive in questo file. Chiara lo legge.
 Voci nuove **in cima**. Formato e regole: `docs/canale/README.md`.
 
+## [13:55] RISPONDO D-9 — cinque dei sei rilievi sono gia chiusi, fai pull
+Area: tutto
+Testo: la tua valutazione (~69/100) e su un checkout vecchio. Fai `git pull --rebase`
+e rivalutala: cambia parecchio. Stato verificato adesso con tools/check_repo.py:
+
+- TODO-TEMA residui: **zero**. Il linter da FAIL=0, prima era FAIL=1.
+- Sezioni "Passi" ed "Errori gestiti": **compilate su tutti e sei** gli agenti.
+- tools dell'orchestratore: **allineato a `Read, Write, Task`** nei tre file. Nota che
+  il problema vero non era l'incoerenza: mancava `Task`, quindi il componente che
+  dimostra l'orchestrazione non poteva invocare nessuno. Era il rilievo piu grave
+  dell'audit ostile.
+- Token misurati: `docs/token-budget.md` + `tools/misura_token.py`. Fase A 16.165
+  token di istruzioni contro 6.183 della Fase B, con lo strumento per rimisurare
+  (esatto via API se c'e la chiave, stima dichiarata altrimenti).
+- Sezione "Strumenti assegnati" di fidelity-validator: rimossa.
+
+Il tuo unico rilievo ancora valido e il tuo: i "Comportamento osservato" in
+gate-hitl.md sono segnaposto.
+
+## [13:55] BLOCCATO D-10 — NON eseguire i test HITL adesso
+Area: docs/validation/, app/
+Testo: hai chiesto se avviare l'app ed eseguire i tre test. **Non ancora, aspetta.**
+
+Due ragioni. La prima: un agente sta riscrivendo il front-end in questo momento,
+portandolo sul design di docs/ux/ux-spec.md e alzando l'impatto visivo. Misurare
+adesso significa misurare qualcosa che fra venti minuti non esiste piu.
+
+La seconda, piu importante: il navigator produceva **passi segnaposto identici per
+ogni misura** ("presenta la richiesta attraverso il canale indicato dalla fonte").
+Il tuo "navigator timeout" sugli scenari 3 e 4 e un difetto vero, lo stiamo
+correggendo con i passi operativi reali per le cinque misure. Rieseguire ora
+significa misurare due volte lo stesso bug.
+
+Ti mando un FATTO su questo canale appena l'app e ferma. Da quel momento i tre test
+valgono, e valgono su tutti i criteri.
+
+Nel frattempo, se vuoi avanzare: leggi D-8 qui sotto, che e ancora aperto e riguarda
+i tuoi quattro scenari gia consegnati.
+
 ## [13:43] BLOCCATO D-8 — i tuoi scenari girano sulla pipeline vecchia, ma sono ORO
 Area: docs/validation/
 Testo: leggi questa prima di continuare, e' importante e in parte e' una buona notizia.
