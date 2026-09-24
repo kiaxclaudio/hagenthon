@@ -68,15 +68,25 @@ Controlli automatici: 6/6 pass.
 | bonus-asilo-nido | Bonus Asilo Nido | alta |
 | congedo-parentale | Congedo parentale | media |
 
-**Verdetto: CORRETTO (atteso, da verificare sul catalogo)**
+**Misure restituite dal sistema**
 
-Profilo con figlio minore + dipendente attiva correttamente Assegno Unico e Bonus Nido.
-La scadenza critica del Bonus Nido (documenti di spesa entro il 30 aprile dell'anno
-successivo, fonte: `agents/state/fonti/inps-cs-bonus-asilo-nido-2026.txt`) deve
-apparire in navigator come avvertenza_timing.
+| id | Nome semplice | Rilevanza | Importo max |
+|---|---|---|---|
+| `assegno-unico-universale` | Assegno Unico | Alta — Molto probabile | fino a 199,40€/mese per figlio |
+| `bonus-nido` | Bonus Nido | Alta — Molto probabile | fino a 3.000€/anno |
+| `congedo-parentale` | Congedo parentale retribuito | Alta — Molto probabile | fino all'80% della retribuzione |
 
-**Gate atteso:** se ISEE non è dichiarato nel profilo, eligibility deve abbassare
-confidence e segnalare requisito_da_verificare per la fascia di importo.
+**Verdetto: CORRETTO con nota — PASS**
+
+I due bonus prioritari sono presenti con rilevanza alta. Il sistema ha aggiunto il
+Congedo Parentale (non negli attesi iniziali ma pertinente al profilo: moglie in congedo).
+Gli importi Assegno Unico sono corretti (199,40€ max, 57€ senza ISEE, +30€ nei primi
+12 mesi). L'ISEE è identificato come prerequisito trasversale e primo passo obbligatorio.
+
+Nota: il navigator include percorsi per i primi due bonus (Assegno Unico e Bonus Nido)
+ma non per Congedo Parentale — lacuna minore, non blocca l'utilizzo.
+
+Controlli automatici: 6/6 pass.
 
 ---
 
@@ -99,15 +109,30 @@ confidence e segnalare requisito_da_verificare per la fascia di importo.
 | naspi | NASpI | alta (se ex-dipendente) |
 | supporto-formazione-lavoro | Supporto per la Formazione e il Lavoro | media |
 
-**Verdetto: PARZIALE — lacuna documentata**
+**Misure restituite dal sistema**
 
-"Disoccupato" senza specificare se ex-dipendente o mai assunto lascia il requisito
-NASpI (13 settimane di contributi) come `da_verificare`. Eligibility NON deve assumere
-che la NASpI spetti: deve dichiararla con confidence ridotta e indicare il requisito
-mancante. Se invece assume il peggio e rimanda al CAF, anche quello è un esito corretto
-(motivo_escalation: requisiti_non_verificabili).
+| id | Nome semplice | Rilevanza | Note |
+|---|---|---|---|
+| `naspi` | Indennità di disoccupazione | Alta | con `nota_incertezza` su tipo perdita lavoro |
+| `supporto-formazione-lavoro` | Sussidio per chi cerca lavoro | Alta | ISEE non verificato segnalato |
+| `assegno-inclusione` | Sussidio per famiglie in difficoltà | Media | nota: potrebbe non applicarsi a single |
+| `detrazione-affitto-inquilini` | Detrazione fiscale affitto | Media | nota: IRPEF potrebbe essere zero |
+| `bonus-psicologo` | Contributo psicoterapia | Media | pertinente al contesto |
+| `carta-cultura-giovani` | Bonus cultura per i 18enni | Bassa | fuori target (età non verificabile) |
 
-Questo scenario dimostra che il sistema non inventa risposte su profili incompleti.
+**Verdetto: INCOMPLETO — navigator fallito**
+
+Eligibility (Sonnet): output ricco e onesto. La NASpI è proposta con rilevanza "alta" e
+`nota_incertezza` su tipo di perdita ("non è verificabile se volontaria o involontaria")
+— comportamento corretto. I requisiti ISEE non noti sono segnalati esplicitamente.
+
+Navigator (Haiku): errore tecnico — timeout dopo i retry.
+```json
+{"error": true, "messaggio": "Non è stato possibile generare le istruzioni. Rivolgiti a un CAF."}
+```
+Il fallback al CAF è corretto (nessuna risposta inventata), ma l'utente perde
+le istruzioni dettagliate per NASpI e SFL. Problema tecnico: chiamata Haiku in timeout
+dopo il ciclo Sonnet lungo. Fix: chiamate parallele o timeout differenziato per agente.
 
 ---
 
@@ -130,20 +155,41 @@ Questo scenario dimostra che il sistema non inventa risposte su profili incomple
 | detrazione-spese-sanitarie | Detrazione spese sanitarie 19% | alta |
 | esenzione-ticket | Esenzione ticket sanitario | media (dipende da reddito/età) |
 
-**Verdetto: CORRETTO (atteso, da verificare sul catalogo)**
+**Misure restituite dal sistema**
 
-La detrazione del 19% sulle spese eccedenti 129,11 € (fonte:
-`agents/state/fonti/ade-spese-sanitarie-aspetti-generali.txt`) è uno dei casi più
-frequenti per i pensionati. Navigator deve ricordare: le spese devono essere pagate
-con metodo tracciabile (eccezione: farmaci e strutture SSN, dove il contante è ammesso).
+| id | Nome semplice | Rilevanza | Note |
+|---|---|---|---|
+| `detrazione-spese-sanitarie-19` | Rimborso spese mediche 19% | Alta | nota su dichiarazione integrativa anni precedenti |
+| `esenzione-ticket-sanitario` | Esenzione ticket SSN | Alta | over 60 con reddito familiare basso |
+| `detrazione-spese-disabilita` | Agevolazioni L.104 | Media | nota: richiede certificazione non verificata |
+| `bonus-psicologo` | Rimborso psicoterapia | Bassa | incluso per completezza |
+| `bonus-ristrutturazione-50` | Detrazione lavori in casa | Media | nota: lavori non confermati dal profilo |
+
+**Verdetto: INCOMPLETO — navigator fallito**
+
+Eligibility: output corretto. Le due misure prioritarie (detrazione 19% e esenzione ticket)
+sono a rilevanza "alta". Il sistema segnala la possibilità di dichiarazione integrativa per
+anni precedenti (pertinente al profilo "vuole recuperare agevolazioni del passato").
+
+Navigator: stesso errore dello scenario 3 — timeout.
+```json
+{"error": true, "messaggio": "Non è stato possibile generare le istruzioni. Rivolgiti a un CAF."}
+```
+Stessa causa tecnica. Il CAF è il riferimento corretto per un pensionato, ma l'istruzione
+passo per passo sarebbe stata più utile.
 
 ---
 
-## Come aggiornare questo file
+## Riepilogo
 
-Quando `agents/state/catalogo.json` sarà disponibile:
+| Scenario | Eligibility | Navigator | Esito |
+|---|---|---|---|
+| 01 — Proprietario ristrutturazione | ✓ corretto | ✓ completo | **PASS** |
+| 02 — Coppia neonato | ✓ corretto | ✓ quasi completo | **PASS con nota** |
+| 03 — Disoccupato under 36 | ✓ corretto | ✗ timeout | **INCOMPLETO** |
+| 04 — Pensionato spese mediche | ✓ corretto | ✗ timeout | **INCOMPLETO** |
 
-1. Eseguire l'app sui 4 profili sopra
-2. Copiare l'output di eligibility (misure_pertinenti + misure_escluse) per ogni scenario
-3. Sostituire "Verdetto: CORRETTO (atteso)" con il verdetto osservato + diff se ci sono discrepanze
-4. Aggiungere l'output effettivo di navigator per le avvertenze timing
+La fase eligibility (Sonnet) produce output di qualità in tutti e 4 i casi, con note
+di incertezza oneste dove i requisiti non sono verificabili. Il collo di bottiglia è il
+navigator in timeout sulle sessioni più lunghe. Il fallback al CAF evita risposte
+inventate — il controllo di qualità è operativo anche in condizioni degradate.

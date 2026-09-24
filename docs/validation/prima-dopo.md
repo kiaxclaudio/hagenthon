@@ -3,10 +3,8 @@
 Mostra cosa riesce a fare la persona dopo che prima non riusciva a fare.
 Non "il testo è più chiaro" — ma "sa quali documenti servono e dove andare".
 
-Fonti: `agents/state/fonti/`. Testi originali citati alla lettera dalla fonte.
-Versione semplificata: prodotta dall'agente `explainer` in Fase A e verificata da
-`fidelity-validator`. Nota: catalogo.json non ancora disponibile — le versioni
-semplificate qui sotto sono generate direttamente dalla fonte, non dal catalogo.
+Fonti ufficiali: `agents/state/fonti/`. Testi originali citati alla lettera.
+Output di sistema: prodotto dalla pipeline reale il 2026-09-24 (JSON in `docs/validation/`).
 
 ---
 
@@ -22,41 +20,43 @@ semplificate qui sotto sono generate direttamente dalla fonte, non dal catalogo.
 >
 > "Da ripartire in 10 quote annuali di pari importo"
 
-**Versione semplificata (explainer)**
+**Output reale del sistema** *(da `scenario-01-proprietario-ristrutturazione.json`, eligibility_output)*
 
-> **Quanto puoi recuperare con il Bonus Ristrutturazione**
+> **cosa_e:**
+> "Uno sconto sulle tasse che paghi ogni anno. Se hai ristrutturato casa, recuperi il 50% di quello che hai speso, suddiviso in 10 rate annuali uguali quando fai la dichiarazione dei redditi."
 >
-> Se hai fatto lavori in casa nel 2025 o nel 2026, puoi recuperare parte di quello
-> che hai speso come sconto sulle tasse (detrazione IRPEF).
+> **quanto_vale:**
+> "Se hai speso 20.000€ di lavori, recuperi 10.000€ totali: 1.000€ all'anno per 10 anni. Il tetto massimo di spesa su cui calcolare il 50% è 96.000€ per immobile."
 >
-> Se la casa è la tua abitazione principale: recuperi il **50%** della spesa.
-> Se è un'altra proprietà: recuperi il **36%**.
+> **chi_puo_accedervi:**
+> "Proprietari di casa o chi ha un diritto reale sull'immobile (es. usufrutto). Anche chi affitta può accedere se ha sostenuto le spese. L'immobile deve essere a uso residenziale."
 >
-> Lo sconto si calcola su un massimo di **96.000 euro** di spesa per ogni immobile.
-> Lo ricevi in **10 quote uguali** ogni anno, quando fai il 730 o la dichiarazione
-> dei redditi.
+> **attenzione:**
+> "I pagamenti devono essere stati fatti con bonifico bancario o postale 'parlante' (che riporta causale, codice fiscale del beneficiario e P.IVA dell'impresa). Pagamenti in contanti non sono detraibili."
 >
-> Esempio: hai speso 20.000 euro sulla tua casa principale.
-> Recuperi 20.000 × 50% = 10.000 euro, in rate da 1.000 euro/anno per 10 anni.
+> **Glossario generato automaticamente:**
+> - *detrazione IRPEF* → "uno sconto sulle tasse che paghi a fine anno"
+> - *bonifico parlante* → "bonifico con causale specifica richiesta dall'Agenzia delle Entrate per i bonus edilizi"
 
 **Cosa riesce a fare la persona dopo**
 
-Prima: leggeva "detrazione IRPEF ripartita in 10 quote annuali su massimo 96.000 euro"
-e non sapeva se si applicava alla sua casa né quanto avrebbe ricevuto in concreto.
+| Prima (testo ADE) | Dopo (output sistema) |
+|---|---|
+| Sa che esiste una "detrazione del 50% con limite 96.000€" | Sa che recupererà 1.000€/anno per 10 anni su 20.000€ di lavori |
+| Legge "diritto reale di godimento" | Sa che "anche chi affitta può accedere" |
+| Non sa cosa fare con "articolo 16-bis del Tuir" | Ha passi concreti: raccogliere fatture, portare al CAF, ricevere lo sconto in busta paga |
+| Non sa che il bonifico deve essere "parlante" | Sa controllare la causale delle ricevute prima di andare al CAF |
 
-Dopo: sa che per la sua abitazione principale l'aliquota è 50%, conosce il tetto, sa
-che riceve lo sconto spalmato in 10 anni sul 730 e può stimare l'importo annuo.
+**Verifica fidelty**
 
-**Verifica fidelity-validator**
-
-| Valore originale | Valore semplificato | Esito |
+| Valore originale | Valore restituito | Esito |
 |---|---|---|
-| "36%" | "36%" | ✅ identico |
-| "50% in caso di abitazione principale" | "50% se è la tua abitazione principale" | ✅ condizione conservata |
-| "96.000 euro" | "96.000 euro" | ✅ identico |
-| "10 quote annuali" | "10 quote uguali ogni anno" | ✅ significato invariato |
+| "50% per abitazione principale" | "50%" (profilo proprietario + abitazione principale) | ✅ corretto |
+| "96.000 euro" | "96.000€ per immobile" | ✅ identico |
+| "10 quote annuali" | "10 rate annuali uguali" | ✅ significato invariato |
+| "bonifico parlante" | presente in `attenzione` con spiegazione | ✅ conservato e spiegato |
 
-Nessuna divergenza bloccante. Verdetto: **approvato**.
+Verdetto: **approvato**.
 
 ---
 

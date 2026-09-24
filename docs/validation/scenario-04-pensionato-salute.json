@@ -1,0 +1,189 @@
+{
+  "scenario": "scenario-04-pensionato-salute",
+  "descrizione": "Pensionato proprietario con spese mediche importanti",
+  "timestamp": "2026-09-24T13:26:17.147161",
+  "profilo_input": {
+    "situazione_vita": "Ho avuto spese mediche importanti",
+    "situazione_abitativa": "Sono proprietario dell'immobile",
+    "situazione_reddituale": "Sì, lavoro come dipendente (o sono in pensione)",
+    "supporto_fiscale": "Sì, vado al CAF",
+    "timing": "Ho già finito, voglio recuperare agevolazioni del passato",
+    "note_libere": "Pensionato con spese mediche elevate",
+    "escalation": false,
+    "motivo_escalation": null
+  },
+  "bonus_attesi": [
+    "Detrazioni sanitarie 19%",
+    "esenzione ticket"
+  ],
+  "bonus_trovati": [
+    "Rimborso spese mediche nella dichiarazione dei redditi",
+    "Esenzione dal pagamento del ticket al medico o in farmacia",
+    "Agevolazioni fiscali per anziani con disabilità o non autosufficienti",
+    "Rimborso per sedute dallo psicologo",
+    "Detrazione per lavori in casa"
+  ],
+  "match_attesi": [],
+  "eligibility_output": {
+    "profilo_riassunto": "Pensionato, proprietario di casa, con spese mediche elevate, già seguito dal CAF e interessato a recuperare agevolazioni degli anni passati.",
+    "bonus": [
+      {
+        "id": "detrazione-spese-sanitarie-19",
+        "nome": "Detrazione IRPEF 19% spese sanitarie",
+        "nome_semplice": "Rimborso spese mediche nella dichiarazione dei redditi",
+        "categoria": "salute",
+        "rilevanza": "alta",
+        "badge_rilevanza": "Molto probabile",
+        "importo_massimo": "Nessun limite massimo di spesa, detrazione sul totale eccedente 129,11€",
+        "percentuale": "19% di detrazione IRPEF",
+        "anni_recupero": "Nella dichiarazione dell'anno in cui si sostiene la spesa",
+        "scadenza": "Dichiarazioni emendabili fino a 5 anni precedenti entro i termini di decadenza",
+        "requisito_principale": "Avere sostenuto spese mediche documentate e avere IRPEF da pagare",
+        "cosa_e": "Lo Stato rimborsa il 19% delle spese mediche sostenute (visite, farmaci, esami, protesi, ecc.) come sconto sulle tasse. La detrazione si applica sulla parte di spesa che supera 129,11€ totali nell'anno.",
+        "quanto_vale": "Se hai speso 3.000€ in spese mediche, la detrazione è calcolata su 2.870,89€ e recuperi circa 545€. Più spendi, più recuperi.",
+        "chi_puo_accedervi": "Chiunque abbia sostenuto spese mediche e abbia un reddito su cui pagare le tasse. Vale anche per i pensionati.",
+        "attenzione": "Le spese devono essere pagate con strumenti tracciabili (bonifico, carta, bancomat). I contanti sono ammessi solo per alcune prestazioni come il ticket SSN. Conserva sempre ricevute e fatture.",
+        "nota_incertezza": "Per recuperare spese degli anni passati è possibile presentare una dichiarazione integrativa a favore entro 5 anni. Il CAF può verificare quali anni sono ancora emendabili e se sussiste sufficiente IRPEF per la detrazione.",
+        "glossario": [
+          {
+            "termine": "Detrazione IRPEF",
+            "spiegazione": "Uno sconto diretto sulle tasse da pagare allo Stato, calcolato come percentuale di una spesa sostenuta."
+          },
+          {
+            "termine": "Dichiarazione integrativa a favore",
+            "spiegazione": "Una nuova dichiarazione dei redditi che corregge quella già presentata, per recuperare detrazioni dimenticate negli anni precedenti."
+          },
+          {
+            "termine": "Franchigia",
+            "spiegazione": "La soglia minima di spesa (129,11€) che non viene detratta: la detrazione si calcola solo sulla parte eccedente."
+          }
+        ]
+      },
+      {
+        "id": "esenzione-ticket-sanitario",
+        "nome": "Esenzione ticket sanitario per reddito o patologia",
+        "nome_semplice": "Esenzione dal pagamento del ticket al medico o in farmacia",
+        "categoria": "salute",
+        "rilevanza": "alta",
+        "badge_rilevanza": "Molto probabile",
+        "importo_massimo": "Esenzione totale o parziale dal ticket su visite ed esami SSN",
+        "percentuale": "100% di esenzione in alcuni casi",
+        "anni_recupero": "Beneficio continuativo, non recuperabile retroattivamente",
+        "scadenza": "Senza scadenza definita, va rinnovata periodicamente",
+        "requisito_principale": "Età superiore a 60 anni con reddito familiare basso, oppure presenza di una patologia cronica riconosciuta",
+        "cosa_e": "I pensionati con reddito familiare entro certi limiti o con determinate malattie croniche non pagano il ticket per visite specialistiche ed esami diagnostici presso il Servizio Sanitario Nazionale.",
+        "quanto_vale": "Un pensionato che fa visite ed esami regolari può risparmiare centinaia di euro l'anno eliminando completamente il costo del ticket.",
+        "chi_puo_accedervi": "Pensionati over 60 con reddito familiare sotto 36.151,98€ oppure persone con malattie croniche riconosciute come diabete, ipertensione, tumori e altre.",
+        "attenzione": "L'esenzione va richiesta alla propria ASL o al medico di base. Se non è stata mai richiesta, non è recuperabile retroattivamente per ticket già pagati.",
+        "nota_incertezza": "Il reddito di riferimento è quello familiare complessivo, non solo quello del pensionato. I limiti di reddito possono variare leggermente per regione.",
+        "glossario": [
+          {
+            "termine": "Ticket sanitario",
+            "spiegazione": "La quota che il cittadino paga di tasca propria per accedere a prestazioni mediche del Servizio Sanitario Nazionale."
+          },
+          {
+            "termine": "Patologia cronica",
+            "spiegazione": "Malattia di lunga durata riconosciuta dal SSN che dà diritto all'esenzione dal ticket per le cure correlate."
+          },
+          {
+            "termine": "ASL",
+            "spiegazione": "Azienda Sanitaria Locale, l'ente pubblico che gestisce i servizi sanitari del tuo territorio."
+          }
+        ]
+      },
+      {
+        "id": "detrazione-spese-disabilita",
+        "nome": "Detrazioni e deduzioni per disabilità e non autosufficienza",
+        "nome_semplice": "Agevolazioni fiscali per anziani con disabilità o non autosufficienti",
+        "categoria": "salute",
+        "rilevanza": "media",
+        "badge_rilevanza": "Da verificare",
+        "importo_massimo": "Da verificare in base al tipo di spesa e grado di disabilità",
+        "percentuale": "19% di detrazione per spese specifiche; deduzione al 100% per alcune voci",
+        "anni_recupero": "Nella dichiarazione dell'anno di spesa, recuperabile con dichiarazione integrativa",
+        "scadenza": "Senza scadenza definita",
+        "requisito_principale": "Essere riconosciuti disabili ai sensi della Legge 104/1992 o non autosufficienti",
+        "cosa_e": "Chi ha una disabilità certificata può detrarre o dedurre spese aggiuntive: spese per badante, acquisto di ausili tecnici, veicoli adattati, eliminazione barriere architettoniche e altro ancora.",
+        "quanto_vale": "Le spese per una badante sono deducibili fino a 1.549,37€ all'anno. Le spese per ausili come carrozzine o apparecchi acustici sono detraibili al 19% senza franchigia.",
+        "chi_puo_accedervi": "Persone con riconoscimento di invalidità civile, Legge 104 o non autosufficienza. Alcune agevolazioni si applicano anche ai familiari che sostengono le spese.",
+        "attenzione": "È necessario avere un riconoscimento ufficiale di disabilità rilasciato dalla Commissione medica INPS/ASL. Senza questo certificato le agevolazioni non si applicano.",
+        "nota_incertezza": "Dal profilo non è chiaro se il pensionato abbia un riconoscimento di invalidità. Se le spese mediche elevate sono legate a una condizione cronica grave, potrebbe valere la pena verificare i requisiti per la Legge 104.",
+        "glossario": [
+          {
+            "termine": "Legge 104/1992",
+            "spiegazione": "La legge italiana che riconosce e tutela le persone con disabilità, garantendo loro agevolazioni fiscali e lavorative."
+          },
+          {
+            "termine": "Non autosufficienza",
+            "spiegazione": "Condizione di una persona che non riesce a svolgere autonomamente le attività quotidiane come lavarsi, vestirsi o mangiare."
+          },
+          {
+            "termine": "Deduzione",
+            "spiegazione": "A differenza della detrazione, riduce il reddito su cui si calcolano le tasse, non le tasse direttamente."
+          }
+        ]
+      },
+      {
+        "id": "bonus-psicologo",
+        "nome": "Bonus Psicologo (Contributo per supporto psicologico)",
+        "nome_semplice": "Rimborso per sedute dallo psicologo",
+        "categoria": "salute",
+        "rilevanza": "bassa",
+        "badge_rilevanza": "Possibile",
+        "importo_massimo": "Fino a 1.500€ per anno",
+        "percentuale": "Contributo diretto da 50€ a 70€ per seduta in base all'ISEE",
+        "anni_recupero": "Una tantum per ciascuna sessione di domanda",
+        "scadenza": "Da verificare — il bando viene aperto periodicamente da INPS",
+        "requisito_principale": "ISEE non superiore a 50.000€",
+        "cosa_e": "Un contributo statale che copre parzialmente le spese per sessioni di psicoterapia con professionisti abilitati iscritti all'elenco INPS. È pensato per chi non potrebbe permettersi un percorso terapeutico privato.",
+        "quanto_vale": "Con ISEE fino a 15.000€ il contributo è di 70€ a seduta (max 1.500€ totali). Con ISEE tra 15.000 e 30.000€ è di 60€. Con ISEE fino a 50.000€ è di 50€ a seduta.",
+        "chi_puo_accedervi": "Persone con ISEE fino a 50.000€ che abbiano bisogno di supporto psicologico. La domanda si presenta tramite il sito INPS quando il bando è aperto.",
+        "attenzione": "Il bando non è sempre aperto: viene attivato periodicamente e i fondi sono limitati. Verificare la disponibilità attuale sul sito INPS.",
+        "nota_incertezza": "Dal profilo non emergono elementi che colleghino le spese mediche a un percorso psicologico. Incluso per completezza, poiché condizioni di salute prolungate possono impattare il benessere mentale.",
+        "glossario": [
+          {
+            "termine": "ISEE",
+            "spiegazione": "Indicatore della Situazione Economica Equivalente: misura la situazione economica del nucleo familiare considerando redditi e patrimoni."
+          },
+          {
+            "termine": "Bando",
+            "spiegazione": "Un avviso pubblico che apre la possibilità di fare domanda per un contributo statale, spesso con scadenza e fondi limitati."
+          }
+        ]
+      },
+      {
+        "id": "bonus-ristrutturazione-50",
+        "nome": "Bonus Ristrutturazione Edilizia 50%",
+        "nome_semplice": "Detrazione per lavori in casa",
+        "categoria": "casa",
+        "rilevanza": "media",
+        "badge_rilevanza": "Da verificare",
+        "importo_massimo": "Fino a 96.000€ di spesa detraibile per unità immobiliare",
+        "percentuale": "50% di detrazione IRPEF",
+        "anni_recupero": "In 10 anni",
+        "scadenza": "Da verificare — la misura viene prorogata annualmente; verificare lo stato attuale",
+        "requisito_principale": "Essere proprietario dell'immobile e aver effettuato lavori di ristrutturazione con pagamento tracciabile",
+        "cosa_e": "Chi esegue lavori di ristrutturazione nella propria casa (rifacimento bagno, impianti, pavimenti, tetto ecc.) può recuperare il 50% della spesa come sconto sulle tasse, distribuito in 10 anni.",
+        "quanto_vale": "Se hai speso 20.000€ in lavori, recuperi 10.000€ totali, cioè 1.000€ all'anno per 10 anni in meno di tasse da pagare.",
+        "chi_puo_accedervi": "Proprietari di immobili residenziali che abbiano effettuato lavori di manutenzione straordinaria o ristrutturazione.",
+        "attenzione": "I pagamenti devono essere stati effettuati tramite bonifico parlante dedicato. Senza il bonifico corretto la detrazione non è ammessa.",
+        "nota_incertezza": "Dal profilo risulta che l'utente è proprietario di casa ma non è chiaro se abbia effettuato lavori di ristrutturazione. Se i lavori sono stati fatti in passato, il CAF può verificare se sono ancora recuperabili.",
+        "glossario": [
+          {
+            "termine": "Bonifico parlante",
+            "spiegazione": "Un bonifico bancario con causale specifica obbligatoria che include il codice fiscale del beneficiario e la norma di riferimento per la detrazione."
+          },
+          {
+            "termine": "Manutenzione straordinaria",
+            "spiegazione": "Lavori che modificano o rinnovano parti strutturali o impianti dell'abitazione, distinti dalla manutenzione ordinaria come piccole riparazioni."
+          }
+        ]
+      }
+    ],
+    "avvertenza": "Questi bonus sono indicativi in base alle informazioni fornite. Le condizioni specifiche, gli importi e le scadenze vanno verificati su agenziaentrate.gov.it o con un CAF prima di procedere."
+  },
+  "navigator_output": {
+    "error": true,
+    "messaggio": "Non è stato possibile generare le istruzioni. Rivolgiti a un CAF."
+  }
+}

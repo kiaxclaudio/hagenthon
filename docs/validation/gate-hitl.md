@@ -5,6 +5,32 @@ Un gate che non scatta mai non è una funzionalità: è una frase in un document
 
 ---
 
+## Evidenza reale — scenari 03 e 04 (2026-09-24)
+
+I file `scenario-03-disoccupato-under36.json` e `scenario-04-pensionato-salute.json`
+mostrano il fallback al CAF in caso di errore tecnico del navigator:
+
+```json
+{
+  "error": true,
+  "messaggio": "Non è stato possibile generare le istruzioni. Rivolgiti a un CAF."
+}
+```
+
+Questo è il **fallback di errore** (timeout del navigator Haiku dopo il ciclo Sonnet),
+distinto dai gate HITL deliberati. In entrambi i casi il sistema non inventa istruzioni:
+sceglie il silenzio e rimanda a un operatore qualificato.
+
+| Condizione | Tipo | Comportamento |
+|---|---|---|
+| `escalation: true` nel profilo | Gate HITL 1 (by design) | Messaggio specifico con motivazione |
+| Tutti i bonus a rilevanza "bassa" | Gate HITL 2 (by design) | Messaggio specifico con motivazione |
+| Timeout/errore tecnico | Fallback di errore | `"Rivolgiti a un CAF"` generico |
+
+I test 1–3 sotto documentano i gate by design con profili costruiti apposta.
+
+---
+
 ## Test 1 — Caso non coperto dal catalogo
 
 **Obiettivo:** verificare che il sistema rimandi al CAF invece di inventare una risposta
