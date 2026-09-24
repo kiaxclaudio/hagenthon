@@ -35,54 +35,66 @@ lavora su un catalogo già verificato, non su una fonte grezza.
 | Campo | Tipo | Origine |
 |---|---|---|
 | `profilo` | oggetto | `agents/state/profilo.json`, prodotto da `profiler` |
-| `catalogo` | array di misure | `agents/state/catalogo.json`, approvato in Fase A |
-| `run_id` | stringa | sessione corrente, per `agents/state/run-<id>.json` |
+| `catalogo_versione` | stringa | versione del catalogo su cui si ragiona, riportata poi in uscita |
+| `misure_candidate` | array di voci di catalogo | `agents/state/catalogo.json`, pre-filtrate dall'orchestratore sulle situazioni di vita del profilo; con `non_so` passano tutte |
 
 Schema: `agents/schemas/eligibility.input.json`
 
 Del profilo usa `situazioni_vita`, `condizione_abitativa`, `tipo_reddito`, `timing` e `completo`.
-Del catalogo usa `requisiti`, `situazioni_vita_collegate` e `timing_compatibile`: sono i campi che
-`source-analyzer` ha già allineato alla tassonomia del profilo.
+Delle voci di catalogo usa `requisiti`, `situazioni_vita_collegate` e `timing_compatibile`: sono i
+campi che `source-analyzer` ha già allineato alla tassonomia del profilo.
 
 ## Output
 
 Esclusivamente JSON conforme a `agents/schemas/eligibility.output.json`. Nessuna prosa fuori dal
 JSON.
 
-Campi del `payload`: `misure_pertinenti[]` con `misura_id`, `nome`, `requisiti_soddisfatti[]`,
-`requisiti_da_verificare[]`, `motivo_pertinenza` e `confidence`; `misure_escluse[]` con il
-requisito che il profilo non soddisfa; `motivo_escalation`, enum chiuso che `run-<id>.json`
-copia senza tradurre; `disclaimer`; `source_refs` verso le voci di catalogo usate.
+Campi del `payload`: `profilo_id`, `catalogo_versione`, `misure_pertinenti[]` (`misura_id`,
+`nome`, `titolo_semplice`, `tipo`, `motivazione`, `corrispondenze_profilo`,
+`requisiti_da_verificare[]`, `source_refs`), `misure_escluse[]` (`misura_id`,
+`motivo_esclusione`, `requisito_id`), `escalation`, `motivo_escalation`,
+`spiegazione_escalation` e `disclaimer`.
+
+`motivo_escalation` è un enum chiuso: `confidence_bassa`, `caso_non_coperto_dal_catalogo`,
+`profilo_incompleto`, `requisiti_non_verificabili`, `richiesta_di_consulenza`. Lo stesso valore
+viene copiato in `agents/state/run-<id>.json`, non tradotto a parole.
 
 ## Passi
 
-1. Legge profilo e catalogo. Se il catalogo è vuoto o assente non prosegue: senza catalogo
-   verificato non esiste risposta ammissibile.
-2. Filtra il catalogo su `situazioni_vita_collegate` e `timing_compatibile`, poi per ogni
-   misura rimasta confronta i `requisiti` con gli assi del profilo e classifica ciascun
-   requisito in `soddisfatto`, `da_verificare` (il profilo non contiene il dato) o
-   `non_soddisfatto` (il profilo lo contraddice).
-3. Una misura è pertinente se nessun requisito è `non_soddisfatto` e almeno uno è `soddisfatto`.
-   Una misura con un requisito `non_soddisfatto` va in `misure_escluse` con il motivo, perché
-   sapere perché una misura non spetta è informazione utile quanto l'elenco di quelle che spettano.
-4. Calcola la `confidence` di ogni misura come frazione di requisiti `soddisfatti` sul totale dei
+1. Legge il profilo e le misure candidate. Se `misure_candidate` è vuoto non prosegue: senza
+   catalogo verificato non esiste risposta ammissibile.
+2. Per ogni misura confronta i `requisiti` con gli assi del profilo e classifica ciascun
+   requisito in soddisfatto, da verificare (il profilo non contiene il dato) o non soddisfatto
+   (il profilo lo contraddice).
+3. Una misura è pertinente se nessun requisito è non soddisfatto e almeno uno è soddisfatto.
+   Una misura con un requisito non soddisfatto va in `misure_escluse` con `motivo_esclusione`,
+   perché sapere perché una misura non spetta è informazione utile quanto l'elenco di quelle che
+   spettano.
+4. Compila `corrispondenze_profilo` con gli assi che hanno prodotto la pertinenza e
+   `requisiti_da_verificare` con il motivo per cui ciascuno resta aperto
+   (`da_verificare_perche`).
+5. Calcola la `confidence` di ogni misura come frazione di requisiti soddisfatti sul totale dei
    requisiti valutabili, abbassata a 0.5 quando il profilo ha `completo: false`.
-5. Scrive `motivo_pertinenza` citando il requisito, non l'opportunità: "risulta pertinente perché
-   hai dichiarato di essere proprietario dell'immobile", mai "ti conviene perché recuperi di più".
-6. Ordina l'elenco per asse del profilo dichiarato e, a parità, per nome della misura. Mai per
+6. Scrive `motivazione` citando il requisito, non l'opportunità: "risulta pertinente perché hai
+   dichiarato di essere proprietario dell'immobile", mai "ti conviene perché recuperi di più".
+7. Ordina l'elenco per asse del profilo dichiarato e, a parità, per nome della misura. Mai per
    importo, percentuale o beneficio: un ordinamento per valore è una raccomandazione implicita.
-7. Applica i gate: `confidence < 0.6` su una misura la esclude dall'elenco e valorizza
-   `motivo_escalation` con `confidence_bassa`; nessuna misura pertinente vale
-   `caso_non_coperto`. In entrambi i casi la sessione rimanda a un CAF.
-8. Aggiorna `agents/state/run-<id>.json` con le misure proposte e restituisce il JSON.
+8. Applica i gate: `confidence < 0.6` su una misura la esclude dall'elenco e porta
+   `motivo_escalation` a `confidence_bassa`; nessuna misura pertinente vale
+   `caso_non_coperto_dal_catalogo`. In entrambi i casi `escalation` è attiva e
+   `spiegazione_escalation` dice alla persona perché, rimandando a un CAF.
+9. Riporta `catalogo_versione` in uscita e restituisce il JSON: se domani la misura cambia, resta
+   scritto su quale versione la persona è stata orientata.
 
 ## Vincoli
 
-- Nessuna misura fuori dal catalogo verificato (G-01): se la persona chiede di un bonus che il
-  catalogo non contiene, la risposta è il rinvio al CAF, non una ricostruzione a memoria.
+- Nessuna misura fuori dal catalogo verificato (G-01, G-19): se la persona chiede di un bonus
+  che il catalogo non contiene, la risposta è il rimando al CAF, non una ricostruzione a
+  memoria.
 - I dati numerici si citano dal catalogo senza modificarli e senza personalizzarli (G-03): non
   si calcola quanto spetta a questa persona, perché quel calcolo è consulenza.
-- Nessuna graduatoria, nessun "il migliore per te", nessun confronto fra misure (G-04).
+- Nessuna graduatoria, nessun "il migliore per te", nessun confronto fra misure (G-04, G-21).
+  Una domanda esplicita del tipo "che cosa mi conviene" vale `richiesta_di_consulenza`.
 - Nessuna inferenza sul profilo: un asse `non_dichiarato` genera un requisito `da_verificare`,
   mai un requisito dato per soddisfatto.
 - Ogni affermazione porta `source_refs` verso la voce di catalogo da cui viene (G-07).
@@ -90,19 +102,19 @@ copia senza tradurre; `disclaimer`; `source_refs` verso le voci di catalogo usat
 
 ## Fallback
 
-Profilo con `completo: false` o `status: degraded`: restituisce le misure pertinenti alla sola
-`situazioni_vita`, tutte con `confidence` non superiore a 0.5, e valorizza `motivo_escalation`
-con `profilo_insufficiente`, dichiarando che il profilo è incompleto. Output valido, `status: "degraded"`, mai un errore.
+Profilo con `completo: false` o `status: degraded`: restituisce le misure pertinenti alle sole
+`situazioni_vita`, tutte con `confidence` non superiore a 0.5, e porta `motivo_escalation` a
+`profilo_incompleto`. Output valido, `status: "degraded"`, mai un errore.
 
 ## Gate HITL (escalation umana)
 
 Tre condizioni verificabili, tutte con lo stesso esito: la sessione dice alla persona di
 rivolgersi a un CAF e dichiara il motivo.
 - `confidence < 0.6` su una misura: la misura non viene proposta.
-- Caso non coperto dal catalogo (nessuna misura pertinente, oppure richiesta su una misura
-  assente): `motivo_escalation: "caso_non_coperto"`.
-- Requisiti in conflitto fra loro nel catalogo per la stessa misura: `status: "hitl_required"`,
-  motivo `catalogo_incoerente`, e la segnalazione va all'operatore, non alla persona.
+- Caso non coperto (nessuna misura pertinente, oppure domanda su una misura assente):
+  `motivo_escalation: "caso_non_coperto_dal_catalogo"`.
+- Requisiti non verificabili con i dati del profilo su tutte le misure candidate:
+  `motivo_escalation: "requisiti_non_verificabili"`, e la segnalazione va anche all'operatore.
 
 ## Limite di iterazioni
 
@@ -115,6 +127,6 @@ profilo aggiornato dopo una ri-domanda: massimo 2 in tutto, poi si escala al CAF
 |---|---|
 | timeout modello | retry con backoff, max 3, poi `status: "degraded"` e rimando a un CAF |
 | output non conforme allo schema | 1 ri-richiesta con lo schema in chiaro, poi HITL |
-| `agents/state/catalogo.json` assente o vuoto | `status: "hitl_required"`, motivo `catalogo_assente`: nessuna misura viene proposta |
-| voce di catalogo priva di `requisiti` | la misura non viene valutata e finisce in `misure_escluse`, e la sessione rimanda a un CAF |
+| `misure_candidate` vuoto o catalogo assente | `status: "hitl_required"`: nessuna misura viene proposta e la sessione rimanda a un CAF |
+| voce di catalogo priva di `requisiti` | la misura non viene valutata, finisce in `misure_escluse` con `motivo_esclusione: "requisito_non_soddisfatto"` e concorre a `requisiti_non_verificabili` |
 | `agents/state/run-<id>.json` non scrivibile | restituisce comunque il JSON con `status: "degraded"`: la sessione prosegue in memoria |

@@ -1,3 +1,8 @@
+---
+name: hitl-escalation
+description: Procedura di escalation a una persona quando scatta un gate HITL, con i codici HE-01..HE-17. Caricare dall'orchestratore alla transizione verso hitl_required o all'attivazione del rimando a un CAF; restituisce il dossier per chi cura il catalogo, i quattro blocchi del messaggio per la persona, la traccia da scrivere nello stato e le regole di chiusura del ciclo.
+---
+
 # Skill: hitl-escalation
 
 | | |
@@ -38,16 +43,22 @@ secondo si indirizza una persona.
 
 | Gate (condizione in `orchestrator.md`) | Fase | Chi riceve | Che cosa vede la persona | Dossier | `escalation.motivo` in `run-state.json` |
 |---|---|---|---|---|---|
-| Secondo rifiuto del `fidelity-validator` sulla stessa misura | A | operatore | niente in quel momento: la Fase A è offline e la misura non entra nel catalogo | completo, con le divergenze del secondo giro | nessuno finché nessuna sessione la chiede |
-| `source-analyzer` in `degraded`, o misura senza percentuale e senza tetto | A | operatore | niente: la Fase A si ferma sulla fonte e nessuna misura viene pubblicata | ridotto: non esiste una misura completa, si allega la porzione di fonte non interpretabile | nessuno: non esiste una sessione |
+| Secondo rifiuto del `fidelity-validator` sulla stessa misura | A | operatore | niente in quel momento: la Fase A è offline e la misura non entra nel catalogo | completo, con le divergenze del secondo giro | nessuno: non esiste una sessione. Nel catalogo la misura esce con `motivo: doppio_rifiuto_validator` |
+| `source-analyzer` in `degraded`, o misura senza percentuale e senza tetto | A | operatore | niente: la Fase A si ferma sulla fonte e nessuna misura viene pubblicata | ridotto: non esiste una misura completa, si allega la porzione di fonte non interpretabile | nessuno: nel catalogo `motivo: fonte_non_interpretabile` oppure `dati_numerici_mancanti` |
 | `eligibility` con `confidence < 0.6` su una misura | B | persona **e** operatore | messaggio della sezione 4: la misura non viene proposta e si indica il CAF | completo, con il valore di `confidence` e i requisiti rimasti da verificare | `confidence_bassa` |
-| `eligibility` senza misure pertinenti, o domanda su una misura assente dal catalogo | B | persona; operatore in forma aggregata | messaggio della sezione 4, con il rimando al CAF | ridotto: profilo non identificante e misura cercata | `caso_non_coperto` |
-| `navigator` senza alcun passo componibile | B | persona **e** operatore | messaggio della sezione 4: la procedura non è documentata | completo, con la voce di catalogo incompleta | `procedura_non_documentata` |
-| `profiler` con cinque risposte mancanti dopo la ri-domanda | B | persona | messaggio della sezione 4: le informazioni non bastano a orientare | ridotto | `profilo_insufficiente` |
+| `eligibility` senza misure pertinenti, o domanda su una misura assente dal catalogo | B | persona; operatore in forma aggregata | messaggio della sezione 4, con il rimando al CAF | ridotto: profilo non identificante e misura cercata | `caso_non_coperto_dal_catalogo` |
+| `navigator` senza alcun passo componibile | B | persona **e** operatore | messaggio della sezione 4: la procedura non è documentata | completo, con la voce di catalogo incompleta | `caso_non_coperto_dal_catalogo` |
+| `profiler` con cinque risposte mancanti dopo la ri-domanda | B | persona | messaggio della sezione 4: le informazioni non bastano a orientare | ridotto | `profilo_incompleto` |
+| La persona chiede che cosa le conviene fare | B | persona | messaggio della sezione 4: il sistema orienta, non consiglia (G-04) | nessuno: non è un difetto del sistema | `richiesta_di_consulenza` |
 
-I valori di `escalation.motivo` sono quelli dell'enum di `eligibility.output.json`: il campo si
-copia nello stato, non si traduce e non si riscrive a parole
-(`agents/schemas/run-state.json`).
+I motivi sono due enum chiusi e distinti, uno per fase, e nessuno dei due si riscrive a parole.
+In Fase B vale `escalation.motivo` di `agents/schemas/run-state.json`, che punta all'enum di
+`eligibility.output.json`: il campo si copia, non si traduce. In Fase A vale
+`misure_escluse[].motivo` di `agents/schemas/catalogo.json`, con i suoi quattro valori
+(`doppio_rifiuto_validator`, `fonte_non_interpretabile`, `dati_numerici_mancanti`,
+`fuori_perimetro`). Tenere separati i due enum è ciò che permette di contare quante misure sono
+uscite dal catalogo senza confonderle con le sessioni finite al CAF: sono due code di lavoro
+diverse.
 
 Regola derivata: **in Fase A non si parla mai alla persona**, perché non c'è nessuna sessione in
 corso; si parla al team che prepara il catalogo. In Fase B si parla a entrambi, e i due messaggi
@@ -153,8 +164,8 @@ campi (gli schemi hanno `additionalProperties: false`).
 
 | Fase | File e schema | Che cosa si scrive |
 |---|---|---|
-| A | `agents/state/catalogo.json` | la misura **non** entra nel catalogo: resta fuori, con il proprio `misura_id` nel dossier e l'ultimo verdetto `esclusa_hitl`. Il testo respinto non viene pubblicato, così nessun consumatore può mostrarlo per errore |
-| B | `agents/state/run-<id>.json` (`agents/schemas/run-state.json`) | si valorizza `escalation` con `attiva: true`, `motivo`, `attivata_il` e `messaggio_mostrato`, e si porta `stato_sessione` a `hitl_escalated` |
+| A | `agents/state/catalogo.json` (`agents/schemas/catalogo.json`) | la misura **non** entra in `voci[]`; si appende una voce a `misure_escluse[]` con `misura_id`, `nome`, `motivo`, `escluso_il` e `source_refs`, più `divergenze_residue[]` quando il motivo è il doppio rifiuto. La spiegazione respinta non si scrive da nessuna parte nel catalogo, così nessun consumatore può mostrarla per errore: resta solo nel dossier |
+| B | `agents/state/run-<id>.json` (`agents/schemas/run-state.json`) | si valorizza `escalation` con `attiva: true`, `motivo`, `attivata_il` e `messaggio_mostrato`, si porta `stato_sessione` a `hitl_escalated` e `ultimo_status` a `hitl_required` |
 
 Il **dossier non è un campo dello stato**: gli schemi sono chiusi. Si compone al momento
 dell'escalation leggendo il catalogo, `run-<id>.json` e l'ultimo output del validator o di
@@ -164,7 +175,9 @@ l'escalation è avvenuta, che è quanto serve per non perderla e per ricostruirl
 Regole.
 
 - **HE-10 Prima si scrive, poi si parla.** La traccia nello stato si scrive **prima** di mostrare
-  il messaggio e prima di restituire il controllo. Se la sessione cade subito dopo, il caso deve
+  il messaggio e prima di restituire il controllo. Il contratto lo impone già da sé: con
+  `attiva: true` diventano obbligatori `motivo`, `attivata_il` e `messaggio_mostrato`, quindi il
+  messaggio va composto e scritto prima di poter essere mostrato. Se la sessione cade subito dopo, il caso deve
   esistere lo stesso: un'escalation persa è peggio di un'escalation non fatta, perché la persona
   crede che qualcuno stia guardando.
 - **HE-11 Idempotenza.** Una sola escalation attiva per sessione: un secondo evento con lo stesso
@@ -189,9 +202,16 @@ automatico: li decide una persona.
 
 | Esito | Che cosa cambia | Che cosa vede la persona |
 |---|---|---|
-| **Misura corretta a mano** | la voce entra nel catalogo con il testo scritto dall'operatore e il `source_refs` invariato | la misura compare nelle schede |
-| **Misura ritirata** | la misura resta fuori dal catalogo | le sessioni non la propongono, e sul tema si rimanda al CAF |
-| **Problema alla fonte** | la fonte è segnalata come difettosa e la Fase A va rieseguita su una versione aggiornata | nessuna misura di quella fonte viene proposta |
+| **Misura corretta a mano** | la voce entra in `voci[]` con il testo scritto dall'operatore e il `source_refs` invariato, e sparisce da `misure_escluse[]`: la stessa misura non può stare nei due elenchi | la misura compare nelle schede |
+| **Misura ritirata** | la misura resta in `misure_escluse[]` con il suo motivo: dichiarata, non sparita | le sessioni non la propongono e non la nominano come esistente (G-19); sul tema si rimanda al CAF |
+| **Problema alla fonte** | la fonte è segnalata come difettosa e la Fase A va rieseguita su una versione aggiornata: nuova `versione` di catalogo e nuova data di consultazione (G-24) | nessuna misura di quella fonte viene proposta finché il catalogo non è rigenerato |
+
+Nota di contratto: `catalogo.json#/$defs/voce_catalogo` vincola `verifica.verdict` a
+`const: "approved"` e gli schemi sono chiusi. Il catalogo quindi **non distingue** una
+spiegazione approvata dal validator da una scritta a mano dopo l'escalation. Finché lo schema
+resta congelato (`CLAUDE.md`, sezione 4), la distinzione vive nel dossier archiviato in
+`docs/validation/`, non nel catalogo: è una perdita accettabile, perché in entrambi i casi il
+testo è passato da una verifica prima di essere pubblicato.
 
 - **HE-16 Il testo corretto a mano non passa dall'`explainer`.** È già stato verificato da una
   persona; rimandarlo nel ciclo riaprirebbe la possibilità di un rifiuto su un contenuto che non è
@@ -217,7 +237,7 @@ riproducibili, da eseguire nella passata di robustezza e da catturare come evide
 2. **Caso non coperto.** Si esegue una sessione con un profilo che il catalogo non copre. Atteso:
    nessuna misura proposta, messaggio della sezione 4 con almeno un'alternativa, `escalation`
    scritta **prima** della risposta, con `stato_sessione: "hitl_escalated"` e
-   `motivo: "caso_non_coperto"`.
+   `motivo: "caso_non_coperto_dal_catalogo"`.
 3. **Fonte illeggibile.** Si fornisce una pagina ufficiale parzialmente illeggibile. Atteso:
    `source-analyzer` in `degraded`, Fase A fermata sulla fonte, nessuna misura pubblicata,
    dossier ridotto.

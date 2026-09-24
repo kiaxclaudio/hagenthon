@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A cosa ho diritto? — mockup navigabile</title>
+<!--
+  Mockup navigabile · "A cosa ho diritto?"
+  File singolo, zero dipendenze esterne: nessuna CDN, nessun font remoto, nessuna immagine.
+  Si apre con doppio clic e funziona offline.
+
+  A cosa serve:
+   1. mostrare in demo l'intero percorso, dai primi passi alla scheda finale;
+   2. dare a chi implementa `app/` markup e stili da copiare tali e quali.
+
+  Come e' organizzato:
+   - blocco TOKEN      -> copia di docs/ux/accenture-tokens.css (in app/ si importa il file, non si incolla)
+   - blocco COMPONENTI -> gli stili da portare in app/styles/components.css: usano solo var(--...)
+   - blocco SCHERMATE  -> il markup, con gli attributi aria-* gia' al posto giusto
+   - blocco SCENARI    -> dati FITTIZI dei 4 scenari di prova, nella forma degli schemi degli agenti
+
+  Tutti i dati fiscali mostrati sono inventati a scopo dimostrativo. Vedi la fascia in cima.
+-->
+<style>
+/* ============================================================================
+   TOKEN — copia di docs/ux/accenture-tokens.css
+   In app/ NON si incolla: si importa il file. Qui e' in linea solo per tenere
+   il mockup in un file unico senza dipendenze.
+   ============================================================================ */
+:root{
+  --acc-purple:#A100FF; --acc-purple-light:#BE82FF; --acc-ink:#0A0014;
+  --acc-gradient-title:linear-gradient(90deg,var(--acc-purple-light),var(--acc-purple));
+
+  --surface-base:#050008; --surface-card:#140021; --surface-hover:#1C0A29;
+  --surface-selected:#230B33; --surface-banner:#1A0A24; --surface-error:#2A0E12;
+  --surface-quiet:rgba(255,255,255,0.05);
+  --surface-glow:
+    radial-gradient(1100px 620px at 84% -14%, rgba(161,0,255,0.20), transparent 62%),
+    radial-gradient(760px 520px at -8% 110%, rgba(161,0,255,0.11), transparent 60%);
+
+  --text-primary:#FFFFFF;    /* 20.79:1 */
+  --text-secondary:#D0CCD3;  /* 12.61:1 */
+  --text-tertiary:#9B999C;   /*  7.36:1 */
+  --text-accent:#BE82FF;     /*  7.75:1 */
+  --text-on-purple:#FFFFFF;  /*  5.30:1 */
+  --text-on-light:#0A0014;   /*  7.65:1 */
+  --text-disabled:#807587;   /*  4.58:1 */
+  --text-error:#FF9F93;      /* 10.11:1 */
+  --text-warning:#FFC978;    /* 13.20:1 */
+  --text-positive:#6FE3B0;   /* 12.64:1 */
+
+  --line-decorative:#2A262D; --line-soft:#64576C; --line-control:#807587;
+  --line-accent:#A100FF; --line-selected:#BE82FF;
+  --border-width:1px; --border-width-control:2px; --border-width-selected:3px;
+
+  --font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --fs-100:0.9375rem; --fs-200:1.125rem; --fs-300:1.25rem; --fs-400:1.5rem;
+  --fs-500:1.875rem;  --fs-600:2.375rem; --fs-700:3rem;
+  --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700;
+  --lh-tight:1.2; --lh-base:1.6; --lh-loose:1.75;
+  --ls-tight:-0.02em; --ls-wide:0.2em; --ls-eyebrow:0.25em;
+  --measure-prose:62ch; --measure-title:22ch;
+
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px;
+  --sp-6:32px; --sp-7:48px; --sp-8:64px; --sp-9:96px;
+  --gap-options:var(--sp-4); --gap-sections:var(--sp-7); --page-padding:var(--sp-6);
+  --page-max:760px; --page-max-wide:940px;
+
+  --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-pill:999px;
+  --shadow-card:0 18px 40px rgba(0,0,0,0.55);
+  --shadow-raised:0 24px 60px rgba(0,0,0,0.65);
+  --shadow-sticky:0 -12px 32px rgba(5,0,8,0.85);
+
+  --target-min:44px; --target-comfort:64px; --target-spacing:var(--sp-4);
+
+  --focus-ring-color:#FFFFFF; --focus-ring-width:3px; --focus-ring-offset:3px;
+  --focus-halo:0 0 0 9px rgba(190,130,255,0.45);
+  --hover-surface:var(--surface-hover); --hover-border:var(--acc-purple-light);
+  --active-surface:#260C37;
+  --selected-surface:var(--surface-selected); --selected-border:var(--line-selected);
+  --disabled-surface:#120E16; --disabled-text:var(--text-disabled); --disabled-border:var(--line-soft);
+  --error-surface:var(--surface-error); --error-border:#FF9F93; --error-text:var(--text-error);
+  --loading-track:#2A262D; --loading-fill:var(--acc-purple-light);
+  --motion-fast:120ms; --motion-base:200ms; --motion-slow:240ms;
+  --easing:cubic-bezier(0.2,0.7,0.3,1);
+  --z-content:1; --z-sticky:50; --z-disclaimer:60; --z-dialog:100;
+}
+
+/* ============================================================================
+   COMPONENTI — questo blocco si copia in app/styles/components.css.
+   Usa solo var(--...): staccato dai token continua a funzionare.
+   ============================================================================ */
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{
+  background:var(--surface-base);
+  color:var(--text-primary);
+  font-family:var(--font-family);
+  font-size:var(--fs-300);
+  line-height:var(--lh-base);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  padding-bottom:140px; /* spazio per il banner disclaimer ancorato */
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:var(--surface-glow)}
+
+/* --- focus: mai rimosso, anello bianco (vedi deroga D-3 della specifica) --- */
+:where(a,button,[role="button"],[role="radio"],input,summary,[tabindex]):focus-visible{
+  outline:var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset:var(--focus-ring-offset);
+  box-shadow:var(--focus-halo);
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+
+/* --- salta al contenuto --- */
+.skip{position:absolute;left:-9999px;top:0;z-index:var(--z-dialog);
+  background:var(--acc-purple);color:var(--text-on-purple);padding:var(--sp-3) var(--sp-5);
+  border-radius:0 0 var(--radius-sm) 0;font-size:var(--fs-200);font-weight:var(--fw-semibold)}
+.skip:focus{left:0}
+
+/* --- intestazione --- */
+.topbar{position:sticky;top:0;z-index:var(--z-sticky);
+  background:rgba(5,0,8,0.92);backdrop-filter:blur(8px);
+  border-bottom:var(--border-width) solid var(--line-decorative)}
+.topbar-in{max-width:var(--page-max-wide);margin:0 auto;padding:var(--sp-4) var(--page-padding);
+  display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);flex-wrap:wrap}
+.logo{font-size:var(--fs-300);font-weight:var(--fw-bold);letter-spacing:-0.01em;color:var(--text-primary)}
+.logo i{font-style:normal;color:var(--acc-purple)}
+.stepwrap{display:flex;align-items:center;gap:var(--sp-3)}
+.steptext{font-size:var(--fs-200);color:var(--text-tertiary);white-space:nowrap}
+.stepbar{display:flex;gap:6px}
+.stepbar span{width:26px;height:6px;border-radius:var(--radius-pill);background:var(--loading-track)}
+.stepbar span.on{background:var(--acc-purple-light)}
+
+/* --- impaginazione --- */
+main{position:relative;z-index:var(--z-content)}
+.page{max-width:var(--page-max);margin:0 auto;padding:var(--sp-8) var(--page-padding) var(--sp-7)}
+.page.wide{max-width:var(--page-max-wide)}
+.screen{display:none}
+.screen.on{display:block}
+
+/* --- tipografia --- */
+.eyebrow{display:inline-block;border:var(--border-width) solid rgba(255,255,255,0.15);
+  background:var(--surface-quiet);border-radius:var(--radius-pill);
+  font-size:var(--fs-100);text-transform:uppercase;letter-spacing:var(--ls-eyebrow);
+  padding:var(--sp-2) var(--sp-4);color:var(--text-secondary);margin-bottom:var(--sp-5)}
+h1{font-size:var(--fs-600);line-height:var(--lh-tight);letter-spacing:var(--ls-tight);
+  font-weight:var(--fw-bold);max-width:var(--measure-title);outline:none}
+h1.gradient{background:var(--acc-gradient-title);-webkit-background-clip:text;background-clip:text;
+  color:transparent;font-size:var(--fs-700);padding-bottom:.06em}
+h2{font-size:var(--fs-500);line-height:var(--lh-tight);font-weight:var(--fw-bold);color:var(--text-primary)}
+h3{font-size:var(--fs-100);text-transform:uppercase;letter-spacing:var(--ls-wide);
+  color:var(--text-accent);font-weight:var(--fw-semibold);margin-bottom:var(--sp-3)}
+p{max-width:var(--measure-prose)}
+.lead{font-size:var(--fs-400);color:var(--text-secondary);margin-top:var(--sp-5);line-height:var(--lh-base)}
+.help{font-size:var(--fs-200);color:var(--text-tertiary);margin-top:var(--sp-3)}
+.mt4{margin-top:var(--sp-4)} .mt5{margin-top:var(--sp-5)}
+.mt6{margin-top:var(--sp-6)} .mt7{margin-top:var(--sp-7)}
+ul.bul{list-style:none;margin-top:var(--sp-3)}
+ul.bul li{position:relative;padding-left:1.5em;margin-bottom:var(--sp-2);
+  font-size:var(--fs-200);color:var(--text-secondary);line-height:var(--lh-loose)}
+ul.bul li::before{content:"\203A";position:absolute;left:0;top:-0.05em;color:var(--acc-purple-light);
+  font-size:1.3em;line-height:1.5}
+
+/* --- opzione di risposta --- */
+.options{display:flex;flex-direction:column;gap:var(--gap-options);margin-top:var(--sp-6)}
+.opt{
+  display:flex;align-items:flex-start;gap:var(--sp-4);width:100%;text-align:left;
+  min-height:var(--target-comfort);padding:var(--sp-5);
+  background:var(--surface-card);color:var(--text-primary);
+  border:var(--border-width-control) solid var(--line-control);
+  border-radius:var(--radius-md);cursor:pointer;font-family:inherit;
+  transition:background var(--motion-fast) var(--easing),border-color var(--motion-fast) var(--easing),
+             transform var(--motion-fast) var(--easing);
+}
+.opt:hover{background:var(--hover-surface);border-color:var(--hover-border);transform:translateY(-1px)}
+.opt:active{background:var(--active-surface);transform:none}
+.opt .mark{
+  flex:0 0 auto;width:30px;height:30px;border-radius:var(--radius-sm);
+  border:var(--border-width-control) solid var(--line-control);
+  display:flex;align-items:center;justify-content:center;
+  font-size:var(--fs-300);line-height:1;color:transparent;margin-top:2px}
+.opt .txt{font-size:var(--fs-400);line-height:1.35}
+.opt .sub{display:block;font-size:var(--fs-200);color:var(--text-tertiary);margin-top:var(--sp-2);
+  font-weight:var(--fw-regular)}
+.opt[aria-checked="true"],.opt[aria-pressed="true"]{
+  background:var(--selected-surface);border-color:var(--selected-border);
+  border-width:var(--border-width-selected);padding:calc(var(--sp-5) - 1px)}
+.opt[aria-checked="true"] .txt,.opt[aria-pressed="true"] .txt{font-weight:var(--fw-semibold)}
+/* la spunta: secondo canale, non cromatico */
+.opt[aria-checked="true"] .mark,.opt[aria-pressed="true"] .mark{
+  border-color:var(--acc-purple-light);color:var(--acc-purple-light)}
+.opt[aria-checked="true"] .mark::after,.opt[aria-pressed="true"] .mark::after{content:"\2713"}
+
+/* --- bottoni --- */
+.actions{display:flex;flex-wrap:wrap;gap:var(--sp-4);align-items:center;margin-top:var(--sp-7)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);
+  min-height:var(--target-comfort);padding:0 var(--sp-6);border-radius:var(--radius-pill);
+  font-family:inherit;font-size:var(--fs-300);font-weight:var(--fw-semibold);cursor:pointer;
+  border:var(--border-width-control) solid transparent;
+  transition:background var(--motion-fast) var(--easing),border-color var(--motion-fast) var(--easing)}
+.btn-primary{background:var(--acc-purple);color:var(--text-on-purple);border-color:var(--acc-purple)}
+.btn-primary:hover{background:#B733FF;border-color:#B733FF}
+.btn-secondary{background:transparent;color:var(--text-primary);border-color:var(--line-control)}
+.btn-secondary:hover{background:var(--hover-surface);border-color:var(--hover-border)}
+.btn-quiet{background:transparent;color:var(--text-secondary);border-color:transparent;
+  min-height:var(--target-min);padding:0 var(--sp-3);font-weight:var(--fw-medium)}
+.btn-quiet:hover{color:var(--text-primary);text-decoration:underline}
+.btn[aria-disabled="true"]{background:var(--disabled-surface);color:var(--disabled-text);
+  border-color:var(--disabled-border);cursor:not-allowed}
+.btn[aria-disabled="true"]:hover{background:var(--disabled-surface);border-color:var(--disabled-border)}
+.why{font-size:var(--fs-200);color:var(--text-tertiary)}
+
+/* --- radiogroup da tastiera: frecce dentro il gruppo, Tab per uscirne --- */
+document.querySelectorAll('[role="radiogroup"]').forEach(gruppo=>{
+  const radio = [...gruppo.querySelectorAll('[role="radio"]')];
+  radio.forEach((r,i)=> r.tabIndex = i === 0 ? 0 : -1);
+  gruppo.addEventListener("keydown", e=>{
+    const i = radio.indexOf(document.activeElement);
+    if (i < 0) return;
+    let j = null;
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") j = (i + 1) % radio.length;
+    if (e.key === "ArrowUp"   || e.key === "ArrowLeft")  j = (i - 1 + radio.length) % radio.length;
+    if (j === null) return;
+    e.preventDefault();
+    radio.forEach(r=> r.tabIndex = -1);
+    radio[j].tabIndex = 0;
+    radio[j].focus();
+  });
+  // dopo una scelta il focus resta sul controllo scelto
+  radio.forEach(r=> r.addEventListener("click", ()=>{
+    radio.forEach(x=> x.tabIndex = -1); r.tabIndex = 0;
+  }));
+});
+
+/* --- chip "Cosa significa?" --- */
+.chips{display:flex;flex-wrap:wrap;gap:var(--sp-3);margin-top:var(--sp-5)}
+.chip{display:inline-flex;align-items:center;gap:var(--sp-2);min-height:var(--target-min);
+  padding:0 var(--sp-4);border-radius:var(--radius-pill);
+  border:var(--border-width) solid var(--line-control);background:var(--surface-quiet);
+  color:var(--text-accent);font-family:inherit;font-size:var(--fs-200);font-weight:var(--fw-medium);
+  cursor:pointer}
+.chip:hover{border-color:var(--acc-purple-light);background:var(--surface-hover)}
+.chip::before{content:"\203A";color:var(--acc-purple);font-size:1.2em;line-height:1}
+.chip[aria-expanded="true"]{border-color:var(--acc-purple-light);color:var(--text-primary)}
+.gloss{margin-top:var(--sp-4);padding:var(--sp-4) var(--sp-5);background:var(--surface-card);
+  border-left:3px solid var(--acc-purple);border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  font-size:var(--fs-200);line-height:var(--lh-loose);color:var(--text-secondary);
+  max-width:var(--measure-prose)}
+.gloss b{color:var(--text-primary)}
+.gloss[hidden]{display:none}
+
+/* --- card misura --- */
+.cards{display:flex;flex-direction:column;gap:var(--sp-5);margin-top:var(--sp-5)}
+.card{background:var(--surface-card);border:var(--border-width) solid var(--line-soft);
+  border-radius:var(--radius-lg);padding:var(--sp-6);box-shadow:var(--shadow-card)}
+.card-kicker{font-size:var(--fs-100);text-transform:uppercase;letter-spacing:var(--ls-wide);
+  color:var(--text-accent);font-weight:var(--fw-semibold)}
+.card h2{margin-top:var(--sp-2)}
+.card-plain{font-size:var(--fs-300);color:var(--text-secondary);margin-top:var(--sp-3)}
+.figs{display:flex;flex-wrap:wrap;gap:var(--sp-3);margin-top:var(--sp-5)}
+.fig{flex:1 1 170px;background:var(--surface-base);border:var(--border-width) solid var(--line-decorative);
+  border-radius:var(--radius-md);padding:var(--sp-4) var(--sp-5)}
+.fig b{display:block;font-size:var(--fs-500);font-weight:var(--fw-bold);color:var(--text-primary);
+  line-height:1.1;font-variant-numeric:tabular-nums}
+.fig span{display:block;font-size:var(--fs-200);color:var(--text-tertiary);margin-top:var(--sp-2)}
+.fig.missing b{font-size:var(--fs-300);color:var(--text-tertiary);font-weight:var(--fw-medium)}
+.sec{margin-top:var(--sp-6)}
+.tag{display:inline-block;margin-left:var(--sp-2);font-size:var(--fs-100);
+  border:var(--border-width) solid var(--line-control);border-radius:var(--radius-pill);
+  padding:2px var(--sp-3);color:var(--text-secondary);white-space:nowrap}
+.step1{background:var(--surface-base);border:var(--border-width) solid var(--line-accent);
+  border-radius:var(--radius-md);padding:var(--sp-4) var(--sp-5);font-size:var(--fs-300);
+  color:var(--text-primary)}
+.warn{border-left:3px solid var(--text-warning);padding:var(--sp-3) var(--sp-5);
+  font-size:var(--fs-200);color:var(--text-secondary);line-height:var(--lh-loose)}
+.warn b{color:var(--text-warning)}
+.src{margin-top:var(--sp-5);padding-top:var(--sp-4);border-top:var(--border-width) solid var(--line-decorative);
+  font-size:var(--fs-100);color:var(--text-tertiary)}
+
+/* --- riepilogo profilo --- */
+.recap{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-3);margin-top:var(--sp-5);
+  padding:var(--sp-4) var(--sp-5);background:var(--surface-card);
+  border:var(--border-width) solid var(--line-decorative);border-radius:var(--radius-md)}
+.recap .k{font-size:var(--fs-200);color:var(--text-secondary)}
+.recap .sep{color:var(--text-tertiary)}
+
+/* --- accordion "cosa non ti riguarda" --- */
+details.acc{margin-top:var(--sp-6);background:var(--surface-card);
+  border:var(--border-width) solid var(--line-soft);border-radius:var(--radius-md)}
+details.acc summary{cursor:pointer;list-style:none;padding:var(--sp-5);min-height:var(--target-comfort);
+  display:flex;align-items:center;gap:var(--sp-3);font-size:var(--fs-300);font-weight:var(--fw-semibold)}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::before{content:"+";color:var(--acc-purple-light);font-size:var(--fs-400);line-height:1}
+details.acc[open] summary::before{content:"\2212"}
+details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
+
+/* --- glossario --- */
+.gloss-list{list-style:none;margin-top:var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-4)}
+.gloss-list li{background:var(--surface-card);border:var(--border-width) solid var(--line-decorative);
+  border-radius:var(--radius-md);padding:var(--sp-4) var(--sp-5)}
+.gloss-list b{display:block;font-size:var(--fs-300);color:var(--text-primary)}
+.gloss-list p{font-size:var(--fs-200);color:var(--text-secondary);line-height:var(--lh-loose);margin-top:var(--sp-2)}
+.gloss-list .where{font-size:var(--fs-200);color:var(--text-tertiary);margin-top:var(--sp-2)}
+
+/* --- blocco CAF / escalation --- */
+.caf{margin-top:var(--sp-6);background:var(--surface-card);
+  border:var(--border-width-control) solid var(--line-accent);
+  border-radius:var(--radius-lg);padding:var(--sp-6)}
+.caf h2{font-size:var(--fs-400)}
+.caf p{margin-top:var(--sp-3);font-size:var(--fs-300);color:var(--text-secondary)}
+
+/* --- stati --- */
+.loader{margin-top:var(--sp-7)}
+.track{height:8px;border-radius:var(--radius-pill);background:var(--loading-track);overflow:hidden}
+.track i{display:block;height:100%;width:38%;border-radius:var(--radius-pill);
+  background:var(--loading-fill);animation:slide 1.5s var(--easing) infinite}
+@keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(320%)}}
+.steps-list{list-style:none;margin-top:var(--sp-6);display:flex;flex-direction:column;gap:var(--sp-4)}
+.steps-list li{font-size:var(--fs-300);color:var(--text-disabled);display:flex;gap:var(--sp-3);align-items:baseline}
+.steps-list li::before{content:"\25CB";color:var(--text-disabled)}
+.steps-list li.done{color:var(--text-secondary)}
+.steps-list li.done::before{content:"\2713";color:var(--text-positive)}
+.steps-list li.now{color:var(--text-primary);font-weight:var(--fw-semibold)}
+.steps-list li.now::before{content:"\25CF";color:var(--acc-purple-light)}
+
+.panel-error{margin-top:var(--sp-6);background:var(--error-surface);
+  border:var(--border-width-control) solid var(--error-border);border-radius:var(--radius-lg);
+  padding:var(--sp-6)}
+.panel-error .head{display:flex;align-items:center;gap:var(--sp-3)}
+.panel-error .sign{flex:0 0 auto;width:34px;height:34px;border-radius:var(--radius-pill);
+  border:2px solid var(--error-border);color:var(--error-text);display:flex;align-items:center;
+  justify-content:center;font-weight:var(--fw-bold);font-size:var(--fs-300)}
+.panel-error h2{font-size:var(--fs-400);color:var(--text-primary)}
+.panel-error p{margin-top:var(--sp-4);font-size:var(--fs-300);color:var(--text-secondary)}
+
+.banner-degraded{margin-top:var(--sp-5);background:var(--surface-card);
+  border:var(--border-width-control) solid var(--text-warning);border-radius:var(--radius-md);
+  padding:var(--sp-5);display:flex;gap:var(--sp-4);align-items:flex-start}
+.banner-degraded .sign{flex:0 0 auto;width:34px;height:34px;border-radius:var(--radius-pill);
+  border:2px solid var(--text-warning);color:var(--text-warning);display:flex;align-items:center;
+  justify-content:center;font-weight:var(--fw-bold)}
+.banner-degraded p{font-size:var(--fs-200);color:var(--text-secondary);line-height:var(--lh-loose)}
+.banner-degraded b{color:var(--text-warning)}
+
+/* --- disclaimer ancorato --- */
+.disclaimer{position:sticky;bottom:0;z-index:var(--z-disclaimer);
+  background:var(--surface-banner);border-top:var(--border-width) solid var(--line-soft);
+  box-shadow:var(--shadow-sticky)}
+.disclaimer-in{max-width:var(--page-max-wide);margin:0 auto;padding:var(--sp-4) var(--page-padding);
+  font-size:var(--fs-200);color:var(--text-secondary);line-height:var(--lh-base)}
+.disclaimer-in b{color:var(--text-primary)}
+@media (max-height:600px){ .disclaimer{position:static} }
+
+/* --- piè di pagina --- */
+.foot{max-width:var(--page-max-wide);margin:0 auto;padding:var(--sp-6) var(--page-padding);
+  font-size:var(--fs-100);text-transform:uppercase;letter-spacing:var(--ls-wide);
+  color:var(--text-tertiary)}
+
+/* --- due colonne solo per la scheda, solo su schermi larghi --- */
+@media (min-width:1000px){
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-5);align-items:start}
+}
+
+/* ============================================================================
+   CORNICE DEMO — non fa parte del prodotto. In app/ non si copia.
+   ============================================================================ */
+.demo-note{background:#1A0A24;border-bottom:2px dashed var(--acc-purple-light);
+  padding:var(--sp-3) var(--page-padding);text-align:center;
+  font-size:var(--fs-200);color:var(--text-warning);position:relative;z-index:var(--z-sticky)}
+.demo-note b{color:var(--text-warning)}
+.demo-bar{position:fixed;right:var(--sp-4);top:120px;z-index:var(--z-dialog);width:212px;
+  background:var(--surface-card);border:2px dashed var(--line-control);border-radius:var(--radius-md);
+  padding:var(--sp-4)}
+.demo-bar h4{font-size:var(--fs-100);text-transform:uppercase;letter-spacing:var(--ls-wide);
+  color:var(--text-tertiary);font-weight:var(--fw-semibold);margin-bottom:var(--sp-3)}
+.demo-bar button{display:block;width:100%;text-align:left;margin-bottom:6px;min-height:36px;
+  padding:0 var(--sp-3);font-family:inherit;font-size:var(--fs-100);cursor:pointer;
+  background:transparent;color:var(--text-secondary);border:1px solid var(--line-decorative);
+  border-radius:var(--radius-sm)}
+.demo-bar button:hover{border-color:var(--acc-purple-light);color:var(--text-primary)}
+.demo-bar hr{border:0;border-top:1px solid var(--line-decorative);margin:var(--sp-3) 0}
+@media (max-width:1320px){ .demo-bar{position:static;width:auto;max-width:var(--page-max);margin:var(--sp-5) auto 0} }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#contenuto">Salta al contenuto</a>
+
+<!-- Etichetta obbligatoria: i numeri in questo mockup sono inventati. -->
+<div class="demo-note">
+  <b>Mockup dimostrativo.</b> Tutti gli importi, le percentuali e le scadenze qui mostrati sono
+  <b>dati fittizi</b> costruiti per la demo: non sono valori ufficiali e non vanno usati per nessuna pratica.
+</div>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="logo">Accenture<i>&gt;</i></div>
+    <div class="stepwrap" id="stepwrap" hidden>
+      <span class="steptext" id="steptext" role="status" aria-live="polite">Domanda 1 di 5</span>
+      <span class="stepbar" id="stepbar" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- Comandi di demo: servono al presentatore per saltare fra le schermate e gli stati. -->
+<nav class="demo-bar" aria-label="Comandi della demo">
+  <h4>Comandi demo</h4>
+  <button type="button" data-goto="s0">Schermata iniziale</button>
+  <button type="button" data-goto="s1">Domanda 1</button>
+  <button type="button" data-goto="s5">Elaborazione</button>
+  <hr>
+  <h4>Scenari</h4>
+  <button type="button" data-scen="casa">1 · Ristrutturazione</button>
+  <button type="button" data-scen="figlio">2 · Figlio appena nato</button>
+  <button type="button" data-scen="lavoro">3 · Cerca lavoro, under 36</button>
+  <button type="button" data-scen="spese_mediche">4 · Pensionato, spese mediche</button>
+  <hr>
+  <h4>Stati</h4>
+  <button type="button" data-state="degraded">Output degraded</button>
+  <button type="button" data-state="vuoto">Nessuna misura</button>
+  <button type="button" data-state="escalation">Escalation a CAF</button>
+  <button type="button" data-state="errore">Errore tecnico</button>
+</nav>
+
+<main id="contenuto">
+
+<!-- ========================= S0 — APERTURA ========================= -->
+<section class="screen on page" id="s0" aria-label="Schermata iniziale">
+  <div class="eyebrow">Orientamento agli aiuti statali</div>
+  <h1 class="gradient" tabindex="-1">A cosa ho diritto?</h1>
+  <p class="lead">Ti facciamo cinque domande semplici. Alla fine ti diciamo quali aiuti dello Stato
+    riguardano la tua situazione, cosa vogliono dire e da dove si comincia.</p>
+  <ul class="bul mt5">
+    <li>Non serve nessun documento e nessuna registrazione.</li>
+    <li>Ci vogliono circa tre minuti.</li>
+    <li>Puoi tornare indietro e cambiare una risposta in qualsiasi momento.</li>
+  </ul>
+  <div class="actions">
+    <button class="btn btn-primary" type="button" data-goto="s1">Iniziamo</button>
+  </div>
+  <p class="help mt5">Nessun dato personale viene salvato.</p>
+</section>
+
+<!-- ========================= S1 — SITUAZIONE DI VITA (multipla) ========================= -->
+<section class="screen page" id="s1" aria-label="Domanda 1">
+  <div class="eyebrow">Domanda 1 di 5</div>
+  <h1 tabindex="-1">Cosa sta succedendo nella tua vita in questo momento?</h1>
+  <p class="help">Puoi scegliere piu&#39; di una risposta.</p>
+
+  <div class="options" role="group" aria-label="Situazione di vita" id="opt-situazione">
+    <button class="opt" type="button" aria-pressed="false" data-val="casa">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="txt">Sto per comprare o ristrutturare casa
+        <span class="sub">Lavori in casa, acquisto, interventi in condominio</span></span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="figlio">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="txt">Ho avuto o aspetto un figlio</span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="lavoro">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="txt">Ho perso il lavoro o sto cercando lavoro</span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="spese_mediche">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="txt">Ho spese mediche importanti</span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="auto">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="txt">Voglio comprare un&#39;auto</span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="under36">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="txt">Ho meno di 36 anni</span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="non_so" data-exclusive="true">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="txt">Non so da dove partire, mostrami tutto</span>
+    </button>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" type="button" id="s1-next" aria-disabled="true" data-next="s2">Avanti</button>
+    <span class="why" id="s1-why" role="status" aria-live="polite">Scegli almeno una risposta per continuare.</span>
+  </div>
+</section>
+
+<!-- ========================= S2 — CASA ========================= -->
+<section class="screen page" id="s2" aria-label="Domanda 2">
+  <div class="eyebrow">Domanda 2 di 5</div>
+  <h1 tabindex="-1">Dove abiti in questo momento?</h1>
+  <div class="options" role="radiogroup" aria-label="Condizione abitativa" data-single="abitazione" data-next="s3">
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="proprietario" data-label="Casa di proprieta&#39;">
+      <span class="mark" aria-hidden="true"></span><span class="txt">In una casa di mia proprieta&#39;</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="affittuario" data-label="In affitto">
+      <span class="mark" aria-hidden="true"></span><span class="txt">In affitto</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="ospite_familiari" data-label="Con familiari">
+      <span class="mark" aria-hidden="true"></span><span class="txt">A casa di familiari</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="non_so" data-label="Non indicato">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Preferisco non rispondere</span></button>
+  </div>
+  <div class="actions"><button class="btn btn-quiet" type="button" data-goto="s1">&#8592; Indietro</button></div>
+</section>
+
+<!-- ========================= S3 — REDDITO ========================= -->
+<section class="screen page" id="s3" aria-label="Domanda 3">
+  <div class="eyebrow">Domanda 3 di 5</div>
+  <h1 tabindex="-1">Da dove arrivano i tuoi soldi ogni mese?</h1>
+  <p class="help">Non ti chiediamo quanto guadagni: serve solo sapere di che tipo di entrata si tratta.</p>
+  <div class="options" role="radiogroup" aria-label="Tipo di reddito" data-single="reddito" data-next="s4a">
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="lavoro_dipendente" data-label="Lavoro dipendente">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Uno stipendio da un datore di lavoro</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="pensione" data-label="Pensione">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Una pensione</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="partita_iva" data-label="Partita IVA">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Lavoro in proprio, ho la partita IVA</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="nessun_reddito" data-label="Nessuna entrata">
+      <span class="mark" aria-hidden="true"></span><span class="txt">In questo momento non ho entrate</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="non_so" data-label="Non indicato">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Preferisco non rispondere</span></button>
+  </div>
+  <div class="chips">
+    <button class="chip" type="button" aria-expanded="false" aria-controls="g-piva">Cosa significa partita IVA?</button>
+  </div>
+  <div class="gloss" id="g-piva" hidden>
+    <b>Partita IVA</b> e&#39; il numero che lo Stato assegna a chi lavora in proprio e deve emettere
+    fattura. Chi ha solo uno stipendio o una pensione non ce l&#39;ha.
+  </div>
+  <div class="actions"><button class="btn btn-quiet" type="button" data-goto="s2">&#8592; Indietro</button></div>
+</section>
+
+<!-- ========================= S4a — TIMING ========================= -->
+<section class="screen page" id="s4a" aria-label="Domanda 4">
+  <div class="eyebrow">Domanda 4 di 5</div>
+  <h1 tabindex="-1">A che punto sei?</h1>
+  <div class="options" role="radiogroup" aria-label="A che punto sei" data-single="timing" data-next="s4b">
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="da_iniziare" data-label="Devo ancora iniziare">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Devo ancora iniziare</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="in_corso" data-label="Gia&#39; cominciato">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Ho gia&#39; cominciato</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="gia_concluso" data-label="Gia&#39; finito">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Ho gia&#39; finito e vorrei recuperare le spese passate</span></button>
+  </div>
+  <div class="actions"><button class="btn btn-quiet" type="button" data-goto="s3">&#8592; Indietro</button></div>
+</section>
+
+<!-- ========================= S4b — CAF ========================= -->
+<section class="screen page" id="s4b" aria-label="Domanda 5">
+  <div class="eyebrow">Domanda 5 di 5</div>
+  <h1 tabindex="-1">Hai gia&#39; un CAF o un commercialista?</h1>
+  <div class="options" role="radiogroup" aria-label="Hai un CAF" data-single="caf" data-next="s5" data-noauto="true">
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="si" data-label="Ha un CAF">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Si&#39;</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="no" data-label="Nessun CAF">
+      <span class="mark" aria-hidden="true"></span><span class="txt">No</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="non_so_cosa_e" data-label="Non sa cosa sia un CAF">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Non so cosa sia un CAF</span></button>
+  </div>
+  <!-- La spiegazione compare come conseguenza della risposta: non e' un errore e non blocca. -->
+  <div class="gloss" id="g-caf" hidden>
+    <b>CAF</b> sta per Centro di Assistenza Fiscale. E&#39; un ufficio, spesso gratuito o a costo basso,
+    dove una persona compila per te le pratiche con lo Stato. Ce n&#39;e&#39; quasi sempre uno vicino a casa.
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary" type="button" id="s4b-next" aria-disabled="true" data-next="s5">Vedi le misure</button>
+    <button class="btn btn-quiet" type="button" data-goto="s4a">&#8592; Indietro</button>
+  </div>
+</section>
+
+<!-- ========================= S5 — ELABORAZIONE ========================= -->
+<section class="screen page" id="s5" aria-label="Elaborazione in corso">
+  <div class="eyebrow">Un momento</div>
+  <h1 tabindex="-1">Sto guardando la tua situazione</h1>
+  <div class="loader" role="status" aria-live="polite">
+    <div class="track" aria-hidden="true"><i></i></div>
+    <ul class="steps-list" id="loading-steps">
+      <li data-i="0">Sto mettendo in ordine le tue risposte.</li>
+      <li data-i="1">Sto cercando le misure che riguardano la tua situazione.</li>
+      <li data-i="2">Sto preparando i passi da fare.</li>
+    </ul>
+  </div>
+  <p class="help mt6" id="slow-note" hidden>Ci sto mettendo piu&#39; del previsto. Puoi aspettare ancora
+    un momento oppure annullare.</p>
+</section>
+
+<!-- ========================= S6 — SCHEDA ========================= -->
+<section class="screen page wide" id="s6" aria-label="Le misure che riguardano la tua situazione">
+  <div class="eyebrow">Il risultato</div>
+  <h1 tabindex="-1">Ecco cosa risulta per la tua situazione</h1>
+
+  <div class="recap" id="recap"></div>
+
+  <div id="degraded-slot"></div>
+
+  <p class="lead" id="count-line"></p>
+  <p class="help" id="order-line">In ordine di situazione, non di convenienza: non c&#39;e&#39; una misura
+    migliore delle altre.</p>
+
+  <div class="cards" id="cards"></div>
+
+  <details class="acc" id="excluded-box">
+    <summary>Perche&#39; non vedo altri bonus di cui ho sentito parlare?</summary>
+    <div class="body" id="excluded-body"></div>
+  </details>
+
+  <div class="sec">
+    <h3>Le parole che hai incontrato</h3>
+    <ul class="gloss-list" id="glossario"></ul>
+  </div>
+
+  <div class="caf">
+    <h2>Il prossimo passo lo fai con una persona</h2>
+    <p>Questa scheda dice quali misure esistono e cosa vogliono dire. Non dice cosa ti conviene fare:
+      quella e&#39; una decisione, e va presa con qualcuno che puo&#39; guardare i tuoi documenti.</p>
+    <div class="actions">
+      <button class="btn btn-primary" type="button">Trova un CAF vicino a te</button>
+      <button class="btn btn-secondary" type="button" data-restart="true">Ricomincia con un profilo diverso</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= STATO — NESSUNA MISURA ========================= -->
+<section class="screen page" id="s-vuoto" aria-label="Nessuna misura pertinente">
+  <div class="eyebrow">Il risultato</div>
+  <h1 tabindex="-1">Da quello che hai risposto non risultano misure che riguardano la tua situazione</h1>
+  <div class="recap" id="recap-vuoto"></div>
+  <p class="lead">Questo non vuol dire che non ti spetti niente: vuol dire che serve guardare il tuo
+    caso da vicino, e da qui non possiamo farlo.</p>
+  <div class="caf">
+    <h2>Dove puoi chiedere</h2>
+    <p>Un CAF guarda la tua posizione con i documenti alla mano e ti dice cosa risulta. Il servizio
+      e&#39; spesso gratuito.</p>
+    <div class="actions">
+      <button class="btn btn-primary" type="button">Trova un CAF vicino a te</button>
+      <button class="btn btn-secondary" type="button" data-restart="true">Ricomincia con un profilo diverso</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= STATO — ESCALATION ========================= -->
+<section class="screen page" id="s-escalation" aria-label="Serve l&#39;aiuto di una persona">
+  <div class="eyebrow">Serve una persona</div>
+  <h1 tabindex="-1">Su questo preferiamo non risponderti da soli</h1>
+  <div class="caf mt5">
+    <h2>Perche&#39;</h2>
+    <p>Non abbiamo informazioni verificate su questo caso. Preferiamo dirtelo invece di tirare a
+      indovinare: un&#39;informazione sbagliata qui diventa una pratica sbagliata.</p>
+    <p>Un CAF puo&#39; guardare la tua posizione con i documenti alla mano. Il servizio e&#39; spesso gratuito.</p>
+    <div class="actions">
+      <button class="btn btn-primary" type="button">Trova un CAF vicino a te</button>
+      <button class="btn btn-secondary" type="button" data-goto="s1">Torna indietro e cambia una risposta</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= STATO — ERRORE ========================= -->
+<section class="screen page" id="s-errore" aria-label="Errore">
+  <div class="eyebrow">Si e&#39; interrotto</div>
+  <h1 tabindex="-1">Qualcosa non ha funzionato dalla nostra parte</h1>
+  <div class="panel-error" role="alert">
+    <div class="head">
+      <span class="sign" aria-hidden="true">!</span>
+      <h2>Errore durante la ricerca delle misure</h2>
+    </div>
+    <p>Non e&#39; colpa di quello che hai risposto. Le tue risposte sono ancora qui: puoi riprovare
+      senza ricominciare da capo.</p>
+    <div class="actions">
+      <button class="btn btn-primary" type="button" data-goto="s5">Riprova</button>
+      <button class="btn btn-secondary" type="button">Vai a un CAF</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ========================= DISCLAIMER ANCORATO ========================= -->
+<div class="disclaimer">
+  <div class="disclaimer-in">
+    <b>Questo strumento spiega quali misure esistono. Non da&#39; consigli e non fa calcoli sul tuo caso.</b>
+    Verifica le scadenze su agenziaentrate.gov.it e parla con un CAF o un commercialista prima di decidere.
+  </div>
+</div>
+
+<div class="foot">Hackathon Agentic Coding &middot; Accenture Application Engineering &middot; mockup UX</div>
+
+<script>
+/* ============================================================================
+   SCENARI — dati FITTIZI per la demo.
+   La forma rispecchia agents/schemas/eligibility.output.json (misure_pertinenti,
+   misure_escluse) e navigator.output.json (primo_passo_concreto, glossario).
+   In app/ questo oggetto sparisce: i dati arrivano dagli agenti.
+   ============================================================================ */
+const SCENARI = {
+
+  casa: {
+    recap: ["Casa da ristrutturare", "Casa di proprieta'", "Lavoro dipendente", "Devo ancora iniziare"],
+    misure: [
+      { tipo:"detrazione", nome:"Bonus Ristrutturazione",
+        semplice:"Ti torna indietro una parte di quello che spendi per i lavori in casa, sotto forma di sconto sulle tasse, spalmato su piu' anni.",
+        cifre:[["50%","di quanto spendi"],["96.000 €","tetto massimo di spesa"],["10 anni","in quante rate ti torna"]],
+        requisiti:[
+          {t:"I lavori devono essere su un immobile gia' esistente, non su una nuova costruzione."},
+          {t:"I pagamenti devono passare da un bonifico con una causale precisa.", tag:"da verificare con un CAF"},
+          {t:"L'immobile deve risultare intestato a te o devi averne un titolo."}
+        ],
+        scadenza:"Vale per le spese pagate entro il 31 dicembre 2026. Verifica la data sul sito dell'Agenzia delle Entrate.",
+        attenzione:"Se il bonifico non riporta la causale giusta, perdi il diritto al rimborso anche se i lavori sono regolari.",
+        passo:"Prima di pagare il primo euro, chiedi all'impresa una fattura intestata a te e fatti dire quale causale scrivere sul bonifico.",
+        glossario:["bonifico_parlante","detrazione"],
+        fonte:"Agenzia delle Entrate, guida alle ristrutturazioni edilizie — consultata il 12/09/2026" },
+      { tipo:"detrazione", nome:"Ecobonus",
+        semplice:"Riguarda i lavori che fanno consumare meno energia alla casa: caldaia, infissi, cappotto.",
+        cifre:[["65%","di quanto spendi"],["60.000 €","tetto massimo di spesa"],["10 anni","in quante rate ti torna"]],
+        requisiti:[
+          {t:"Serve un tecnico che certifichi il risparmio di energia ottenuto."},
+          {t:"La comunicazione all'ENEA va mandata entro 90 giorni dalla fine dei lavori.", tag:"da verificare con un CAF"}
+        ],
+        scadenza:"Entro 90 giorni dalla fine dei lavori per la comunicazione. Verifica sul sito dell'ente.",
+        attenzione:null,
+        passo:"Chiedi al tecnico che segue i lavori se prevede di fare lui la comunicazione all'ENEA, e mettilo per iscritto.",
+        glossario:["enea"],
+        fonte:"ENEA, portale detrazioni fiscali — consultata il 12/09/2026" },
+      { tipo:"detrazione", nome:"Bonus Mobili",
+        semplice:"Se stai gia' facendo lavori in casa, una parte di quello che spendi per mobili ed elettrodomestici nuovi ti torna indietro.",
+        cifre:[["50%","di quanto spendi"],["5.000 €","tetto massimo di spesa"],["10 anni","in quante rate ti torna"]],
+        requisiti:[
+          {t:"Devono esserci lavori di ristrutturazione gia' cominciati sulla stessa casa."},
+          {t:"I mobili devono essere comprati dopo l'inizio dei lavori, non prima."}
+        ],
+        scadenza:"Vale per gli acquisti pagati entro il 31 dicembre 2026.",
+        attenzione:"L'ordine conta: un divano comprato la settimana prima dell'inizio lavori non rientra.",
+        passo:"Segnati la data di inizio lavori e conserva ogni scontrino dei mobili comprati dopo quella data.",
+        glossario:[],
+        fonte:"Agenzia delle Entrate, guida bonus mobili — consultata il 12/09/2026" }
+    ],
+    escluse:[
+      ["Assegno Unico","Riguarda una situazione diversa dalla tua: si rivolge a chi ha figli a carico."],
+      ["Bonus Affitto Giovani","Serve una condizione che, da quello che hai risposto, non risulta: un contratto di affitto."]
+    ],
+    glossario:{
+      detrazione:["Detrazione","Uno sconto sulle tasse che paghi. Non sono soldi che arrivano sul conto: sono tasse che non paghi, di solito un po' ogni anno per diversi anni.",null],
+      bonifico_parlante:["Bonifico parlante","Un normale bonifico bancario in cui pero' devi scrivere nella causale alcune informazioni precise, fra cui la legge di riferimento e il codice fiscale di chi paga.","Lo fai allo sportello o dall'home banking: molte banche hanno gia' il modulo pronto."],
+      enea:["ENEA","L'ente pubblico a cui va comunicato che hai fatto lavori di risparmio energetico. La comunicazione si manda da un sito, anche tramite il tecnico.",null]
+    }
+  },
+
+  figlio: {
+    recap: ["Figlio appena nato", "In affitto", "Lavoro dipendente", "Ho gia' cominciato"],
+    misure: [
+      { tipo:"assegno", nome:"Assegno Unico e Universale",
+        semplice:"Una somma che lo Stato versa ogni mese sul conto, per ogni figlio a carico. Quanto arriva dipende dalla situazione economica della famiglia.",
+        cifre:[["199 €","al mese per figlio, importo pieno"],["57 €","al mese, importo minimo"],["ISEE","cosa stabilisce l'importo"]],
+        requisiti:[
+          {t:"Il figlio deve essere a tuo carico."},
+          {t:"Serve presentare l'ISEE per avere piu' dell'importo minimo.", tag:"da verificare con un CAF"},
+          {t:"La domanda si fa una volta e poi si rinnova ogni anno."}
+        ],
+        scadenza:"La domanda si puo' fare in qualsiasi momento, ma gli arretrati vengono pagati solo per i mesi indietro consentiti. Verifica sul sito dell'INPS.",
+        attenzione:"Senza ISEE l'assegno arriva comunque, ma all'importo piu' basso.",
+        passo:"Vai in un CAF con il codice fiscale tuo e del bambino e chiedi di fare insieme ISEE e domanda: sono due pratiche, si fanno nello stesso appuntamento.",
+        glossario:["isee"],
+        fonte:"INPS, scheda prestazione assegno unico — consultata il 12/09/2026" },
+      { tipo:"contributo", nome:"Bonus Asilo Nido",
+        semplice:"Un rimborso di quello che paghi di retta all'asilo nido, versato mese per mese dietro presentazione delle ricevute.",
+        cifre:[["3.000 €","massimo all'anno"],["11","quante mensilita' al massimo"],["ISEE","cosa stabilisce l'importo"]],
+        requisiti:[
+          {t:"Il nido deve essere pubblico o privato autorizzato."},
+          {t:"La retta deve essere gia' pagata: si rimborsa, non si anticipa."},
+          {t:"L'importo cambia in base all'ISEE.", tag:"da verificare con un CAF"}
+        ],
+        scadenza:"La domanda va fatta entro il 31 dicembre dell'anno in cui paghi le rette.",
+        attenzione:"Le ricevute vanno caricate una per una: se ne salti una, quel mese non viene rimborsato.",
+        passo:"Chiedi al nido una ricevuta intestata a te per ogni mese gia' pagato, e mettile tutte insieme in una cartella.",
+        glossario:["isee"],
+        fonte:"INPS, bonus asilo nido — consultata il 12/09/2026" },
+      { tipo:"esenzione", nome:"Congedo parentale retribuito",
+        semplice:"Puoi stare a casa dal lavoro per seguire il bambino continuando a ricevere una parte dello stipendio.",
+        cifre:[["80%","dello stipendio, per il primo mese"],["3 mesi","quanto dura la parte piu' alta"],["12 anni","fino a che eta' del bambino"]],
+        requisiti:[
+          {t:"Devi avere un lavoro dipendente in corso."},
+          {t:"La richiesta passa dal datore di lavoro oltre che dall'INPS."}
+        ],
+        scadenza:"Non risulta una scadenza fissa: dipende dall'eta' del bambino. Verificala sul sito dell'INPS.",
+        attenzione:null,
+        passo:"Parla con l'ufficio del personale della tua azienda: la domanda all'INPS di solito parte da li'.",
+        glossario:[],
+        fonte:"INPS, congedo parentale — consultata il 12/09/2026" }
+    ],
+    escluse:[
+      ["Bonus Ristrutturazione","Riguarda una situazione diversa dalla tua: servono lavori su una casa."],
+      ["Supporto Formazione e Lavoro","Serve una condizione che, da quello che hai risposto, non risulta: non risultare occupato."]
+    ],
+    glossario:{
+      isee:["ISEE","Un documento che mette insieme redditi e patrimonio di tutta la famiglia e produce un numero. Molti aiuti usano quel numero per decidere quanto darti.","Si fa gratis in un CAF, oppure online sul sito dell'INPS. Ci vogliono pochi giorni."]
+    }
+  },
+
+  lavoro: {
+    recap: ["In cerca di lavoro", "Con familiari", "Nessuna entrata", "Devo ancora iniziare"],
+    misure: [
+      { tipo:"contributo", nome:"Supporto per la Formazione e il Lavoro",
+        semplice:"Una somma mensile che ricevi mentre segui un corso o un percorso per trovare lavoro. Non e' un sussidio fermo: e' legato alla partecipazione.",
+        cifre:[["350 €","al mese"],["12 mesi","per quanto tempo"],["ISEE","cosa stabilisce l'accesso"]],
+        requisiti:[
+          {t:"Devi risultare disoccupato e iscritto al centro per l'impiego."},
+          {t:"Devi partecipare effettivamente al percorso: le assenze fanno perdere il diritto."},
+          {t:"L'ISEE della famiglia deve essere sotto una certa soglia.", tag:"da verificare con un CAF"}
+        ],
+        scadenza:"Non risulta una scadenza fissa per la domanda. Verificala sul sito dell'INPS.",
+        attenzione:"Se non ti presenti alle attivita' concordate, perdi il diritto alla somma dei mesi successivi.",
+        passo:"Prenota un appuntamento al centro per l'impiego della tua citta': l'iscrizione e' il passo che apre tutto il resto.",
+        glossario:["isee","centro_impiego"],
+        fonte:"INPS, supporto formazione e lavoro — consultata il 12/09/2026" },
+      { tipo:"assegno", nome:"NASpI",
+        semplice:"Una somma mensile per chi ha perso un lavoro dipendente e aveva versato contributi. Dura per un periodo proporzionale a quanto hai lavorato.",
+        cifre:[["75%","dello stipendio medio, all'inizio"],["24 mesi","durata massima"],["68 giorni","entro quando fare domanda"]],
+        requisiti:[
+          {t:"Devi aver perso il lavoro senza esserti dimesso volontariamente."},
+          {t:"Servono contributi versati nei due anni precedenti.", tag:"da verificare con un CAF"}
+        ],
+        scadenza:"La domanda va fatta entro 68 giorni dalla fine del rapporto di lavoro. Passato quel termine il diritto si perde.",
+        attenzione:"Il termine dei 68 giorni e' perentorio: non ci sono proroghe.",
+        passo:"Cerca la data esatta dell'ultimo giorno di lavoro sulla lettera di licenziamento e contala: e' da li' che partono i 68 giorni.",
+        glossario:["contributi"],
+        fonte:"INPS, NASpI — consultata il 12/09/2026" },
+      { tipo:"credito_imposta", nome:"Incentivo all'assunzione under 36",
+        semplice:"Non e' una somma per te: e' uno sconto che riceve l'azienda che ti assume. Sapere che esiste ti serve per dirlo a chi ti fa il colloquio.",
+        cifre:[["100%","dei contributi a carico dell'azienda"],["8.000 €","tetto massimo all'anno"],["36 mesi","per quanto tempo"]],
+        requisiti:[
+          {t:"L'assunzione deve essere a tempo indeterminato."},
+          {t:"Devi avere meno di 36 anni al momento dell'assunzione."}
+        ],
+        scadenza:"Vale per le assunzioni fatte entro il 31 dicembre 2026.",
+        attenzione:null,
+        passo:"Se arrivi a un colloquio, puoi dire che per la tua fascia di eta' esiste uno sgravio contributivo: e' un'informazione che all'azienda interessa.",
+        glossario:["contributi"],
+        fonte:"INPS, incentivi occupazione giovani — consultata il 12/09/2026" }
+    ],
+    escluse:[
+      ["Bonus Asilo Nido","Riguarda una situazione diversa dalla tua: serve un figlio iscritto al nido."],
+      ["Detrazione spese sanitarie","Vale in un momento diverso da quello in cui ti trovi: senza entrate non ci sono tasse da cui togliere lo sconto."]
+    ],
+    glossario:{
+      isee:["ISEE","Un documento che mette insieme redditi e patrimonio di tutta la famiglia e produce un numero. Molti aiuti usano quel numero per decidere se e quanto darti.","Si fa gratis in un CAF, oppure online sul sito dell'INPS."],
+      centro_impiego:["Centro per l'impiego","L'ufficio pubblico dove ci si iscrive come persona in cerca di lavoro. L'iscrizione e' gratuita ed e' la condizione di partenza per quasi tutte le misure sul lavoro.",null],
+      contributi:["Contributi","I soldi che ogni mese vengono messi da parte sul tuo nome per la pensione e per le tutele come la disoccupazione. Li versa il datore di lavoro, li trovi sulla busta paga.",null]
+    }
+  },
+
+  spese_mediche: {
+    recap: ["Spese mediche importanti", "Casa di proprieta'", "Pensione", "Ho gia' finito"],
+    misure: [
+      { tipo:"detrazione", nome:"Detrazione delle spese sanitarie",
+        semplice:"Una parte di quello che hai speso per visite, esami e medicine torna indietro come sconto sulle tasse, quando fai la dichiarazione.",
+        cifre:[["19%","della spesa"],["129,11 €","la franchigia: sotto questa cifra non si detrae"],["5 anni","entro quando si puo' recuperare"]],
+        requisiti:[
+          {t:"Le spese devono risultare da scontrino fiscale parlante o fattura intestata a te."},
+          {t:"I pagamenti devono essere tracciabili, tranne che per i medicinali."},
+          {t:"Serve avere tasse da pagare da cui togliere lo sconto.", tag:"da verificare con un CAF"}
+        ],
+        scadenza:"Si possono recuperare le spese degli ultimi 5 anni presentando una dichiarazione integrativa.",
+        attenzione:"Se la tua pensione e' sotto la soglia di tassazione, lo sconto non ha nulla da cui essere tolto: e' un caso da far vedere a un CAF.",
+        passo:"Raccogli in una busta tutti gli scontrini della farmacia e le fatture delle visite degli ultimi cinque anni, anche se sembrano piccoli.",
+        glossario:["detrazione","scontrino_parlante","cassetto_fiscale"],
+        fonte:"Agenzia delle Entrate, guida alle spese sanitarie — consultata il 12/09/2026" },
+      { tipo:"esenzione", nome:"Esenzione dal ticket sanitario",
+        semplice:"Non paghi il ticket su visite ed esami. Dipende dall'eta', dal reddito o dalla presenza di certe malattie.",
+        cifre:[["100%","del ticket su visite ed esami"],["Codice E","l'etichetta che compare sulla ricetta"]],
+        requisiti:[
+          {t:"Rientrare in una delle categorie previste per eta', reddito o patologia.", tag:"da verificare con un CAF"},
+          {t:"L'esenzione va richiesta alla ASL o risulta automaticamente: dipende dalla regione."}
+        ],
+        scadenza:"Non risulta una scadenza fissa: l'esenzione si rinnova di anno in anno. Verificala presso la tua ASL.",
+        attenzione:null,
+        passo:"Chiedi al tuo medico di famiglia se sulla tua posizione risulta gia' un codice di esenzione: spesso c'e' gia' e non lo si sa.",
+        glossario:["ticket"],
+        fonte:"Ministero della Salute, esenzioni dal ticket — consultata il 12/09/2026" }
+    ],
+    escluse:[
+      ["Bonus Mobili","Serve una condizione che, da quello che hai risposto, non risulta: lavori di ristrutturazione in corso."],
+      ["Assegno Unico","Riguarda una situazione diversa dalla tua: si rivolge a chi ha figli a carico."],
+      ["Bonus Prima Casa Under 36","Il termine per chiederlo e' gia' passato."]
+    ],
+    glossario:{
+      detrazione:["Detrazione","Uno sconto sulle tasse che paghi. Non sono soldi che arrivano sul conto: sono tasse che non paghi.",null],
+      scontrino_parlante:["Scontrino parlante","Lo scontrino della farmacia su cui compaiono il tuo codice fiscale e la natura del prodotto. Senza quei dati la spesa non si puo' portare in detrazione.","Basta dare la tessera sanitaria alla cassa: lo scontrino esce gia' cosi'."],
+      cassetto_fiscale:["Cassetto fiscale","Una pagina sul sito dell'Agenzia delle Entrate dove trovi tutto quello che lo Stato sa di te: redditi, spese sanitarie, dichiarazioni passate.","Per entrare serve SPID, CIE o CNS. Un CAF puo' guardarlo per te con una delega."],
+      ticket:["Ticket","La somma che si paga di tasca propria per una visita o un esame del servizio sanitario pubblico. Non e' il costo pieno: e' una quota.",null]
+    }
+  }
+};
+
+/* ============================================================================
+   COMPORTAMENTO — logica minima di navigazione e composizione.
+   In app/ questa parte viene sostituita dal framework scelto: conta il markup
+   che produce, non questo codice.
+   ============================================================================ */
+const profilo = { situazioni:[], abitazione:null, reddito:null, timing:null, caf:null };
+const ORDINE = ["s1","s2","s3","s4a","s4b"];
+let scenarioCorrente = "casa";
+let statoCorrente = "ok";
+
+function mostra(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id));
+  const i = ORDINE.indexOf(id);
+  const wrap = document.getElementById("stepwrap");
+  wrap.hidden = i < 0;
+  if (i >= 0){
+    document.getElementById("steptext").textContent = "Domanda " + (i+1) + " di " + ORDINE.length;
+    document.querySelectorAll("#stepbar span").forEach((b,n)=>b.classList.toggle("on", n<=i));
+  }
+  window.scrollTo(0,0);
+  // il focus va sul titolo della nuova schermata, non sul corpo
+  const h = document.querySelector("#"+id+" h1");
+  if (h) h.focus();
+}
+
+/* --- S1: scelta multipla, con opzione esclusiva e annuncio del cambio --- */
+const TUTTE = [...document.querySelectorAll("#opt-situazione .opt")];
+const ESCLUSIVA = document.querySelector('#opt-situazione .opt[data-exclusive="true"]');
+const s1why = document.getElementById("s1-why");
+
+function accese(){ return TUTTE.filter(o => o.getAttribute("aria-pressed") === "true"); }
+
+TUTTE.forEach(b=>{
+  b.addEventListener("click", ()=>{
+    const esclusiva = b === ESCLUSIVA;
+    const acceso = b.getAttribute("aria-pressed") === "true";
+    let avviso = "";
+
+    if (!acceso && esclusiva){
+      // "mostrami tutto" spegne tutto il resto, e lo si dice
+      const tolte = accese().length;
+      TUTTE.forEach(o=>o.setAttribute("aria-pressed","false"));
+      if (tolte) avviso = "Le altre scelte sono state tolte.";
+    } else if (!acceso && ESCLUSIVA.getAttribute("aria-pressed") === "true"){
+      ESCLUSIVA.setAttribute("aria-pressed","false");
+      avviso = "Hai tolto la scelta «mostrami tutto».";
+    }
+    b.setAttribute("aria-pressed", acceso ? "false" : "true");
+
+    profilo.situazioni = accese().map(o=>o.dataset.val);
+    const ok = profilo.situazioni.length > 0;
+    document.getElementById("s1-next").setAttribute("aria-disabled", ok ? "false" : "true");
+    s1why.textContent = avviso || (ok ? "" : "Scegli almeno una risposta per continuare.");
+  });
+});
+document.getElementById("s1-next").addEventListener("click", e=>{
+  if (e.currentTarget.getAttribute("aria-disabled") === "true") return;
+  scenarioCorrente = SCENARI[profilo.situazioni[0]] ? profilo.situazioni[0] : "casa";
+  mostra("s2");
+});
+
+/* --- domande a scelta singola: selezione + avanzamento --- */
+document.querySelectorAll("[data-single]").forEach(gruppo=>{
+  const campo = gruppo.dataset.single, dopo = gruppo.dataset.next, noauto = gruppo.dataset.noauto === "true";
+  gruppo.querySelectorAll(".opt").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      gruppo.querySelectorAll(".opt").forEach(o=>o.setAttribute("aria-checked","false"));
+      b.setAttribute("aria-checked","true");
+      profilo[campo] = b.dataset.val;
+      if (campo === "caf"){
+        document.getElementById("g-caf").hidden = (b.dataset.val !== "non_so_cosa_e");
+        document.getElementById("s4b-next").setAttribute("aria-disabled","false");
+      }
+      if (!noauto) setTimeout(()=>{ dopo === "s5" ? avvia() : mostra(dopo); }, 400);
+    });
+  });
+});
+document.getElementById("s4b-next").addEventListener("click", e=>{
+  if (e.currentTarget.getAttribute("aria-disabled") === "true") return;
+  avvia();
+});
+
+/* --- chip "Cosa significa?" --- */
+document.querySelectorAll(".chip[aria-controls]").forEach(c=>{
+  c.addEventListener("click", ()=>{
+    const box = document.getElementById(c.getAttribute("aria-controls"));
+    const aperto = c.getAttribute("aria-expanded") === "true";
+    c.setAttribute("aria-expanded", aperto ? "false" : "true");
+    box.hidden = aperto;
+  });
+});
+document.addEventListener("keydown", e=>{
+  if (e.key !== "Escape") return;
+  document.querySelectorAll('.chip[aria-expanded="true"]').forEach(c=>{
+    c.setAttribute("aria-expanded","false");
+    document.getElementById(c.getAttribute("aria-controls")).hidden = true;
+    c.focus();
+  });
+});
+
+/* --- S5: elaborazione, poi scheda --- */
+function avvia(){
+  mostra("s5");
+  const voci = [...document.querySelectorAll("#loading-steps li")];
+  voci.forEach(v=>v.className = "");
+  document.getElementById("slow-note").hidden = true;
+  let i = 0;
+  voci[0].classList.add("now");
+  const t = setInterval(()=>{
+    voci[i].className = "done"; i++;
+    if (i < voci.length){ voci[i].classList.add("now"); }
+    else { clearInterval(t); componi(); mostra(statoCorrente === "vuoto" ? "s-vuoto" : "s6"); }
+  }, 850);
+}
+
+/* --- composizione della scheda --- */
+function componi(){
+  const s = SCENARI[scenarioCorrente];
+  const degradato = statoCorrente === "degraded";
+
+  // riepilogo del profilo, con la via di uscita per cambiarlo
+  const recapHtml = s.recap.map(x=>'<span class="k">'+x+'</span>').join('<span class="sep" aria-hidden="true">&middot;</span>')
+    + '<button class="btn btn-quiet" type="button" data-goto="s1">Modifica le risposte</button>';
+  document.getElementById("recap").innerHTML = recapHtml;
+  document.getElementById("recap-vuoto").innerHTML = recapHtml;
+
+  // fascia degraded, quando il risultato c'e' ma e' meno affidabile
+  document.getElementById("degraded-slot").innerHTML = degradato ? (
+    '<div class="banner-degraded" role="status">' +
+      '<span class="sign" aria-hidden="true">!</span>' +
+      '<p><b>Attenzione</b> &mdash; Alcune informazioni potrebbero non essere complete: non siamo ' +
+      'riusciti a verificare tutto. Prima di muoverti, falle controllare da un CAF.</p>' +
+    '</div>') : "";
+
+  const n = s.misure.length;
+  document.getElementById("count-line").textContent =
+    "Abbiamo trovato " + n + (n === 1 ? " misura che riguarda" : " misure che riguardano") + " la tua situazione.";
+
+  // card misura
+  document.getElementById("cards").innerHTML = s.misure.map((m, idx)=>{
+    const primaSenzaDato = degradato && idx === 0;
+    const cifre = m.cifre.map((c,j)=>
+      (primaSenzaDato && j === 1)
+        ? '<div class="fig missing"><b>Questo dato non risulta dalla fonte che abbiamo consultato</b><span>tetto massimo</span></div>'
+        : '<div class="fig"><b>'+c[0]+'</b><span>'+c[1]+'</span></div>'
+    ).join("");
+    const req = m.requisiti.map(r=>
+      '<li>'+r.t+(r.tag ? '<span class="tag">'+r.tag+'</span>' : '')+'</li>').join("");
+    const att = m.attenzione
+      ? '<div class="sec warn"><b>Attenzione</b> &mdash; '+m.attenzione+'</div>' : "";
+    const chips = (m.glossario||[]).filter(k=>s.glossario[k]).map(k=>
+      '<button class="chip" type="button" aria-expanded="false" aria-controls="gl-'+idx+'-'+k+'">Cosa significa &laquo;'+
+      s.glossario[k][0]+'&raquo;?</button>' +
+      '<div class="gloss" id="gl-'+idx+'-'+k+'" hidden><b>'+s.glossario[k][0]+'</b> &mdash; '+s.glossario[k][1]+'</div>'
+    ).join("");
+    return '<article class="card">' +
+      '<div class="card-kicker">'+m.tipo.replace("_"," ")+'</div>' +
+      '<h2>'+m.nome+'</h2>' +
+      '<p class="card-plain">'+m.semplice+'</p>' +
+      '<div class="figs">'+cifre+'</div>' +
+      '<div class="sec"><h3>Cosa devi avere</h3><ul class="bul">'+req+'</ul></div>' +
+      '<div class="sec"><h3>Entro quando</h3><p class="card-plain">'+m.scadenza+'</p></div>' +
+      att +
+      '<div class="sec"><h3>Il primo passo</h3><div class="step1">'+m.passo+'</div></div>' +
+      (chips ? '<div class="chips">'+chips+'</div>' : "") +
+      '<p class="src">Fonte: '+m.fonte+'</p>' +
+    '</article>';
+  }).join("");
+
+  // riattacca i chip appena creati
+  document.querySelectorAll("#cards .chip[aria-controls]").forEach(c=>{
+    c.addEventListener("click", ()=>{
+      const box = document.getElementById(c.getAttribute("aria-controls"));
+      const aperto = c.getAttribute("aria-expanded") === "true";
+      c.setAttribute("aria-expanded", aperto ? "false" : "true");
+      box.hidden = aperto;
+    });
+  });
+
+  // cosa non ti riguarda, e perche'
+  document.getElementById("excluded-body").innerHTML =
+    '<ul class="bul">' + s.escluse.map(e=>'<li><strong>'+e[0]+'</strong> &mdash; '+e[1]+'</li>').join("") + '</ul>' +
+    '<p class="help">Se pensi che una di queste ti riguardi comunque, e&#39; esattamente il tipo di ' +
+    'domanda da fare a un CAF.</p>';
+
+  // glossario: solo i termini realmente comparsi
+  const usati = new Set();
+  s.misure.forEach(m=>(m.glossario||[]).forEach(k=>usati.add(k)));
+  if (profilo.caf === "non_so_cosa_e") usati.add("caf");
+  const voci = {...s.glossario, caf:["CAF","Centro di Assistenza Fiscale: un ufficio, spesso gratuito o a costo basso, dove una persona compila per te le pratiche con lo Stato.","Ce n'e' quasi sempre uno vicino a casa. Porta un documento e il codice fiscale."]};
+  document.getElementById("glossario").innerHTML = [...usati].filter(k=>voci[k]).map(k=>
+    '<li><b>'+voci[k][0]+'</b><p>'+voci[k][1]+'</p>'+(voci[k][2] ? '<p class="where">Dove si trova: '+voci[k][2]+'</p>' : '')+'</li>'
+  ).join("");
+}
+
+/* --- navigazione diretta e comandi della demo --- */
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-goto],[data-scen],[data-state],[data-restart]");
+  if (!b) return;
+  if (b.dataset.goto){ b.dataset.goto === "s5" ? avvia() : mostra(b.dataset.goto); }
+  if (b.dataset.restart){ location.reload(); }
+  if (b.dataset.scen){ scenarioCorrente = b.dataset.scen; statoCorrente = "ok"; componi(); mostra("s6"); }
+  if (b.dataset.state){
+    statoCorrente = b.dataset.state;
+    if (statoCorrente === "errore"){ mostra("s-errore"); return; }
+    if (statoCorrente === "escalation"){ mostra("s-escalation"); return; }
+    componi();
+    mostra(statoCorrente === "vuoto" ? "s-vuoto" : "s6");
+  }
+});
+
+componi();
+</script>
+</body>
+</html>

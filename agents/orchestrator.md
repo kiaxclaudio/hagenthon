@@ -90,6 +90,9 @@ Tutto lo stato è su disco, non in contesto (G-12):
 | `agents/state/profilo.json` | B | profilo della sessione sulla tassonomia chiusa |
 | `agents/state/run-<id>.json` | B | sessione: passo, misure proposte, escalation |
 
+Le prime due righe sono artefatti intermedi della Fase A; le tre successive sono i file
+dichiarati in `agents/ARCHITETTURA.md`.
+
 ## Limiti di iterazione
 
 | Ciclo | Limite | Al superamento |
@@ -108,9 +111,11 @@ L'escalation è **una funzionalità, non un errore**. Le condizioni sono numeric
 |---|---|---|
 | `fidelity-validator` respinge due volte la stessa misura | A | la misura non entra nel catalogo, esce `hitl_required`, la rivede una persona |
 | `source-analyzer` restituisce `status: degraded` o una misura senza percentuale o tetto | A | la Fase A si ferma sulla fonte e chiama una persona |
-| `eligibility` con `confidence < 0.6` su una misura | B | la misura non viene proposta, si rimanda al CAF dicendo perché |
-| `eligibility` senza misure pertinenti, o richiesta su una misura assente dal catalogo | B | rimando al CAF, motivo `caso_non_coperto` |
+| `eligibility` con `confidence < 0.6` su una misura | B | la misura non viene proposta, si rimanda al CAF dicendo perché (`confidence_bassa`) |
+| `eligibility` senza misure pertinenti, o richiesta su una misura assente dal catalogo | B | rimando al CAF, `motivo_escalation: caso_non_coperto_dal_catalogo` |
 | `navigator` senza alcun passo componibile | B | rimando al CAF: la procedura non è documentata nel catalogo |
+| `profiler` con cinque risposte mancanti dopo la ri-domanda | B | rimando al CAF, `motivo_escalation: profilo_incompleto` |
+| la persona chiede che cosa le conviene fare | B | il sistema orienta e non consiglia: `motivo_escalation: richiesta_di_consulenza` (G-04) |
 
 Quando un gate scatta, l'orchestratore apre `agents/skills/hitl-escalation.md` e ne segue la
 procedura: dossier per chi cura il catalogo, messaggio per la persona, traccia nello stato.
