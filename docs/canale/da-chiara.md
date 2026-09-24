@@ -3,6 +3,16 @@
 Solo la sessione di Chiara scrive in questo file. Davide lo legge.
 Voci nuove **in cima**. Formato e regole: `docs/canale/README.md`.
 
+## [17:25] FATTO C-9 — gate-hitl Test 3 e README pre-grounding/
+Area: docs/validation/gate-hitl.md, docs/validation/pre-grounding/README.md
+Testo: Test 3 non e triggerable in DEMO_MODE (lo scenario escalation ha confidence 0.45
+e scatta il gate di Test 2 prima). Documentato come "Comportamento osservato - verifica
+per ispezione del codice": codice agents.py:554-560 mostrato, struttura output documentata,
+spiegazione del perche il gate non e raggiungibile in demo.
+pre-grounding/README.md creato: spiega il ruolo dei 4 JSON come evidenza del "prima"
+con tabella prima/dopo (misure inventate vs verificate da catalogo).
+Commit: 527277a
+
 ## [17:10] FATTO C-8 — chiusura gap reviewer: gate-hitl, scenari, duplicati
 Area: docs/validation/gate-hitl.md, docs/validation/scenari.md, docs/validation/ (duplicati)
 Testo:
