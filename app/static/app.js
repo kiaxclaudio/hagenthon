@@ -59,7 +59,11 @@ async function sendMessage(text) {
 
     sessionId = data.session_id;
 
-    if (data.stage === 'chat') {
+    if (data.status === 'degraded' && data.stage !== 'escalation') {
+      // Il sistema continua a rispondere, ma dichiara che sta lavorando in modo parziale.
+      appendMessage('assistant', data.message);
+      showEscalation(data.escalation_message || '');
+    } else if (data.stage === 'chat') {
       appendMessage('assistant', data.message);
       extractAndShowChoices(data.message);
     } else if (data.stage === 'results') {
@@ -202,6 +206,16 @@ function buildBonusCard(spieg, percorso) {
       bodyHTML += `<div class="glossario-item"><strong>${escHtml(g.termine)}</strong>: ${escHtml(g.spiegazione)}</div>`;
     });
     bodyHTML += `</details>`;
+  }
+
+  // Ogni dato numerico mostrato deve essere risalibile alla fonte (G5).
+  if (spieg.source_refs?.length) {
+    bodyHTML += `<div class="fonti-scheda"><span class="info-label">Fonti</span> ${spieg.source_refs.map(escHtml).join(' · ')}</div>`;
+  }
+
+  // Il disclaimer sta su ogni scheda che arriva alla persona (G2).
+  if (spieg.disclaimer) {
+    bodyHTML += `<p class="scheda-disclaimer">${escHtml(spieg.disclaimer)}</p>`;
   }
 
   body.innerHTML = bodyHTML;

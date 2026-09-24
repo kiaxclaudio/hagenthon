@@ -51,6 +51,21 @@ I conflitti si evitano **per costruzione**: ogni file ha un proprietario, e ness
 Se ti serve una modifica in un file che non è tuo: **non farla**. Scrivila come richiesta nel tuo
 file di status e dillo alla sincronizzazione successiva.
 
+## 2-bis. Canale fra le due sessioni
+
+Ci coordiniamo **dentro il repository**, non attraverso le persone.
+
+- **All'inizio di ogni sessione e prima di iniziare qualunque compito**: `git pull --rebase`,
+  poi leggi il file dell'altra parte in `docs/canale/`. Se sta gia facendo quella cosa, non iniziarla.
+- **Prima di toccare qualcosa, dichiaralo** con una voce `PRENDO` nel **tuo** file, e pusha subito.
+  Una dichiarazione che arriva dopo il lavoro non serve a nulla.
+- Domande e risposte passano di qui (`CHIEDO` / `RISPONDO`), non a voce.
+- Scorciatoia: il comando `/canale`.
+
+Regole complete e formato delle voci: `docs/canale/README.md`.
+Chi scrive dove: `docs/canale/da-davide.md` solo la sessione di Davide,
+`docs/canale/da-chiara.md` solo quella di Chiara. La guardia di proprieta lo impone.
+
 ## 3. Disciplina git
 
 - `git pull --rebase` **prima** di ogni push. Sempre.

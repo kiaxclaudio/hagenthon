@@ -1,0 +1,23 @@
+FONTE: ade-spese-sanitarie-aspetti-generali
+URL: https://www.agenziaentrate.gov.it/portale/aspetti-generali
+ENTE: agenzia_entrate
+DATA_CONSULTAZIONE: 2026-09-24
+MODO_DI_RACCOLTA: Pagina HTML letta con WebFetch. Il file riporta le CITAZIONI LETTERALI estratte dalla
+pagina, non l'intera pagina: ogni riga fra virgolette è testo della fonte, le righe
+senza virgolette sono etichette di chi ha raccolto la fonte.
+------------------------------------------------------------------------------
+
+[detrazione-e-franchigia]
+"È possibile portare in detrazione dall'Irpef il 19% delle spese sanitarie per la parte eccedente l'importo di 129,11 euro."
+
+[pagamento-tracciabile]
+"la detrazione del 19% degli oneri indicati nell'articolo 15 del Tuir...è fruibile soltanto se il pagamento è effettuato con versamento bancario o postale o altri sistemi tracciabili"
+
+[eccezioni-contanti]
+"il versamento in contanti continua a essere ammesso, senza perdere il diritto alla detrazione, per l'acquisto di medicinali e di dispositivi medici e per pagare tutte le prestazioni sanitarie rese dalle strutture pubbliche o dalle strutture private accreditate al Servizio sanitario nazionale"
+
+[rateizzazione]
+"È possibile ripartire la detrazione...in quattro quote annuali costanti e di pari importo quando il loro ammontare complessivo annuo...è superiore a 15.493,71 euro"
+
+[conservazione-documenti]
+"I giustificativi delle spese devono essere conservati per tutto il tempo in cui l'Agenzia delle entrate può effettuare un accertamento (31 dicembre del quinto anno successivo)"

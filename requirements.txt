@@ -1,3 +1,7 @@
+# Dipendenze del prototipo. Installazione: pip install -r requirements.txt
 anthropic>=0.40.0
 flask>=3.0.0
 python-dotenv>=1.0.0
+# Validazione degli output degli agenti contro agents/schemas/ (E1).
+# Da 4.18 la risoluzione dei $ref passa da 'referencing', che jsonschema porta con se'.
+jsonschema>=4.21.0

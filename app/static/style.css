@@ -300,3 +300,19 @@ footer#disclaimer a { color: #f59e0b; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .hidden { display: none !important; }
+
+/* Fonti e disclaimer di scheda: obbligatori su ogni misura mostrata (G2, G5). */
+.fonti-scheda {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  word-break: break-word;
+}
+.scheda-disclaimer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--surface2);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}

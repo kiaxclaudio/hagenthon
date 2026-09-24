@@ -1,0 +1,33 @@
+FONTE: ade-bonus-mobili-cittadini
+URL: https://www.agenziaentrate.gov.it/portale/bonus-mobili/infogen-bonus-mobili-cittadini
+ENTE: agenzia_entrate
+DATA_CONSULTAZIONE: 2026-09-24
+MODO_DI_RACCOLTA: Pagina HTML letta con WebFetch. Il file riporta le CITAZIONI LETTERALI estratte dalla
+pagina, non l'intera pagina: ogni riga fra virgolette è testo della fonte, le righe
+senza virgolette sono etichette di chi ha raccolto la fonte.
+------------------------------------------------------------------------------
+
+[detrazione]
+"una detrazione Irpef del 50% per l'acquisto di mobili e di grandi elettrodomestici"
+
+[limite-di-spesa]
+"5.000 euro per gli anni 2024, 2025 e 2026"
+
+[quote-annuali]
+"La detrazione va ripartita tra gli aventi diritto in 10 quote annuali di pari importo"
+
+[requisito-ristrutturazione]
+"iniziato a partire dal 1° gennaio dell'anno precedente a quello dell'acquisto dei beni"
+
+[classi-energetiche]
+"classe non inferiore classe A per i forni, alla classe E per le lavatrici, le lavasciugatrici e le lavastoviglie, alla classe F per i frigoriferi e i congelatori"
+
+[scadenza-acquisto]
+"acquisti effettuati entro il 31 dicembre 2026"
+
+[modalita-di-pagamento]
+"bonifico o carta di debito o credito. Non è consentito, invece, pagare con assegni bancari, contanti o altri mezzi di pagamento"
+
+[documenti]
+"l'attestazione del pagamento"
+"le fatture di acquisto dei beni, riportanti la natura, la qualità e la quantità dei beni"

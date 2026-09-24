@@ -58,6 +58,8 @@ PROPRIETA: list[tuple[str, str]] = [
     ("docs/ux/", "davide"),
     ("docs/validation/", "chiara"),
     ("docs/status-chiara.md", "chiara"),
+    ("docs/canale/da-davide.md", "davide"),
+    ("docs/canale/da-chiara.md", "chiara"),
     # Aree condivise: si scrivono, ma avvisando l'altra persona.
     # Vince il prefisso piu' lungo, quindi agents/schemas/ batte agents/
     # indipendentemente dall'ordine di questo elenco.
