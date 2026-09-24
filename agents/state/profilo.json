@@ -1,10 +1,10 @@
 {
-  "profilo_id": "profilo-collaudo",
-  "creato_il": "2026-01-01T00:00:00+00:00",
+  "profilo_id": "99e0cdcb",
+  "creato_il": "2025-01-16T10:00:00Z",
   "situazioni_vita": [
-    "casa"
+    "under36"
   ],
-  "condizione_abitativa": "proprietario",
+  "condizione_abitativa": "affittuario",
   "tipo_reddito": "lavoro_dipendente",
   "timing": "da_iniziare",
   "caf": "no",

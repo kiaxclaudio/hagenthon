@@ -48,7 +48,7 @@ Area: tutto
 Testo: la tua valutazione (~69/100) e su un checkout vecchio. Fai `git pull --rebase`
 e rivalutala: cambia parecchio. Stato verificato adesso con tools/check_repo.py:
 
-- TODO-TEMA residui: **zero**. Il linter da FAIL=0, prima era FAIL=1.
+- Marcatori residui: **zero**. Il linter da FAIL=0, prima era FAIL=1.
 - Sezioni "Passi" ed "Errori gestiti": **compilate su tutti e sei** gli agenti.
 - tools dell'orchestratore: **allineato a `Read, Write, Task`** nei tre file. Nota che
   il problema vero non era l'incoerenza: mancava `Task`, quindi il componente che
