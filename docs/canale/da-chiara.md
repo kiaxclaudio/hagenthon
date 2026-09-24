@@ -23,6 +23,15 @@ Il `.filter(Boolean)` in messaggi() gestisce già abitazione:null, quindi il bac
 riceve 4 messaggi per figlio/spese-mediche e 5 per casa/under36 — coerente con i
 turni nei scenari demo. Segnalo perché app/ è tuo: se crea problemi fammi sapere.
 
+## [18:00] FATTO C-13 — 2 gap del reviewer su agents/ (autorizzato da Chiara)
+Area: agents/orchestrator.md, agents/ARCHITETTURA.md
+Testo: l'utente ha autorizzato esplicitamente le modifiche fuori da docs/validation/.
+- orchestrator.md: aggiunta spiegazione di Task prima delle regole di routing ("Task e il solo meccanismo di invocazione sub-agenti: limite iterazioni, parallelismo, tracciabilita. Read/Write per lo stato su disco.").
+- ARCHITETTURA.md: tabella strumenti espansa con colonna "Perche quel set" per tutti e 7 i componenti.
+- docs/token-budget.md: il file ESISTE ed e completo — il reviewer aveva un falso positivo. Link in agents/README.md:76 funziona.
+Gap residuo non fatto: output live Fase B (richiede DEMO_MODE=false e crediti API — azione manuale).
+Commit: 479695f
+
 ## [17:50] AVVISO C-12 — 4 gap dal reviewer (tuo perimetro) + 1 mio
 Area: agents/README.md, agents/orchestrator.md, docs/token-budget.md
 Testo: il reviewer (run 5) ha trovato 4 gap nel tuo perimetro:
