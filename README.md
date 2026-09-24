@@ -220,9 +220,11 @@ Il prototipo serve una pagina e quattro endpoint (`/api/chat`, `/api/reset`,
 memoria di processo. Quando il modello non risponde o un contratto non è rispettato, la rotta
 non restituisce un errore 500: restituisce un esito con `status: "degraded"` e il rimando al CAF.
 
-**Limite aperto, dichiarato:** `agents/state/catalogo.json` non è fra i file committati, quindi
-va rigenerato con il comando sopra su ogni macchina. La sua copertura è quella delle fonti
-presenti in `agents/state/fonti/`, non l'insieme delle misure italiane.
+**Limite aperto, dichiarato:** il catalogo è versionato in
+[`agents/state/catalogo.json`](agents/state/catalogo.json) e contiene **cinque misure verificate
+più una esclusa**. La sua copertura è quella delle fonti raccolte in `agents/state/fonti/`, non
+l'insieme delle misure italiane: casa, figli e spese mediche sono coperte, lavoro, auto e
+under 36 no. Il prodotto lo dichiara invece di riempire il vuoto, e per quei casi rimanda al CAF.
 
 ---
 
@@ -302,11 +304,17 @@ Gli scenari previsti per la prova end-to-end sono quattro, descritti in
 [`docs/inbox/chiara-idea.md`](docs/inbox/chiara-idea.md): proprietario che ristruttura, coppia
 con figlio appena nato, disoccupato under 36, pensionato con spese mediche.
 
-**Stato dichiarato:** [`docs/validation/`](docs/validation/) contiene oggi solo `.gitkeep`. Le
-evidenze di sessione sono prodotte automaticamente dall'hook `session_snapshot.py` a ogni
-chiusura di sessione Claude Code, ma nessuno snapshot è stato ancora committato, e nessun
-artefatto di `agents/state/` — catalogo, profilo, stati di sessione — è fra i file versionati.
-La robustezza è oggi specificata e non ancora dimostrata da un caso di rottura catturato.
+**Stato dichiarato:** [`docs/validation/`](docs/validation/) contiene gli scenari eseguiti, il
+confronto prima/dopo e la prova dei gate HITL. Gli artefatti di Fase A sono versionati in
+`agents/state/`: catalogo, misure grezze, spiegazioni e le verifiche del `fidelity-validator`,
+una per giro.
+
+La prova che regge meglio è in [`agents/state/verifica-fase-a.json`](agents/state/verifica-fase-a.json):
+su sei misure lavorate, il validator ne ha **respinte quattro con divergenze bloccanti** — a un
+tetto di 96.000 euro era sparito «per unità immobiliare», un 19% sembrava calcolarsi sull'intera
+spesa invece che sulla parte eccedente, e su una misura era comparsa una scadenza che nella fonte
+non esiste. Tutte corrette al secondo giro. Una misura è rimasta **esclusa** perché la fonte non
+era interpretabile. Il gate non è descritto: ha funzionato.
 
 Il repository cambia durante la gara: se questa riga e i file non concordano, vale
 `python tools/check_repo.py`, che misura lo stato nel momento in cui lo si esegue.

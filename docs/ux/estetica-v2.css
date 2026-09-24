@@ -1,0 +1,85 @@
+/* ============================================================================
+   ESTETICA v2 — da applicare in coda al blocco COMPONENTI
+   R1 tessere numero · R2 hero/homepage · R3 luce
+   Nessuna risorsa remota. Contrasti calcolati (WCAG 2.x), annotati inline.
+   Sostituisce il logo Accenture con un wordmark tipografico del prodotto.
+   ============================================================================ */
+:root{
+  --surface-sunken:#0A0310;   /* white 20.32:1 */
+  --surface-raised:#230B33;   /* white 17.99:1 · BE82FF 6.71:1 */
+  --surface-top:#2E1440;      /* white 16.28:1 */
+  --line-hairline:rgba(255,255,255,0.10);
+  --cat:#BE82FF;              /* 7.75:1 base · 7.44:1 card */
+  --cat-glow:rgba(190,130,255,0.22);
+  --num-gradient:linear-gradient(180deg,#FFFFFF,#D9B8FF); /* 20.79 -> 12.13 */
+}
+body[data-cat="casa"]   {--cat:#F5B85C; --cat-glow:rgba(245,184,92,0.18)}  /* 11.78:1 */
+body[data-cat="figli"]  {--cat:#5ED9A3; --cat-glow:rgba(94,217,163,0.18)}  /* 11.81:1 */
+body[data-cat="salute"] {--cat:#7FC8F8; --cat-glow:rgba(127,200,248,0.18)} /* 11.41:1 */
+
+/* ---------- R1 - tessere numero: da buchi a rilievi --------------------- */
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:var(--sp-4);margin-top:var(--sp-6)}
+.fig{position:relative;background:var(--surface-raised);
+  border:var(--border-width) solid var(--line-hairline);
+  border-radius:var(--radius-md);padding:var(--sp-5);overflow:hidden}
+.fig::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent)}
+.fig b{display:block;font-size:3.75rem;font-weight:var(--fw-bold);line-height:1.02;
+  letter-spacing:-0.035em;font-variant-numeric:tabular-nums lining-nums;
+  color:var(--text-primary);background:var(--num-gradient);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  padding-bottom:.04em}
+.fig span{display:block;margin-top:var(--sp-3);font-size:var(--fs-200);
+  line-height:1.35;color:#B9B5BC}            /* 9.89:1 su raised */
+.fig.missing b{font-size:var(--fs-300);font-weight:var(--fw-medium);background:none;
+  -webkit-text-fill-color:currentColor;color:#B9B5BC;letter-spacing:0;line-height:var(--lh-base)}
+@media (forced-colors:active){.fig b{-webkit-text-fill-color:CanvasText;background:none}}
+.step1{background:var(--surface-raised);border-color:var(--line-hairline)}
+
+/* ---------- R2 - homepage: l'apertura come momento ---------------------- */
+#s0{position:relative;min-height:calc(100vh - 220px);
+  display:flex;flex-direction:column;justify-content:center}
+#s0::before{content:"?";position:absolute;right:-2rem;top:50%;transform:translateY(-52%);
+  font-size:min(42rem,60vh);line-height:.8;font-weight:var(--fw-bold);
+  color:var(--acc-purple-light);opacity:.055;pointer-events:none;user-select:none;z-index:-1}
+#s0 h1.gradient{font-size:clamp(3rem,7vw,4.5rem);
+  background:linear-gradient(100deg,#FFFFFF,#D9B8FF);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+#s0 .lead{max-width:52ch}
+.proofs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:var(--sp-4);margin-top:var(--sp-7);padding-top:var(--sp-6);
+  border-top:var(--border-width) solid var(--line-hairline)}
+.proofs b{display:block;font-size:var(--fs-600);font-weight:var(--fw-bold);line-height:1.05;
+  letter-spacing:-0.03em;font-variant-numeric:tabular-nums;color:var(--text-primary)}
+.proofs span{display:block;margin-top:var(--sp-2);font-size:var(--fs-200);color:#B9B5BC}
+.wordmark{font-size:var(--fs-300);font-weight:var(--fw-semibold);color:var(--text-primary)}
+.wordmark i{font-style:normal;font-weight:var(--fw-bold);color:var(--acc-purple-light)}
+.wordmark small{display:block;margin-top:2px;font-size:var(--fs-100);font-weight:var(--fw-medium);
+  text-transform:uppercase;letter-spacing:var(--ls-wide);color:var(--text-tertiary)}
+
+/* ---------- R3 - luce: aloni, card, bottone ----------------------------- */
+body::before{
+  background:radial-gradient(1200px 680px at 82% -16%, var(--cat-glow), transparent 62%),
+             radial-gradient(820px 560px at -10% 108%, rgba(161,0,255,0.13), transparent 60%);
+  transition:background var(--motion-slow) var(--easing)}
+.card{position:relative;background:linear-gradient(180deg,#180527,var(--surface-card));
+  border-color:var(--line-hairline);border-top:3px solid var(--cat);
+  box-shadow:var(--shadow-card), inset 0 1px 0 rgba(255,255,255,0.07)}
+.card-kicker{color:var(--cat)}
+.btn-primary{box-shadow:0 8px 28px rgba(161,0,255,0.28);
+  transition:background var(--motion-fast) var(--easing), box-shadow var(--motion-base) var(--easing)}
+.btn-primary:hover{background:#8A00DB;border-color:#8A00DB;   /* bianco 6.77:1, era 4.26:1 */
+  box-shadow:0 10px 36px rgba(161,0,255,0.45)}
+.btn-primary:active{background:#7A00C2;box-shadow:0 4px 16px rgba(161,0,255,.35)}
+.opt:not([disabled]):hover{transform:translateY(-2px);
+  box-shadow:0 10px 26px rgba(0,0,0,.45), 0 0 0 1px rgba(190,130,255,.25)}
+.stepbar span.on{background:var(--acc-purple-light)}
+.stepbar span.now{width:40px;background:var(--acc-purple-light);
+  box-shadow:0 0 12px rgba(190,130,255,.65)}
+@media (prefers-reduced-motion:no-preference){
+  #cards .card{animation:rise var(--motion-slow) var(--easing) both;
+    animation-delay:calc(var(--i,0) * 80ms)}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+}
+@media (prefers-reduced-motion:reduce){.track i{width:100%;opacity:.55;animation:none}}

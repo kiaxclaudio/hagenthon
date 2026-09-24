@@ -1,6 +1,6 @@
 {
   "catalogo_id": "a-cosa-ho-diritto-2026",
-  "versione": "0.1.0",
+  "versione": "0.2.0",
   "generato_il": "2026-09-24T15:10:00+02:00",
   "anno_imposta_riferimento": 2026,
   "fonti": [
@@ -150,10 +150,13 @@
           "Per la detrazione del 50% devi essere titolare di un diritto di proprietà. In alternativa devi essere titolare di un diritto reale di godimento sull'unità immobiliare. Devi esserlo al momento di inizio dei lavori."
         ],
         "attenzione": [
+          "Devi essere titolare della proprietà o di un altro diritto reale di godimento sull'unità immobiliare già al momento di inizio dei lavori: è la condizione che la fonte chiede per la detrazione del 50%.",
+          "La detrazione del 50% vale per l'unità immobiliare adibita ad abitazione principale, cioè quella in cui dimori abitualmente. Negli altri casi in cui l'agevolazione spetta, la detrazione è del 36%.",
+          "Il limite massimo di spesa agevolabile di 96.000 euro si conta per unità immobiliare.",
           "Per le spese del 2027 la detrazione per l'abitazione principale è del 36%. Il limite massimo di spesa agevolabile resta di 96.000 euro.",
           "Dal 2028 al 2033 la detrazione è del 30%, per tutte le abitazioni. Il limite massimo di spesa agevolabile è di 48.000 euro.",
-          "La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione.",
-          "La fonte letta non elenca i documenti da presentare o da conservare."
+          "La fonte letta non elenca i documenti da presentare o da conservare e non indica con quale mezzo vanno pagate le spese: chiedi a un CAF quali documenti tenere e come pagare, prima di cominciare i lavori.",
+          "La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione."
         ],
         "glossario": [
           {
@@ -183,6 +186,15 @@
           {
             "termine": "TUIR",
             "spiegazione_semplice": "TUIR: il Testo unico delle imposte sui redditi, la legge sulle imposte sul reddito."
+          },
+          {
+            "termine": "CAF",
+            "spiegazione_semplice": "Centro di assistenza fiscale: un ufficio che compila e invia la dichiarazione dei redditi al posto tuo e risponde alle domande sui documenti."
+          },
+          {
+            "termine": "dichiarazione dei redditi",
+            "spiegazione_semplice": "Il modulo con cui ogni anno dichiari allo Stato quanto hai guadagnato e quali sconti sulle tasse ti spettano.",
+            "tipo_documento_collegato": "dichiarazione_redditi"
           }
         ],
         "iterazione": 2,
@@ -271,15 +283,16 @@
         "documenti_richiesti": [
           {
             "tipo_documento": "altro",
-            "nome": "l'attestazione del pagamento",
+            "nome": "Attestazione del pagamento: la ricevuta del bonifico oppure l'addebito della carta di debito o di credito",
             "obbligatorio": true,
             "source_refs": [
-              "ade-bonus-mobili-cittadini#documenti"
+              "ade-bonus-mobili-cittadini#documenti",
+              "ade-bonus-mobili-cittadini#modalita-di-pagamento"
             ]
           },
           {
             "tipo_documento": "fattura",
-            "nome": "le fatture di acquisto dei beni, riportanti la natura, la qualità e la quantità dei beni",
+            "nome": "Fatture di acquisto dei beni, che riportano la natura, la qualità e la quantità dei beni",
             "obbligatorio": true,
             "source_refs": [
               "ade-bonus-mobili-cittadini#documenti"
@@ -316,9 +329,12 @@
           "Devi pagare con bonifico o carta di debito o credito. Non è consentito pagare con assegni bancari, contanti o altri mezzi di pagamento."
         ],
         "attenzione": [
+          "L'intervento di ristrutturazione edilizia deve essere iniziato a partire dal 1° gennaio dell'anno precedente a quello in cui compri i mobili o gli elettrodomestici.",
+          "Guarda la classe energetica sull'etichetta prima di comprare: non inferiore alla classe A per i forni, alla classe E per lavatrici, lavasciugatrici e lavastoviglie, alla classe F per frigoriferi e congelatori.",
+          "Paga con bonifico oppure con carta di debito o di credito. La fonte non consente il pagamento con assegni bancari, contanti o altri mezzi di pagamento.",
           "L'agevolazione vale per gli acquisti effettuati entro il 31 dicembre 2026.",
           "Ti servono due documenti: l'attestazione del pagamento e le fatture di acquisto dei beni.",
-          "Le fatture devono riportare la natura, la qualità e la quantità dei beni.",
+          "Le fatture devono riportare la natura, la qualità e la quantità dei beni: una fattura che dice solo «arredamento» non li riporta.",
           "La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione."
         ],
         "glossario": [
@@ -351,6 +367,10 @@
             "termine": "fattura",
             "spiegazione_semplice": "fattura: il documento con cui il venditore certifica che cosa ha venduto.",
             "tipo_documento_collegato": "fattura"
+          },
+          {
+            "termine": "attestazione del pagamento",
+            "spiegazione_semplice": "La prova che hai pagato: la ricevuta del bonifico oppure la riga di addebito della carta di debito o di credito."
           }
         ],
         "iterazione": 1,
@@ -435,10 +455,19 @@
         "documenti_richiesti": [
           {
             "tipo_documento": "altro",
-            "nome": "I giustificativi delle spese",
+            "nome": "I giustificativi delle spese sanitarie",
             "obbligatorio": true,
             "source_refs": [
               "ade-spese-sanitarie-aspetti-generali#conservazione-documenti"
+            ]
+          },
+          {
+            "tipo_documento": "altro",
+            "nome": "La prova del pagamento tracciabile: la ricevuta del versamento bancario o postale, o di un altro sistema tracciabile",
+            "obbligatorio": true,
+            "dove_si_ottiene": "banca_o_posta",
+            "source_refs": [
+              "ade-spese-sanitarie-aspetti-generali#pagamento-tracciabile"
             ]
           }
         ],
@@ -472,6 +501,9 @@
           "Devi conservare i giustificativi delle spese. Li conservi per tutto il tempo in cui l'Agenzia delle entrate può effettuare un accertamento. Cioè fino al 31 dicembre del quinto anno successivo."
         ],
         "attenzione": [
+          "Paga con versamento bancario o postale, o con un altro sistema tracciabile: la detrazione del 19% è fruibile soltanto a questa condizione.",
+          "Il contante resta ammesso, senza perdere il diritto alla detrazione, solo per l'acquisto di medicinali e di dispositivi medici e per le prestazioni sanitarie rese dalle strutture pubbliche o dalle strutture private accreditate al Servizio sanitario nazionale.",
+          "Conserva i giustificativi delle spese fino al 31 dicembre del quinto anno successivo: è il tempo in cui l'Agenzia delle entrate può effettuare un accertamento.",
           "Puoi ripartire la detrazione in quattro quote annuali costanti e di pari importo. Puoi farlo quando il loro ammontare complessivo annuo è superiore a 15.493,71 euro.",
           "La fonte letta non indica una scadenza entro cui accedere a questa detrazione.",
           "La fonte letta non dice per quanti anni indietro puoi ancora recuperare questa detrazione."
@@ -505,6 +537,10 @@
           {
             "termine": "Tuir",
             "spiegazione_semplice": "Tuir: il Testo unico delle imposte sui redditi, la legge sulle imposte sul reddito."
+          },
+          {
+            "termine": "dispositivi medici",
+            "spiegazione_semplice": "Prodotti per la salute come occhiali da vista, apparecchi acustici, siringhe, misuratori di pressione."
           }
         ],
         "iterazione": 2,
@@ -626,16 +662,17 @@
         "documenti_richiesti": [
           {
             "tipo_documento": "isee",
-            "nome": "ISEE",
+            "nome": "ISEE per specifiche prestazioni familiari e per l'inclusione",
             "obbligatorio": false,
             "dove_si_ottiene": "portale_inps",
             "source_refs": [
-              "inps-circolare-7-2026-auu#par-1"
+              "inps-circolare-7-2026-auu#par-1",
+              "inps-circolare-7-2026-auu#par-3"
             ]
           },
           {
             "tipo_documento": "altro",
-            "nome": "Dichiarazione Sostitutiva Unica (DSU)",
+            "nome": "Dichiarazione Sostitutiva Unica (DSU), anche nella versione precompilata o DSU Mini",
             "obbligatorio": false,
             "dove_si_ottiene": "portale_inps",
             "source_refs": [
@@ -677,8 +714,12 @@
           "Se il tuo nucleo familiare ha almeno quattro figli a carico, c'è una maggiorazione forfettaria pari a 150 euro."
         ],
         "attenzione": [
+          "Se la domanda che hai già presentato risulta in stato «accolta», per il 2026 non devi presentarne una nuova. Fa eccezione la domanda decaduta, revocata, rinunciata o respinta.",
+          "Resta l'onere di comunicare le variazioni: inserire una nuova scheda quando nasce un figlio, aggiornare la scheda del figlio che raggiunge la maggiore età per continuare a percepire l'AUU.",
           "Dal mese di marzo 2026, in assenza dell'ISEE, l'AUU è calcolato con riferimento agli importi minimi previsti dalla normativa.",
           "Puoi presentare la nuova Dichiarazione Sostitutiva Unica (DSU) entro il 30 giugno 2026. In quel caso gli importi già erogati per l'anno 2026 sono adeguati. L'adeguamento decorre dal mese di marzo 2026. Ricevi anche i relativi arretrati.",
+          "Puoi ottenere l'ISEE in tempi rapidi presentando la DSU precompilata dal «Portale unico ISEE». Puoi presentare la DSU Mini precompilata anche dall'app «INPS Mobile»: dalla home page, menu «Servizi» > «ISEE» > «Acquisisci dichiarazione».",
+          "Per percepire un importo dell'AUU superiore al valore minimo la DSU per l'anno 2026 deve essere correttamente attestata.",
           "La fonte letta non dice per quanti anni indietro puoi ancora recuperare l'AUU."
         ],
         "glossario": [
@@ -715,6 +756,18 @@
           {
             "termine": "arretrati",
             "spiegazione_semplice": "arretrati: le somme di mesi passati che ti vengono pagate dopo."
+          },
+          {
+            "termine": "Portale unico ISEE",
+            "spiegazione_semplice": "Il servizio online dell'INPS che riunisce i modi per ottenere l'ISEE, compresa la DSU precompilata."
+          },
+          {
+            "termine": "DSU precompilata",
+            "spiegazione_semplice": "La Dichiarazione Sostitutiva Unica già riempita con i dati che Agenzia delle entrate e INPS hanno su di te: la controlli e la confermi."
+          },
+          {
+            "termine": "attestata",
+            "spiegazione_semplice": "La DSU è attestata quando l'INPS ha finito i controlli e ha rilasciato l'ISEE valido."
           }
         ],
         "iterazione": 1,
@@ -806,7 +859,7 @@
         "documenti_richiesti": [
           {
             "tipo_documento": "spid_cie_cns",
-            "nome": "SPID, CIE o CNS",
+            "nome": "SPID, CIE o CNS per entrare nel portale INPS",
             "obbligatorio": true,
             "dove_si_ottiene": "portale_inps",
             "source_refs": [
@@ -815,8 +868,17 @@
           },
           {
             "tipo_documento": "altro",
-            "nome": "documenti di spesa",
+            "nome": "I riferimenti precisi dell'abilitazione della struttura educativa, da chiedere alla struttura e da inserire in domanda",
             "obbligatorio": true,
+            "source_refs": [
+              "inps-cs-bonus-asilo-nido-2026#par-strutture"
+            ]
+          },
+          {
+            "tipo_documento": "altro",
+            "nome": "I documenti di spesa delle mensilità della retta, da caricare entro il 30 aprile dell'anno successivo",
+            "obbligatorio": true,
+            "dove_si_ottiene": "portale_inps",
             "source_refs": [
               "inps-cs-bonus-asilo-nido-2026#par-domanda"
             ]
@@ -855,8 +917,13 @@
           "Ogni anno scegli le mensilità per le quali chiedi il contributo. Devi caricare i relativi documenti di spesa entro il 30 aprile dell'anno successivo. L'anno successivo è quello dopo l'anno a cui si riferiscono le mensilità."
         ],
         "attenzione": [
+          "Chiedi alla struttura educativa i riferimenti precisi della sua abilitazione prima di inviare la domanda: vanno inseriti in domanda e riducono i tempi delle verifiche dell'INPS.",
           "L'INPS verifica che la struttura sia abilitata a erogare servizi educativi. Se la struttura non risulta abilitata, il contributo non verrà riconosciuto.",
-          "Devi chiedere alla struttura educativa i riferimenti precisi della sua abilitazione. Li devi inserire in domanda.",
+          "La domanda la presenta il genitore che sostiene la spesa della retta, esclusivamente online sul portale INPS con SPID, CIE o CNS, oppure tramite patronato.",
+          "Dal 2026 basta trasmettere una sola domanda: vale fino all'agosto dell'anno in cui il bambino compie 3 anni.",
+          "Ogni anno scegli le mensilità per cui chiedere il contributo e carichi i relativi documenti di spesa entro il 30 aprile dell'anno successivo a quello a cui le mensilità si riferiscono.",
+          "Il bonus è riconosciuto solo per nidi, micronidi, sezioni primavera, spazi gioco e servizi educativi in contesti domiciliari per bambini da 0 a 3 anni.",
+          "Se il bambino ha gravi patologie croniche e non può frequentare il nido, il genitore residente e convivente con il minore può chiedere il contributo per forme di supporto a domicilio.",
           "La fonte letta non dice per quanti anni indietro puoi ancora chiedere il contributo."
         ],
         "glossario": [
@@ -893,6 +960,15 @@
           {
             "termine": "mensilità",
             "spiegazione_semplice": "mensilità: i singoli mesi per cui chiedi il contributo."
+          },
+          {
+            "termine": "SPID",
+            "spiegazione_semplice": "Identità digitale con cui entri nei siti della pubblica amministrazione: un nome utente, una password e un codice che arriva sul telefono.",
+            "tipo_documento_collegato": "spid_cie_cns"
+          },
+          {
+            "termine": "documenti di spesa",
+            "spiegazione_semplice": "Le ricevute o le fatture con cui la struttura certifica la retta che hai pagato per ogni mese."
           }
         ],
         "iterazione": 2,

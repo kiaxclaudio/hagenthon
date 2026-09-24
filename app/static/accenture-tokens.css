@@ -1,0 +1,241 @@
+/* ==========================================================================
+   "A cosa ho diritto?" — design token
+   Brand Accenture applicato a un'interfaccia per bassa alfabetizzazione fiscale.
+
+   Come si usa:
+     @import url("accenture-tokens.css");
+     oppure  <link rel="stylesheet" href="accenture-tokens.css">
+
+   Il file contiene SOLO custom properties, piu una sezione base opzionale in
+   fondo (focus visibile e riduzione del movimento) racchiusa fra marcatori:
+   se l'app ha gia un suo reset, quella sezione si cancella senza toccare il resto.
+
+   Ogni colore usato per il TESTO e' scritto in esadecimale pieno e non in
+   rgba(): un colore trasparente appoggiato su uno sfondo diverso da quello
+   previsto cambia rapporto di contrasto senza che nessuno se ne accorga.
+   Il rapporto e' calcolato e annotato accanto a ogni token.
+
+   Riferimento: docs/ux/ux-spec.md, sezione "Accessibilita verificabile".
+   ========================================================================== */
+
+:root {
+
+  /* ----------------------------------------------------------------------
+     1. COLORI DI MARCA (identici a presentation/index.html — non si toccano)
+     ---------------------------------------------------------------------- */
+  --acc-purple:        #A100FF;   /* viola Accenture. MAI prosa: 3.92:1 su sfondo base */
+  --acc-purple-light:  #BE82FF;   /* unico viola ammesso come testo: 7.75:1 su sfondo base */
+  --acc-ink:           #0A0014;
+  --acc-gradient-title: linear-gradient(90deg, var(--acc-purple-light), var(--acc-purple));
+
+  /* ----------------------------------------------------------------------
+     2. SUPERFICI
+     Scala di fondali: piu un elemento e' "vicino" all'utente, piu e' chiaro.
+     Tutte tengono il bianco sopra 17:1, quindi la gerarchia si percepisce
+     senza mai mettere a rischio la leggibilita.
+     ---------------------------------------------------------------------- */
+  --surface-base:      #050008;   /* sfondo pagina (valore di marca) */
+  --surface-card:      #140021;   /* card, opzione di risposta, pannello */
+  --surface-hover:     #1C0A29;   /* card sotto il puntatore */
+  --surface-selected:  #230B33;   /* opzione scelta dall'utente */
+  --surface-banner:    #1A0A24;   /* banner disclaimer permanente */
+  --surface-error:     #2A0E12;   /* pannello di errore */
+  --surface-quiet:     rgba(255,255,255,0.05);  /* pillola eyebrow (valore di marca) */
+
+  /* Aloni radiali del brand: decorativi, dietro a tutto, mai sotto testo lungo. */
+  --surface-glow:
+    radial-gradient(1100px 620px at 84% -14%, rgba(161,0,255,0.20), transparent 62%),
+    radial-gradient(760px 520px at -8% 110%, rgba(161,0,255,0.11), transparent 60%);
+
+  /* ----------------------------------------------------------------------
+     3. TESTO — ogni token porta il rapporto di contrasto misurato
+     ---------------------------------------------------------------------- */
+  --text-primary:      #FFFFFF;   /* 20.79:1 su base · 19.97:1 su card — AAA */
+  --text-secondary:    #D0CCD3;   /* 12.61:1 su card — AAA. Sostituisce rgba(255,255,255,.88) */
+  --text-tertiary:     #9B999C;   /*  7.36:1 su base — AAA. Minimo per testo di servizio */
+  --text-accent:       #BE82FF;   /*  7.75:1 su base · 7.44:1 su card — AAA. Etichette di sezione */
+  --text-on-purple:    #FFFFFF;   /*  5.30:1 su #A100FF — AA. Testo del bottone primario */
+  --text-on-light:     #0A0014;   /*  7.65:1 su #BE82FF — AAA. Testo su fondo viola chiaro */
+  --text-disabled:     #807587;   /*  4.58:1 su card — AA. Disabilitato leggibile, mai invisibile */
+
+  /* Colori semantici. Accompagnano SEMPRE un'etichetta o un segno testuale:
+     nessuna informazione viaggia sul solo colore. */
+  --text-error:        #FF9F93;   /* 10.11:1 su card — AAA */
+  --text-warning:      #FFC978;   /* 13.20:1 su card — AAA */
+  --text-positive:     #6FE3B0;   /* 12.64:1 su card — AAA */
+
+  /* ----------------------------------------------------------------------
+     4. BORDI E SEPARATORI
+     Un bordo che delimita un controllo interattivo sta sopra 3:1 (WCAG 1.4.11).
+     Quelli decorativi possono stare sotto, ma non possono essere l'unico
+     segnale di un confine cliccabile.
+     ---------------------------------------------------------------------- */
+  --line-decorative:   #2A262D;   /* 1.40:1 — solo separazioni estetiche */
+  --line-soft:         #64576C;   /* 2.97:1 — cornice di pannelli non interattivi */
+  --line-control:      #807587;   /* 4.58:1 — bordo di bottoni, opzioni, campi */
+  --line-accent:       #A100FF;   /* 3.76:1 su card — conforme per componenti, non per testo */
+  --line-selected:     #BE82FF;   /* 7.44:1 — bordo dell'opzione scelta */
+
+  --border-width:          1px;
+  --border-width-control:  2px;   /* i controlli hanno bordo doppio: si vedono da lontano */
+  --border-width-selected: 3px;
+
+  /* ----------------------------------------------------------------------
+     5. TIPOGRAFIA
+     Radice a 16px. La prosa non scende mai sotto --fs-200 (18px).
+     La scala e' fissa, non fluida: un testo che cambia dimensione mentre si
+     ridimensiona la finestra disorienta chi legge lentamente.
+     ---------------------------------------------------------------------- */
+  --font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:   ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --fs-100: 0.9375rem;  /* 15px — SOLO etichette in maiuscoletto, mai prosa */
+  --fs-200: 1.125rem;   /* 18px — minimo assoluto per un testo da leggere */
+  --fs-300: 1.25rem;    /* 20px — corpo predefinito dell'applicazione */
+  --fs-400: 1.5rem;     /* 24px — testo di un'opzione di risposta */
+  --fs-500: 1.875rem;   /* 30px — titolo di una card misura */
+  --fs-600: 2.375rem;   /* 38px — domanda della schermata */
+  --fs-700: 3rem;       /* 48px — titolo di apertura */
+
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  --lh-tight: 1.2;      /* titoli */
+  --lh-base:  1.6;      /* prosa (valore di marca) */
+  --lh-loose: 1.75;     /* paragrafi lunghi e spiegazioni di glossario */
+
+  --ls-tight:   -0.02em; /* titoli grandi */
+  --ls-normal:   0;
+  --ls-wide:     0.2em;  /* etichette di sezione maiuscole */
+  --ls-eyebrow:  0.25em; /* pillola eyebrow */
+
+  --measure-prose: 62ch;  /* riga di prosa: mai piu lunga */
+  --measure-title: 22ch;  /* titolo: mai piu lungo */
+
+  /* ----------------------------------------------------------------------
+     6. SPAZIATURE — passo 4px
+     ---------------------------------------------------------------------- */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  24px;
+  --sp-6:  32px;
+  --sp-7:  48px;
+  --sp-8:  64px;
+  --sp-9:  96px;
+
+  --gap-options:  var(--sp-4);  /* fra due opzioni di risposta */
+  --gap-sections: var(--sp-7);  /* fra blocchi di una schermata */
+  --page-padding: var(--sp-6);
+  --page-max:      760px;       /* colonna unica: una cosa per volta */
+  --page-max-wide: 940px;       /* solo la scheda finale, che ha piu contenuto */
+
+  /* ----------------------------------------------------------------------
+     7. RAGGI E OMBRE
+     ---------------------------------------------------------------------- */
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   20px;
+  --radius-pill: 999px;
+
+  --shadow-card:   0 18px 40px rgba(0,0,0,0.55);
+  --shadow-raised: 0 24px 60px rgba(0,0,0,0.65);
+  --shadow-sticky: 0 -12px 32px rgba(5,0,8,0.85);  /* barra fissa sopra il contenuto */
+
+  /* ----------------------------------------------------------------------
+     8. TARGET E CONTROLLI
+     ---------------------------------------------------------------------- */
+  --target-min:     44px;          /* minimo WCAG 2.5.5 */
+  --target-comfort: 64px;          /* altezza reale di un'opzione di risposta */
+  --target-spacing: var(--sp-4);   /* distanza minima fra due target adiacenti */
+
+  /* ----------------------------------------------------------------------
+     9. STATI
+     ---------------------------------------------------------------------- */
+
+  /* Focus. L'anello e' BIANCO, non viola: #BE82FF su un bottone #A100FF da
+     1.98:1 e sparisce proprio sul controllo piu importante della schermata.
+     Il bianco tiene 5.30:1 sul viola e 20.79:1 sullo sfondo.
+     L'alone viola resta come firma di marca ma non porta informazione. */
+  --focus-ring-color:  #FFFFFF;
+  --focus-ring-width:  3px;
+  --focus-ring-offset: 3px;
+  --focus-halo:        0 0 0 9px rgba(190,130,255,0.45);
+
+  /* Hover */
+  --hover-surface: var(--surface-hover);
+  --hover-border:  var(--acc-purple-light);
+  --hover-lift:    translateY(-1px);
+
+  /* Attivo / premuto */
+  --active-surface: #260C37;
+  --active-lift:    translateY(0);
+
+  /* Selezionato — il colore non basta: c'e' anche la spunta e aria-checked */
+  --selected-surface:    var(--surface-selected);
+  --selected-border:     var(--line-selected);
+  --selected-mark-color: var(--acc-purple-light);
+
+  /* Disabilitato: niente opacity, che degrada il contrasto in modo
+     imprevedibile. Colori dichiarati e verificati. */
+  --disabled-surface: #120E16;
+  --disabled-text:    var(--text-disabled);
+  --disabled-border:  var(--line-soft);
+  --disabled-cursor:  not-allowed;
+
+  /* Errore — il segno testuale accompagna sempre il colore */
+  --error-surface: var(--surface-error);
+  --error-border:  #FF9F93;
+  --error-text:    var(--text-error);
+  --error-mark:    "!";
+
+  /* Caricamento */
+  --loading-track: #2A262D;
+  --loading-fill:  var(--acc-purple-light);
+
+  /* ----------------------------------------------------------------------
+     10. MOVIMENTO — breve e sobrio. Nessuna animazione sopra i 240ms.
+     ---------------------------------------------------------------------- */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 240ms;
+  --easing:      cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  /* ----------------------------------------------------------------------
+     11. LIVELLI
+     ---------------------------------------------------------------------- */
+  --z-content:    1;
+  --z-sticky:     50;
+  --z-disclaimer: 60;
+  --z-dialog:     100;
+}
+
+/* ==========================================================================
+   BASE OPZIONALE — cancellabile se l'app ha gia il suo reset.
+   Contiene solo cio' che non si puo esprimere come token: la regola di focus
+   visibile e il rispetto della preferenza di movimento ridotto.
+   -------------------------------------------------------------- inizio --- */
+
+:where(a, button, [role="button"], [role="radio"], [role="checkbox"],
+       input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: var(--focus-halo);
+}
+
+/* Il focus non si rimuove mai. Se serve nasconderlo al mouse si usa
+   :focus-visible, mai outline:none. */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------- fine --- */

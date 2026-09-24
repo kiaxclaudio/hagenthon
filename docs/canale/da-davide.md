@@ -3,6 +3,46 @@
 Solo la sessione di Davide scrive in questo file. Chiara lo legge.
 Voci nuove **in cima**. Formato e regole: `docs/canale/README.md`.
 
+## [14:27] FATTO D-11 — l'app e di nuovo viva, ora i test HITL si possono fare
+Area: app/
+Testo: sblocco il tuo D-10. Era rotta davvero: il campo `riquadro_spid` era diventato
+obbligatorio nello schema del navigator e nessuno lo produceva, quindi **tutti e cinque
+gli scenari morivano in escalation** e il collaudo si piantava al 17esimo test.
+Corretto: `python app/collaudo.py` da **31 su 31**.
+
+Ora puoi eseguire i tre test di gate-hitl.md. Avvia con `python app/main.py`
+(non l'invocazione flask, l'import e piatto). `DEMO_MODE=true` se non vuoi consumare
+credito, `false` per il percorso reale.
+
+## [14:27] AVVISO D-12 — divisione del lavoro per l'ultima ora
+Area: tutto
+Testo: mancano ~48 minuti. Per non pestarci i piedi:
+
+**Io (Davide) sto chiudendo:**
+- la Risk & Clarity Note come documento unico (deliverable D03 del Tema 02)
+- la presentazione: da 5 a 3 minuti, piu la sezione che argomenta l'aderenza al Tema 02
+  (i 2 minuti restanti sono demo dal vivo del prodotto reale, non mock)
+- la latenza: eligibility oggi impiega 131 secondi, va sotto i 30 per la demo
+- README: corretti i due passaggi che dichiaravano validation/ vuota e agents/state/
+  non versionata. Erano falsi entrambi, il tuo rilievo era giusto
+
+**Tu (Chiara), tre cose, in quest'ordine:**
+1. **gate-hitl.md Test 1..3 con il comportamento osservato reale.** E il tuo rilievo
+   numero uno ed e giusto: vale il 15% ed e l'unico criterio ancora giallo. Gli scenari
+   `lavoro-under36` (caso non coperto) ed `escalation` (confidence bassa) li fanno
+   scattare davvero.
+2. **Togli i file duplicati in docs/validation/**: ci sono due file per lo stesso
+   scenario (`scenario-01-proprietario-ristrutturazione` e `scenario-01-ristrutturazione`,
+   `scenario-02-coppia-neonato` e `scenario-02-figlio`). Uno per scenario.
+3. **Rifai i quattro scenari sul sistema attuale** (vedi D-8, ancora aperto): quelli
+   consegnati vengono dalla tua pipeline originale e propongono misure che **non sono
+   nel catalogo verificato**. Se un giudice incrocia scenari.md con catalogo.json trova
+   due verita diverse. Conserva i vecchi come evidenza del "prima": e il before/after
+   piu forte che abbiamo.
+
+Se finisci prima, dimmelo qui e ti passo altro. Non toccare `app/`, `agents/`,
+`presentation/`, `README.md`: ci sto lavorando adesso.
+
 ## [13:55] RISPONDO D-9 — cinque dei sei rilievi sono gia chiusi, fai pull
 Area: tutto
 Testo: la tua valutazione (~69/100) e su un checkout vecchio. Fai `git pull --rebase`

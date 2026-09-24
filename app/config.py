@@ -48,17 +48,64 @@ TIER_PER_AGENTE: dict[str, str] = {
 }
 
 # Tetto di output per agente (F2): nessuno riceve o produce piu' del necessario.
+# I valori sono misurati sull'output reale piu' un margine, non scelti a occhio:
+# un tetto troppo basso tronca la risposta a meta' JSON e costa una ri-richiesta,
+# uno troppo alto lascia spazio a un ragionamento che qui non serve.
 MAX_TOKEN_PER_AGENTE: dict[str, int] = {
-    'source-analyzer': 8000,
-    'explainer': 2000,
-    'fidelity-validator': 2000,
-    'orchestrator': 800,
-    'profiler': 800,
-    'eligibility': 3000,
-    'navigator': 2000,
+    # Fase A: output lunghi e strutturati, con il ragionamento acceso (vedi sotto),
+    # quindi il tetto deve contenere ANCHE i token di pensiero.
+    'source-analyzer': 16000,
+    'explainer': 8000,
+    'fidelity-validator': 8000,
+    # Fase B: solo JSON, pensiero spento, tetto sul contenuto effettivo.
+    'orchestrator': 600,
+    'profiler': 700,
+    'eligibility': 2500,
+    'navigator': 2500,
 }
 
 MAX_TOKEN_DEFAULT = 2000
+
+# --------------------------------------------------------------------------
+# Ragionamento esteso: acceso dove serve, spento dove costa e basta
+# --------------------------------------------------------------------------
+
+# Sui modelli correnti (Sonnet 5, Opus 5) il ragionamento esteso e' ATTIVO per
+# default e i suoi token escono dallo stesso budget di 'max_tokens'. Con un tetto
+# stretto il modello consuma tutto il budget pensando e la risposta torna senza
+# nessun blocco di testo: la chiamata finisce a 'max_tokens' con zero contenuto.
+# E' esattamente cio' che bloccava eligibility. Quindi la scelta va dichiarata
+# per agente, come il tier, invece di essere subita:
+#   'adattivo'    -> ragionamento acceso (Fase A: si giudica una fonte ufficiale)
+#   'disattivato' -> nessun ragionamento (Fase B: si compila un JSON su un input
+#                    gia' verificato, e la demo dal vivo ha un tetto di tempo)
+PENSIERO_PER_AGENTE: dict[str, str] = {
+    'source-analyzer': 'adattivo',
+    'explainer': 'adattivo',
+    'fidelity-validator': 'adattivo',
+    'orchestrator': 'disattivato',
+    'profiler': 'disattivato',
+    'eligibility': 'disattivato',
+    'navigator': 'disattivato',
+}
+
+
+def pensiero_di(agente: str) -> str:
+    return PENSIERO_PER_AGENTE.get(agente, 'disattivato')
+
+
+def parametri_pensiero(agente: str) -> dict:
+    """Parametri di ragionamento da passare a messages.create per questo agente.
+
+    Haiku 4.5 non ha il ragionamento adattivo e non accetta 'output_config':
+    per lui la forma corretta e' non mandare niente, che equivale a spento.
+    """
+    modello = modello_di(agente)
+    if 'haiku' in modello:
+        return {}
+    if pensiero_di(agente) == 'adattivo':
+        return {'thinking': {'type': 'adaptive'}}
+    return {'thinking': {'type': 'disabled'}}
 
 
 def modello_di(agente: str) -> str:

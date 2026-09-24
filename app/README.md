@@ -109,6 +109,40 @@ Esegue 31 verifiche con le risposte del modello simulate: mappa dei tier, classi
 degli errori, backoff, ri-richiesta dopo un output fuori schema, gate HITL della Fase B,
 limite di iterazione della Fase A, stato su file, scenari della modalità demo. Non usa la rete.
 
+## L'interfaccia
+
+Il design non nasce qui: sta in `docs/ux/mockup.html` e in `docs/ux/ux-spec.md`. L'app lo
+esegue, non lo reinventa.
+
+- `app/static/accenture-tokens.css` e' la copia byte per byte di `docs/ux/accenture-tokens.css`
+  e si carica **per prima**: colori, misure, tipografia e bersagli vengono solo da li'.
+- `app/static/style.css` e' il blocco COMPONENTI del mockup, piu' il livello estetico
+  di `docs/ux/estetica-v2.css` e le aggiunte che il mockup non poteva avere (stampa,
+  "dove si fa", attesa lunga). Nessun colore scritto a mano fuori dal blocco di stampa.
+- `app/templates/index.html` porta gli attributi `aria-*` del mockup **tali e quali**:
+  `role="radiogroup"`, `aria-checked`, `aria-pressed`, `aria-expanded`/`aria-controls`,
+  `role="status"`, `role="alert"`, `tabindex="-1"` sugli `h1`.
+
+Il percorso e' a schermate, una domanda per volta, con barra di avanzamento e ritorno
+indietro. **Non esiste una casella di testo libero**: la specifica la vieta in tutta la
+Fase B. Le risposte restano nel browser finche' la persona non conferma il riepilogo; al
+momento di vedere il risultato si apre una sessione pulita e si inviano in ordine, un
+turno ciascuna. Cosi' cambiare una risposta non costa niente e il backend vede solo le
+risposte definitive.
+
+Tre cose che l'interfaccia non fa, per scelta:
+
+- **nessun punteggio e nessuna etichetta di probabilita'** sulle misure. "Molto probabile"
+  e' una previsione sul caso della persona e l'ordinamento e' una raccomandazione
+  implicita: il tema vieta entrambe. L'unica sfumatura e' per requisito, neutra;
+- **nessun "da fare subito" globale**: il primo passo e' di ogni misura;
+- **nessun collegamento inventato**. Dove il catalogo non porta l'indirizzo esatto della
+  pagina, si rimanda alla home dell'ente e lo si dice.
+
+La schermata finale si stampa (`window.print()` piu' un `@media print`): il foglio che la
+persona porta allo sportello e' la misura del successo di questo prodotto. Nella stampa
+finiscono anche i documenti da portare e la ricerca del CAF.
+
 ## Dove stanno le cose
 
 | File | Ruolo |

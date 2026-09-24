@@ -27,6 +27,9 @@ from functools import lru_cache
 from pathlib import Path
 
 import catalogo as catalogo_mod
+
+# Testo vincolato da agents/schemas/navigator.output.json (const): non si riformula.
+TESTO_SPID = "Non hai ancora lo SPID? Puoi attivarlo presso uno sportello di Poste Italiane, in una banca abilitata oppure da app. Ti servono un documento d'identità valido e il tuo numero di telefono. L'attivazione è gratuita."
 from config import DEMO_DIR
 from validation import disclaimer, valida_output
 
@@ -211,6 +214,16 @@ def _navigator_dal_catalogo(voce: dict, profilo: dict) -> dict:
             ),
         },
         'disclaimer': disclaimer(),
+        # Obbligatorio dallo schema: si mostra sempre, anche se nessun passo
+        # richiede l'identita digitale. E' il primo muro per chi non ce l'ha,
+        # e scoprirlo al terzo passo significa fermarsi li.
+        'riquadro_spid': {
+            'necessario': any(
+                'spid_cie_cns' in (passo.get('documenti_necessari') or [])
+                for passo in passi
+            ),
+            'testo': TESTO_SPID,
+        },
     }
     if misura.get('scadenza'):
         payload['scadenza_da_rispettare'] = misura['scadenza']

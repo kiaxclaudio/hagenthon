@@ -21,6 +21,9 @@ import config
 import session as sessione_mod
 from validation import disclaimer, valida, valida_envelope, valida_output
 
+# const di agents/schemas/navigator.output.json
+TESTO_SPID_COLLAUDO = "Non hai ancora lo SPID? Puoi attivarlo presso uno sportello di Poste Italiane, in una banca abilitata oppure da app. Ti servono un documento d'identità valido e il tuo numero di telefono. L'attivazione è gratuita."
+
 ESITI: list[tuple[bool, str]] = []
 
 
@@ -213,6 +216,7 @@ def prova_validazione() -> None:
                    'dove': 'caf', 'documenti_necessari': ['documento_identita'],
                    'dipende_da': [], 'source_refs': ['collaudo#par-1']}],
         'documenti_necessari': [], 'glossario': [], 'disclaimer': disclaimer(),
+        'riquadro_spid': {'necessario': False, 'testo': TESTO_SPID_COLLAUDO},
     })])
     uscita = agents.esegui_agente('navigator', {'prova': True})
     verifica(valida_output('navigator', uscita) == [],
@@ -274,6 +278,7 @@ def prova_gate_fase_b() -> None:
                    'dove': 'caf', 'documenti_necessari': ['spid_cie_cns'],
                    'dipende_da': [], 'source_refs': ['collaudo#par-1']}],
         'documenti_necessari': [], 'glossario': [], 'disclaimer': disclaimer(),
+        'riquadro_spid': {'necessario': False, 'testo': TESTO_SPID_COLLAUDO},
     })
     con_modello([eligibility_ok, navigator_ok])
     esito = agents.run_full_pipeline(PROFILO_FINTO)

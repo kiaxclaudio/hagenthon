@@ -14,7 +14,10 @@ fase_a.py perche' gira una volta sola, offline.
 
 import json
 import random
+import re
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from functools import lru_cache
 from typing import Any
 
 import anthropic
@@ -35,6 +38,7 @@ from config import (
     TIER_PER_AGENTE,
     max_token_di,
     modello_di,
+    parametri_pensiero,
 )
 from validation import (
     MESSAGGIO_CAF,
@@ -146,21 +150,88 @@ def _prompt(agente: str) -> str:
     return testo
 
 
-def _schema_compatto(agente: str) -> str:
-    """Schema di output senza le descrizioni: si spedisce solo in ri-richiesta."""
-    def pulisci(nodo: Any) -> Any:
+def _risolvi_ref(riferimento: str) -> dict | None:
+    """Risolve un $ref locale del repository (./file.json#/$defs/nome o #/$defs/nome).
+
+    Serve perche' uno schema spedito con i $ref intatti non e' un contratto: i
+    valori che contano - il testo esatto del disclaimer, gli enum chiusi delle
+    corrispondenze di profilo - stanno dentro i $defs referenziati, e chi legge
+    lo schema senza risolverli non li vede. Erano esattamente i due campi su cui
+    l'output sbagliava.
+    """
+    percorso, _, puntatore = riferimento.partition('#')
+    nome = percorso.strip('./').removesuffix('.json')
+    try:
+        nodo: Any = schema_di(nome) if nome else None
+    except (KeyError, FileNotFoundError):
+        return None
+    if nodo is None:
+        return None
+    for pezzo in [p for p in puntatore.split('/') if p]:
+        if not isinstance(nodo, dict) or pezzo not in nodo:
+            return None
+        nodo = nodo[pezzo]
+    return nodo if isinstance(nodo, dict) else None
+
+
+@lru_cache(maxsize=16)
+def _schema_compatto(agente: str, radice: str | None = None) -> str:
+    """Schema di output senza descrizioni e con i $ref locali risolti.
+
+    Due operazioni, con lo stesso scopo: far stare il contratto in un prompt.
+    Via le `description` (prosa per chi legge lo schema, non vincoli) e dentro
+    i `$defs` referenziati (vincoli veri: const, enum, pattern).
+    """
+    def pulisci(nodo: Any, visti: frozenset[str], profondita: int) -> Any:
         if isinstance(nodo, dict):
-            return {k: pulisci(v) for k, v in nodo.items() if k != 'description'}
+            riferimento = nodo.get('$ref')
+            if isinstance(riferimento, str):
+                # Ricorsione limitata: un $ref gia' espanso in questo ramo, o
+                # troppo in profondita', resta un $ref. Meglio un contratto
+                # parziale che uno schema che non finisce mai.
+                if riferimento in visti or profondita > 6:
+                    return {'$ref': riferimento}
+                risolto = _risolvi_ref(riferimento)
+                if risolto is None:
+                    return {'$ref': riferimento}
+                unito = {k: v for k, v in nodo.items() if k != '$ref'}
+                unito.update(risolto)
+                return pulisci(unito, visti | {riferimento}, profondita + 1)
+            return {
+                k: pulisci(v, visti, profondita)
+                for k, v in nodo.items()
+                if k not in ('description', '$schema', '$id', 'title')
+            }
         if isinstance(nodo, list):
-            return [pulisci(x) for x in nodo]
+            return [pulisci(x, visti, profondita) for x in nodo]
         return nodo
 
-    return json.dumps(pulisci(schema_di(f'{agente}.output')), ensure_ascii=False)
+    try:
+        schema = schema_di(radice or f'{agente}.output')
+    except (KeyError, FileNotFoundError):
+        # Un agente senza schema di uscita (l'orchestratore conduce una
+        # conversazione, non produce un documento) non ha contratto da citare.
+        return ''
+    return json.dumps(pulisci(schema, frozenset(), 0), ensure_ascii=False)
 
 
 # --------------------------------------------------------------------------
 # Chiamata al modello
 # --------------------------------------------------------------------------
+
+# Traccia delle chiamate: serve a rendere misurabile quello che il repository
+# afferma (tempi e token per agente). Non e' logging di servizio, e' l'evidenza
+# numerica del model tiering e del pre-filtro. Nessun contenuto, solo metriche.
+TRACCIA: list[dict] = []
+
+
+def azzera_traccia() -> None:
+    TRACCIA.clear()
+
+
+def _registra(voce: dict) -> None:
+    TRACCIA.append(voce)
+
 
 
 def _chiama(agente: str, messaggi: list[dict], sistema: str) -> str:
@@ -178,10 +249,15 @@ def _chiama(agente: str, messaggi: list[dict], sistema: str) -> str:
     ultimo: ErroreModello | None = None
 
     for tentativo in range(MAX_RETRY + 1):
+        avvio = time.perf_counter()
         try:
             risposta = _client_anthropic().messages.create(
                 model=modello,
                 max_tokens=max_token_di(agente),
+                # Acceso o spento per agente, da config.PENSIERO_PER_AGENTE: sui
+                # modelli correnti il ragionamento e' attivo di default e i suoi
+                # token escono da 'max_tokens' (C5).
+                **parametri_pensiero(agente),
                 # Il prompt di sistema e' lungo e identico a ogni turno: la cache
                 # lo fa pagare una volta sola (F2).
                 system=[{
@@ -195,10 +271,28 @@ def _chiama(agente: str, messaggi: list[dict], sistema: str) -> str:
                 blocco.text for blocco in risposta.content
                 if getattr(blocco, 'type', '') == 'text'
             ).strip()
+            uso = getattr(risposta, 'usage', None)
+            _registra({
+                'agente': agente,
+                'modello': modello,
+                'tentativo': tentativo,
+                'secondi': round(time.perf_counter() - avvio, 2),
+                'token_in': getattr(uso, 'input_tokens', None),
+                'token_out': getattr(uso, 'output_tokens', None),
+                'stop': getattr(risposta, 'stop_reason', None),
+            })
             if not testo:
+                # Distinzione che vale novanta secondi: una risposta vuota per
+                # troncamento ('max_tokens') e' deterministica, e ritentarla
+                # produce quattro volte lo stesso nulla. Si fallisce subito e si
+                # dice quale parametro va corretto (C3).
+                troncata = getattr(risposta, 'stop_reason', None) == 'max_tokens'
                 raise ErroreModello(
-                    'risposta vuota dal modello', motivo='risposta_vuota',
-                    ritentabile=True,
+                    'risposta senza testo: budget di max_tokens esaurito '
+                    f'({max_token_di(agente)}) prima del contenuto'
+                    if troncata else 'risposta vuota dal modello',
+                    motivo='budget_esaurito' if troncata else 'risposta_vuota',
+                    ritentabile=not troncata,
                 )
             return testo
 
@@ -245,6 +339,73 @@ ISTRUZIONE_FORMATO = (
     "primo livello obbligatorie: status, confidence, source_refs, payload."
 )
 
+# Il contratto si spedisce con la domanda, non dopo il rifiuto. Prima lo schema
+# compariva solo nella ri-richiesta: l'agente scopriva i campi obbligatori dopo
+# aver sbagliato, e quell'errore costava una seconda chiamata intera. Lo schema
+# compattato e' deterministico e viaggia nel blocco di sistema, quindi la cache
+# lo fa pagare una volta sola (F2).
+ISTRUZIONE_SCHEMA = (
+    "\n\nSchema di output da rispettare alla lettera (JSON Schema, descrizioni "
+    "rimosse). Ogni voce di 'required' e' obbligatoria, ogni 'enum' e' chiuso, e "
+    "ogni blocco 'if/then' e' una regola condizionale che vale quanto gli altri "
+    "vincoli. Un valore 'const' si copia carattere per carattere. Un campo "
+    "facoltativo che non sai valorizzare si OMETTE: scriverlo a null non lo "
+    "rende facoltativo, lo rende non conforme.\n{schema}"
+)
+
+# Le regole che legano fra loro piu' campi non si leggono bene in un if/then
+# annidato, e sono esattamente quelle su cui un output sbaglia. Si ripetono in
+# chiaro, per il solo agente che le ha.
+REGOLE_CONDIZIONALI = {
+    'eligibility': (
+        "\n\nRegole condizionali di eligibility, da verificare prima di "
+        "rispondere:\n"
+        "1. payload.escalation false -> NON mettere ne' 'ambito_escalation' ne' "
+        "'motivo_escalation': i campi vanno omessi, non messi a null.\n"
+        "2. payload.escalation true -> servono tutti e tre: 'ambito_escalation', "
+        "'motivo_escalation', 'spiegazione_escalation'.\n"
+        "3. ambito_escalation 'sessione' -> status vale 'hitl_required' e "
+        "'misure_pertinenti' e' vuoto.\n"
+        "4. ambito_escalation 'misura' -> status resta 'ok' e ogni misura in "
+        "'misure_pertinenti' ha confidence almeno 0.6.\n"
+        "5. confidence dell'envelope sotto 0.6 -> payload.escalation deve essere "
+        "true.\n"
+        "6. Ogni voce di 'misure_pertinenti' richiede: misura_id, nome, "
+        "titolo_semplice, tipo, confidence, motivazione, corrispondenze_profilo "
+        "(almeno uno), requisiti_da_verificare (array, anche vuoto), source_refs "
+        "(almeno uno). 'rilevanza' e' facoltativo: 'alta' solo con confidence "
+        "almeno 0.85, 'media' solo fra 0.6 e 0.85.\n"
+        "7. 'misure_escluse' e' obbligatorio (array, anche vuoto); con "
+        "motivo_esclusione 'requisito_non_soddisfatto' serve anche "
+        "'requisito_id'.\n"
+        "8. 'disclaimer' va copiato alla lettera dallo schema, senza una virgola "
+        "di differenza.\n"
+        "9. Nessun campo fuori da quelli elencati: additionalProperties e' "
+        "false.\n"
+        "10. Un requisito che il profilo non permette di verificare va in "
+        "'requisiti_da_verificare' della misura: non e' un motivo di "
+        "esclusione. Si esclude una misura solo quando una risposta del "
+        "profilo contraddice davvero un requisito obbligatorio "
+        "('requisito_non_soddisfatto') o quando la misura non risponde a "
+        "nessuna delle situazioni di vita dichiarate "
+        "('situazione_non_pertinente')."
+    ),
+    'navigator': (
+        "\n\nRegole condizionali di navigator, da verificare prima di "
+        "rispondere:\n"
+        "1. 'passi' deve contenere almeno un passo: un percorso senza passi "
+        "non viene mostrato alla persona e la misura sparisce dalla scheda. Se "
+        "la fonte non basta per ricostruire l'intera procedura, scrivi i passi "
+        "che la fonte sostiene e dichiara il resto nella 'nota' del passo, con "
+        "status 'degraded'. 'degraded' qualifica un percorso parziale, non "
+        "sostituisce il percorso.\n"
+        "2. Ogni passo richiede 'ordine' (progressivo da 1), 'azione', 'dove' "
+        "(enum) e 'source_refs' (almeno uno).\n"
+        "3. 'primo_passo_concreto' e' il primo passo di QUESTA misura, non una "
+        "priorita' fra misure diverse."
+    ),
+}
+
 
 def esegui_agente(agente: str, contenuto_utente: Any, *, valida: bool = True) -> dict:
     """Esegue un agente e restituisce un output gia' validato, o un degradato.
@@ -256,7 +417,13 @@ def esegui_agente(agente: str, contenuto_utente: Any, *, valida: bool = True) ->
     if agente not in TIER_PER_AGENTE:
         raise KeyError(f'agente non previsto dall\'architettura: {agente}')
 
-    sistema = _prompt(agente) + ISTRUZIONE_FORMATO.format(agente=agente)
+    sistema = (
+        _prompt(agente)
+        + ISTRUZIONE_FORMATO.format(agente=agente)
+        + (ISTRUZIONE_SCHEMA.format(schema=_schema_compatto(agente))
+           if _schema_compatto(agente) else '')
+        + REGOLE_CONDIZIONALI.get(agente, '')
+    )
     if isinstance(contenuto_utente, str):
         messaggi = [{'role': 'user', 'content': contenuto_utente}]
     else:
@@ -280,6 +447,8 @@ def esegui_agente(agente: str, contenuto_utente: Any, *, valida: bool = True) ->
 
         if not errori:
             return uscita
+
+        _registra({'agente': agente, 'giro': giro, 'errori_schema': list(errori)})
 
         if giro >= MAX_RICHIESTE_SCHEMA:
             return degradato(
@@ -446,11 +615,18 @@ def esegui_profilazione(sessione_id: str, risposte: dict,
 
 
 def call_eligibility(profilo: dict, candidate: list[dict], catalogo_versione: str) -> dict:
-    """Incrocia profilo e catalogo verificato (sonnet)."""
+    """Incrocia profilo e catalogo verificato (sonnet).
+
+    Le voci candidate non si passano intere: si passa la proiezione ridotta di
+    catalogo.proiezione_per_eligibility, cioe' l'identita' della misura piu' le
+    condizioni da confrontare. Il resto della voce - la spiegazione per la
+    persona, l'esito della verifica di fedelta' - non entra in questa decisione
+    e costava quattro volte i token dell'informazione utile.
+    """
     ingresso = {
         'profilo': profilo,
         'catalogo_versione': catalogo_versione,
-        'misure_candidate': candidate,
+        'misure_candidate': catalogo_mod.proiezione_per_eligibility(candidate),
     }
     return esegui_agente('eligibility', ingresso)
 
@@ -583,12 +759,35 @@ def run_full_pipeline(profilo: dict, sessione_id: str = 'sessione') -> dict:
     # Limite di iterazione: al massimo tre misure guidate per sessione.
     misure = misure[:MAX_MISURE_NAVIGATOR]
 
+    # Il navigator gira una volta per misura e le misure non si parlano fra
+    # loro: sono chiamate indipendenti, quindi si fanno insieme. In sequenza
+    # ogni misura aggiungeva il suo tempo pieno a quello della sessione, e la
+    # persona aspettava la somma invece del massimo. I gate restano gli stessi
+    # e l'ordine del risultato resta quello del catalogo: si ricompone per
+    # indice, non per ordine di arrivo (un ordine che cambia a ogni run
+    # sarebbe una graduatoria involontaria).
+    voci_da_guidare = [
+        (i, v) for i, v in (
+            (i, catalogo_mod.voce_per_id(m.get('misura_id'), catalogo))
+            for i, m in enumerate(misure)
+        ) if v is not None
+    ]
+    uscite: dict[int, dict] = {}
+    if len(voci_da_guidare) == 1:
+        indice, voce = voci_da_guidare[0]
+        uscite[indice] = call_navigator(profilo, voce)
+    elif voci_da_guidare:
+        with ThreadPoolExecutor(max_workers=len(voci_da_guidare)) as pool:
+            futuri = {
+                pool.submit(call_navigator, profilo, voce): indice
+                for indice, voce in voci_da_guidare
+            }
+            for futuro in as_completed(futuri):
+                uscite[futuri[futuro]] = futuro.result()
+
     percorsi: list[dict] = []
-    for misura in misure:
-        voce = catalogo_mod.voce_per_id(misura.get('misura_id'), catalogo)
-        if voce is None:
-            continue
-        uscita_navigator = call_navigator(profilo, voce)
+    for indice, _ in voci_da_guidare:
+        uscita_navigator = uscite[indice]
         # Gate: un percorso senza passi non si mostra, la misura si salta.
         if e_fallback(uscita_navigator) or not uscita_navigator.get('payload', {}).get('passi'):
             continue
@@ -629,11 +828,26 @@ def vista_interfaccia(esito: dict) -> dict:
     un livello a parte, cosi' il front-end non dipende dalla forma interna. Le
     spiegazioni non si rigenerano: sono quelle gia' verificate in Fase A e
     conservate nel catalogo (F1, G4).
+
+    Tre scelte di questo livello vale la pena dichiararle:
+
+    1. non esce nessun punteggio, nessuna etichetta di probabilita' e nessun
+       ordinamento per valore. Dire a una persona "molto probabile" e' una
+       previsione sul suo caso, e mettere una misura sopra un'altra e' una
+       raccomandazione implicita: il tema vieta entrambe (G-04, G-18, G-21).
+       L'unica sfumatura che sopravvive e' per requisito, neutra: "da
+       verificare con un CAF";
+    2. gli elenchi restano elenchi. Il catalogo tiene `a_chi_spetta` e
+       `attenzione` come array, una frase per riga: appiattirli in un
+       paragrafo unico produceva blocchi da cinquecento caratteri;
+    3. il primo passo e' di ogni misura, non della sessione. Un "da fare
+       subito" unico prende la prima misura dell'elenco e ne fa una priorita'
+       che nessuno ha calcolato.
     """
     vista = {
         'status': esito.get('status', 'ok'),
         'escalation': esito.get('escalation', False),
-        'messaggio_escalation': esito.get('messaggio_escalation'),
+        'messaggio_escalation': _per_la_persona(esito.get('messaggio_escalation')),
         'motivo_escalation': esito.get('motivo_escalation'),
         'disclaimer': esito.get('disclaimer', disclaimer()),
         'explainer': None,
@@ -648,58 +862,403 @@ def vista_interfaccia(esito: dict) -> dict:
         for m in esito['eligibility'].get('payload', {}).get('misure_pertinenti', [])
     }
 
-    spiegazioni, percorsi = [], []
+    spiegazioni, percorsi, riquadro = [], [], None
     for uscita in esito['navigator']:
         payload = uscita.get('payload', {})
         misura_id = payload.get('misura_id')
         voce = catalogo_mod.voce_per_id(misura_id, catalogo) or {}
         spiegazione = voce.get('spiegazione', {})
+        misura = voce.get('misura', {})
         pertinente = pertinenti.get(misura_id, {})
+        riferimenti = spiegazione.get('source_refs', [])
 
         spiegazioni.append({
             'id': misura_id,
             'titolo': spiegazione.get('titolo_semplice') or pertinente.get('nome', ''),
-            # Un requisito ancora da verificare non e' una certezza: si dichiara.
-            'badge_rilevanza': (
-                'Da verificare' if pertinente.get('requisiti_da_verificare')
-                else 'Molto probabile'
-            ),
+            'tipo': (misura.get('tipo') or pertinente.get('tipo') or '').replace('_', ' '),
+            'categoria': _categoria(misura),
             'cosa_e': spiegazione.get('cosa_e', ''),
             'quanto_vale': spiegazione.get('quanto_vale', ''),
-            'chi_puo_accedervi': ' '.join(spiegazione.get('a_chi_spetta', [])),
-            'attenzione': ' '.join(spiegazione.get('attenzione', [])),
+            # I numeri non si estraggono dalla prosa: stanno gia' strutturati
+            # nel catalogo, ed e' l'unico posto da cui possono venire (G4).
+            'cifre': _cifre(misura),
+            # "Dove vado a chiederlo": la domanda che oggi resta senza risposta.
+            'dove_si_fa': _dove_si_fa(misura, payload.get('passi', [])),
+            # Array nel catalogo, array qui: il front-end li disegna come <ul>.
+            'a_chi_spetta': list(spiegazione.get('a_chi_spetta', [])),
+            'attenzione': list(spiegazione.get('attenzione', [])),
+            # L'unica sfumatura ammessa: sul singolo requisito, e neutra.
+            'da_verificare': _requisiti_aperti(pertinente.get('requisiti_da_verificare')),
             'glossario': [
                 {'termine': g.get('termine', ''),
-                 'spiegazione': g.get('spiegazione_semplice', '')}
+                 'spiegazione': g.get('spiegazione_semplice', ''),
+                 'dove': g.get('dove_si_trova') or None}
                 for g in spiegazione.get('glossario', [])
             ],
-            'source_refs': spiegazione.get('source_refs', []),
+            'source_refs': riferimenti,
+            # G-24: una fonte senza data di consultazione non e' una fonte.
+            'fonti': _fonti_leggibili(riferimenti, catalogo),
             'disclaimer': spiegazione.get('disclaimer') or disclaimer(),
         })
 
         percorsi.append({
             'id': misura_id,
-            'passi': [
-                {'numero': p.get('ordine'),
-                 'azione': p.get('azione', ''),
-                 'obbligatorio_prima': not p.get('dipende_da'),
-                 'nota': p.get('dove_dettaglio')}
-                for p in payload.get('passi', [])
-            ],
-            'avvertenza_timing': _avvertenza_timing(payload.get('scadenza_da_rispettare')),
+            # Il primo passo e' di questa misura: non e' la priorita' della sessione.
+            'primo_passo': payload.get('primo_passo_concreto'),
+            'passi': _passi_leggibili(payload.get('passi', [])),
+            'avvertenza_timing': (
+                payload.get('avvertenza_timing')
+                or _avvertenza_timing(payload.get('scadenza_da_rispettare'))
+            ),
         })
+        riquadro = payload.get('riquadro_spid') or riquadro
 
-    primo = esito['navigator'][0].get('payload', {}).get('primo_passo_concreto')
     vista['explainer'] = {'spiegazioni': spiegazioni}
     vista['navigator'] = {
         'percorsi': percorsi,
-        'prossimo_passo_prioritario': primo,
-        'riquadro_spid': {'mostra': _serve_spid(esito), 'testo': (
-            'Molte pratiche si aprono solo con SPID, CIE o CNS. Se non li hai, '
-            'un CAF può aiutarti a ottenerli.'
-        )},
+        # Il riquadro lo scrive il contratto del navigator: e' testo di sistema,
+        # non un dato della misura, e non si riformula qui.
+        'riquadro_spid': {
+            'mostra': bool(riquadro) or _serve_spid(esito),
+            'necessario': bool((riquadro or {}).get('necessario', _serve_spid(esito))),
+            'testo': (riquadro or {}).get('testo') or (
+                'Molte pratiche si aprono solo con SPID, CIE o CNS. Se non li '
+                'hai, un CAF puo aiutarti a ottenerli.'
+            ),
+        },
     }
+    # Quello che non compare, e perche': e' la parte che insegna il confine.
+    vista['misure_escluse'] = _misure_escluse(
+        esito, catalogo, [s['id'] for s in spiegazioni]
+    )
     return vista
+
+
+# --- dettagli della composizione ------------------------------------------
+
+_ENTI = {
+    'agenzia_entrate': 'Agenzia delle Entrate',
+    'inps': 'INPS',
+    'inail': 'INAIL',
+    'ministero_salute': 'Ministero della Salute',
+    'comune': 'Comune',
+    'regione': 'Regione',
+    'altro': 'Ente pubblico',
+}
+
+_SITUAZIONI = {
+    'casa': 'lavori o acquisto della casa',
+    'figlio': 'figli',
+    'lavoro': 'lavoro e disoccupazione',
+    'spese_mediche': 'spese mediche',
+    'auto': "acquisto di un'auto",
+    'under36': 'avere meno di 36 anni',
+    'non_so': 'una situazione non ancora definita',
+}
+
+_MOTIVI_CATALOGO = {
+    'fonte_non_interpretabile': (
+        "L'abbiamo cercata, ma la pagina ufficiale non era abbastanza chiara "
+        'da riportarne i numeri senza rischio di sbagliare. Preferiamo non '
+        'dirti niente piuttosto che dirti una cosa sbagliata.'
+    ),
+    'divergenza_non_risolta': (
+        'Le pagine ufficiali che abbiamo letto non dicevano la stessa cosa, e '
+        'non siamo riusciti a capire quale valesse. Non abbiamo scelto a caso.'
+    ),
+    'fonte_non_raggiungibile': (
+        'La pagina ufficiale non era raggiungibile quando abbiamo controllato. '
+        'Senza fonte non la mostriamo.'
+    ),
+}
+
+
+def _data_leggibile(iso: str | None) -> str | None:
+    """'2026-09-24' diventa '24/09/2026': una data che si legge, non un ISO."""
+    if not iso:
+        return None
+    parti = str(iso)[:10].split('-')
+    if len(parti) != 3:
+        return str(iso)
+    anno, mese, giorno = parti
+    return f'{giorno}/{mese}/{anno}'
+
+
+def _fonti_leggibili(source_refs: list, catalogo: dict | None) -> list[dict]:
+    """Da 'ade-ristrutturazioni-cittadini#limite-di-spesa' a una riga leggibile.
+
+    Un riferimento interno non dice niente a nessuno. Quello che serve alla
+    persona e' chi lo dice e quando l'abbiamo guardato (G-24).
+    """
+    registro = {f.get('fonte_id'): f for f in (catalogo or {}).get('fonti', [])}
+    viste, fonti = set(), []
+    for riferimento in source_refs or []:
+        fonte_id = str(riferimento).split('#')[0]
+        if fonte_id in viste:
+            continue
+        viste.add(fonte_id)
+        voce = registro.get(fonte_id, {})
+        fonti.append({
+            'ente': _ENTI.get(voce.get('ente'), voce.get('ente') or 'Fonte ufficiale'),
+            'url': voce.get('url_fonte'),
+            'data_consultazione': _data_leggibile(voce.get('data_consultazione')),
+            'riferimento': fonte_id,
+        })
+    return fonti
+
+
+def _passi_leggibili(passi: list) -> list[dict]:
+    """I passi nella forma che il front-end disegna.
+
+    Sulla dipendenza: un elenco numerato dice gia' che il passo 1 viene prima
+    del 2. Si segnala solo il legame che l'ordine non mostra, cioe' un passo
+    che dipende da un altro che non e' quello subito precedente. La versione
+    precedente marcava "prima degli altri" proprio il passo 1, che e' l'unico
+    per cui non serviva dirlo.
+    """
+    leggibili = []
+    for passo in passi:
+        ordine = passo.get('ordine')
+        precedente = (ordine or 0) - 1
+        dipendenze = [d for d in (passo.get('dipende_da') or []) if d != precedente]
+        leggibili.append({
+            'numero': ordine,
+            'azione': passo.get('azione', ''),
+            # Solo se il contratto lo dichiara: non si deduce da 'dipende_da'
+            # vuoto, che e' semplicemente come si presenta il passo numero 1.
+            'obbligatorio_prima': bool(passo.get('obbligatorio_prima')),
+            'dopo_il_passo': dipendenze[0] if dipendenze else None,
+            'nota': passo.get('nota') or passo.get('dove_dettaglio'),
+        })
+    return leggibili
+
+
+_CATEGORIE = {
+    'casa': 'casa', 'figlio': 'famiglia', 'spese_mediche': 'salute',
+    'lavoro': 'lavoro', 'under36': 'lavoro', 'auto': 'auto',
+}
+
+
+def _categoria(misura: dict) -> str:
+    """Una categoria per l'accento visivo. Non porta informazione da sola:
+    accanto c'e' sempre il tipo di misura scritto in lettere."""
+    for situazione in misura.get('situazioni_vita_collegate', []):
+        if situazione in _CATEGORIE:
+            return _CATEGORIE[situazione]
+    return 'generico'
+
+
+def _euro(valore: float) -> str:
+    """96000 -> '96.000 €'; 203.8 -> '203,80 €'. Come si scrivono in italiano."""
+    intero = float(valore)
+    if abs(intero - round(intero)) < 0.005:
+        testo = f'{round(intero):,}'.replace(',', '.')
+    else:
+        testo = f'{intero:,.2f}'.replace(',', '#').replace('.', ',').replace('#', '.')
+    return testo + ' €'
+
+
+def _cifre(misura: dict) -> list[dict]:
+    """Le due o tre cifre che una persona cerca per prime, dal catalogo.
+
+    Restano tre al massimo: una tessera in piu' e' una tabella, e una tabella
+    non si legge in piedi davanti allo sportello.
+    """
+    beneficio = misura.get('beneficio') or {}
+    recupero = misura.get('recupero') or {}
+    forma = beneficio.get('forma')
+    cifre: list[dict] = []
+
+    if beneficio.get('percentuale') is not None:
+        cifre.append({'valore': f"{beneficio['percentuale']}%",
+                      'etichetta': 'di quanto spendi'})
+    if beneficio.get('tetto_massimo_euro') is not None:
+        cifre.append({
+            'valore': _euro(beneficio['tetto_massimo_euro']),
+            'etichetta': ('importo massimo indicato dalla fonte'
+                          if forma == 'importo_massimo' else 'tetto massimo di spesa'),
+            'dettaglio': beneficio.get('base_tetto'),
+        })
+    if recupero.get('rate_annuali'):
+        anni = recupero['rate_annuali']
+        cifre.append({'valore': f'{anni} anni',
+                      'etichetta': 'in quante rate ti torna'})
+    return cifre[:3]
+
+
+# Canale -> come ci si arriva. La tabella e' di interfaccia, non di dominio:
+# traduce i codici dell'enum in un posto dove una persona puo' andare davvero.
+# Dove il collegamento esatto non e' nel catalogo si rimanda alla home
+# dell'ente e lo si dice: un indirizzo inventato manda la persona a sbattere.
+_CANALI = {
+    'portale_inps': (
+        'online', "Il sito dell'INPS", 'https://www.inps.it',
+        "Entra nell'area riservata, cerca la prestazione per nome nella barra "
+        'di ricerca del sito e apri la voce della domanda.',
+        'SPID, CIE o CNS'),
+    'portale_agenzia_entrate': (
+        'online', "Il sito dell'Agenzia delle Entrate",
+        'https://www.agenziaentrate.gov.it',
+        "Entra nell'area riservata e cerca la sezione della misura.",
+        'SPID, CIE o CNS'),
+    'dichiarazione_redditi': (
+        'online', 'Con la dichiarazione dei redditi',
+        'https://www.agenziaentrate.gov.it',
+        'Non si presenta una domanda a parte: la spesa si indica nella '
+        'dichiarazione dei redditi (modello 730 o Redditi PF). Puoi farlo da '
+        'solo con la dichiarazione precompilata, oppure portare i documenti a '
+        'un CAF o a un commercialista, che la compilano per te.',
+        'SPID, CIE o CNS per la precompilata; se ci vai di persona basta un '
+        'documento e il codice fiscale'),
+    'caf': ('persona', 'Un CAF', None,
+            'Si va di persona, quasi sempre su appuntamento.',
+            'Documento di identita e codice fiscale'),
+    'commercialista': ('persona', 'Un commercialista', None,
+                       'Si va di persona, su appuntamento.',
+                       'Documento di identita e codice fiscale'),
+    'sportello_fisico': ('persona', "Uno sportello dell'ente", None,
+                         'Si va di persona: controlla gli orari prima di andare.',
+                         'Documento di identita e codice fiscale'),
+    'comune': ('persona', 'Il tuo Comune', None,
+               "Si va all'ufficio indicato dal Comune, spesso su appuntamento.",
+               'Documento di identita e codice fiscale'),
+    'banca_o_posta': ('persona', 'La banca o un ufficio postale', None,
+                      'Si fa allo sportello.',
+                      'Documento di identita e codice fiscale'),
+    'datore_di_lavoro': ('persona', "L'ufficio del personale di chi ti paga", None,
+                         'La richiesta passa da chi ti paga lo stipendio.', None),
+    'automatico_in_fattura': ('automatico', 'Non devi chiedere niente', None,
+                              'Lo sconto lo applica direttamente chi ti fa la fattura.',
+                              None),
+    'altro': ('ignoto', 'La fonte non dice da dove si passa', None,
+              "Non lo inventiamo. Chiedilo a un CAF o direttamente all'ente "
+              'che eroga la misura.', None),
+}
+
+
+def _dove_si_fa(misura: dict, passi: list) -> dict:
+    """Dove si va a chiederla: online, di persona, o da nessuna parte.
+
+    Tre cose e basta: come ci si arriva, cosa serve per entrare, cosa portare.
+    I documenti sono quelli del catalogo con il nome che la fonte gli da',
+    non una lista di buon senso.
+    """
+    canali = []
+    for codice in misura.get('canali_accesso') or ['altro']:
+        modo, nome, url, percorso, serve = _CANALI.get(codice, _CANALI['altro'])
+        canali.append({'modo': modo, 'nome': nome, 'url': url,
+                       'percorso': percorso, 'serve': serve})
+
+    # Se un passo porta un dettaglio sul luogo, vale piu' della tabella.
+    dettagli = [p.get('dove_dettaglio') for p in passi if p.get('dove_dettaglio')]
+
+    documenti = [
+        {'nome': d.get('nome') or d.get('tipo_documento'),
+         'obbligatorio': bool(d.get('obbligatorio'))}
+        for d in (misura.get('documenti_richiesti') or [])
+        if d.get('nome') or d.get('tipo_documento')
+    ]
+    return {'canali': canali, 'dettagli': dettagli, 'documenti': documenti}
+
+
+def _requisiti_aperti(requisiti: list | None) -> list[str]:
+    """I requisiti che il sistema non puo' verificare, in frasi leggibili.
+
+    Non e' una probabilita' sul caso della persona: e' l'elenco di cosa
+    manca per saperlo, che e' l'unica sfumatura che il tema consente.
+    """
+    aperti = []
+    for requisito in requisiti or []:
+        if isinstance(requisito, str):
+            aperti.append(requisito)
+            continue
+        testo = (requisito.get('da_verificare_perche')
+                 or requisito.get('descrizione')
+                 or requisito.get('requisito_id'))
+        if testo:
+            aperti.append(str(testo))
+    return aperti
+
+
+def _misure_escluse(esito: dict, catalogo: dict | None, mostrate: list) -> list[dict]:
+    """Cosa non compare nella scheda, e perche'.
+
+    Tre origini, tutte oneste e tutte diverse: quello che l'agente ha valutato
+    e scartato per questo profilo, quello che il catalogo contiene ma non
+    riguarda la situazione descritta, e quello che la Fase A non e' riuscita a
+    verificare e ha tenuto fuori dal catalogo.
+    """
+    escluse, viste = [], set(mostrate)
+
+    payload = (esito.get('eligibility') or {}).get('payload', {})
+    for misura in payload.get('misure_escluse', []) or []:
+        identificativo = misura.get('misura_id')
+        if identificativo in viste:
+            continue
+        viste.add(identificativo)
+        dal_catalogo = catalogo_mod.voce_per_id(identificativo, catalogo) or {}
+        escluse.append({
+            'nome': (dal_catalogo.get('spiegazione', {}).get('titolo_semplice')
+                     or dal_catalogo.get('misura', {}).get('nome')
+                     or misura.get('nome') or identificativo),
+            'motivo': (
+                misura.get('motivo_leggibile')
+                or misura.get('motivo_esclusione')
+                or _MOTIVI_CATALOGO.get(misura.get('motivo'))
+                or 'Da quello che hai risposto non risulta la condizione che chiede.'
+            ),
+        })
+
+    for voce in catalogo_mod.voci(catalogo):
+        misura = voce.get('misura', {})
+        identificativo = misura.get('misura_id')
+        if identificativo in viste:
+            continue
+        viste.add(identificativo)
+        collegate = [
+            _SITUAZIONI.get(s, s)
+            for s in misura.get('situazioni_vita_collegate', [])
+        ]
+        escluse.append({
+            'nome': (voce.get('spiegazione', {}).get('titolo_semplice')
+                     or misura.get('nome')),
+            'motivo': (
+                'Riguarda una situazione diversa da quella che hai descritto: '
+                + ', '.join(collegate) + '.'
+                if collegate else
+                'Da quello che hai risposto non risulta la condizione che chiede.'
+            ),
+        })
+
+    for misura in (catalogo or {}).get('misure_escluse', []) or []:
+        escluse.append({
+            'nome': misura.get('nome') or misura.get('misura_id'),
+            'motivo': _MOTIVI_CATALOGO.get(
+                misura.get('motivo'),
+                'Non siamo riusciti a verificarla su una fonte ufficiale, '
+                'quindi non la mostriamo.',
+            ),
+        })
+
+    return escluse
+
+
+def _per_la_persona(messaggio: str | None) -> str | None:
+    """Toglie dal messaggio di escalation quello che parla solo a noi.
+
+    'affidabilita 0.45, soglia 0.6' e' una soglia interna: alla persona non
+    dice niente e sembra un verdetto sul suo caso.
+    """
+    if not messaggio:
+        return messaggio
+    ripulito = re.sub(
+        r'\s*\([^)]*(?:affidabilit|soglia|confidence)[^)]*\)', '', messaggio
+    )
+    ripulito = ripulito.replace(
+        'catalogo verificato', 'le fonti ufficiali che abbiamo letto'
+    )
+    ripulito = ripulito.replace('nel catalogo', 'fra le fonti che abbiamo letto')
+    return re.sub(r'\s{2,}', ' ', ripulito).strip()
 
 
 def _avvertenza_timing(scadenza: dict | None) -> str | None:

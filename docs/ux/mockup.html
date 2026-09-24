@@ -13,18 +13,18 @@
    1. mostrare in demo l'intero percorso, dai primi passi alla scheda finale;
    2. dare a chi implementa `app/` markup e stili da copiare tali e quali.
 
-  Come e' organizzato:
+  Come è organizzato:
    - blocco TOKEN      -> copia di docs/ux/accenture-tokens.css (in app/ si importa il file, non si incolla)
    - blocco COMPONENTI -> gli stili da portare in app/styles/components.css: usano solo var(--...)
-   - blocco SCHERMATE  -> il markup, con gli attributi aria-* gia' al posto giusto
-   - blocco SCENARI    -> dati FITTIZI dei 4 scenari di prova, nella forma degli schemi degli agenti
+   - blocco SCHERMATE  -> il markup, con gli attributi aria-* già al posto giusto
+   - blocco SCENARI    -> dati FITTIZI dei 3 scenari coperti dal catalogo, nella forma degli schemi degli agenti
 
   Tutti i dati fiscali mostrati sono inventati a scopo dimostrativo. Vedi la fascia in cima.
 -->
 <style>
 /* ============================================================================
    TOKEN — copia di docs/ux/accenture-tokens.css
-   In app/ NON si incolla: si importa il file. Qui e' in linea solo per tenere
+   In app/ NON si incolla: si importa il file. Qui è in linea solo per tenere
    il mockup in un file unico senza dipendenze.
    ============================================================================ */
 :root{
@@ -177,8 +177,16 @@ ul.bul li::before{content:"\203A";position:absolute;left:0;top:-0.05em;color:var
   transition:background var(--motion-fast) var(--easing),border-color var(--motion-fast) var(--easing),
              transform var(--motion-fast) var(--easing);
 }
-.opt:hover{background:var(--hover-surface);border-color:var(--hover-border);transform:translateY(-1px)}
-.opt:active{background:var(--active-surface);transform:none}
+.opt:not([disabled]):hover{background:var(--hover-surface);border-color:var(--hover-border);transform:translateY(-1px)}
+.opt:not([disabled]):active{background:var(--active-surface);transform:none}
+/* fuori perimetro: resta visibile e dichiarata, ma non è selezionabile */
+.opt[disabled]{background:var(--disabled-surface);color:var(--disabled-text);
+  border-color:var(--disabled-border);border-style:dashed;cursor:not-allowed}
+.opt[disabled]:hover,.opt[disabled]:active{background:var(--disabled-surface);
+  border-color:var(--disabled-border);transform:none}
+.opt[disabled] .mark{border-color:var(--disabled-border)}
+.opt[disabled] .txt{color:var(--disabled-text)}
+.opt[disabled] .sub.off{color:var(--text-tertiary)}
 .opt .mark{
   flex:0 0 auto;width:30px;height:30px;border-radius:var(--radius-sm);
   border:var(--border-width-control) solid var(--line-control);
@@ -419,8 +427,7 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
   <h4>Scenari</h4>
   <button type="button" data-scen="casa">1 · Ristrutturazione</button>
   <button type="button" data-scen="figlio">2 · Figlio appena nato</button>
-  <button type="button" data-scen="lavoro">3 · Cerca lavoro, under 36</button>
-  <button type="button" data-scen="spese_mediche">4 · Pensionato, spese mediche</button>
+  <button type="button" data-scen="spese_mediche">3 · Pensionato, spese mediche</button>
   <hr>
   <h4>Stati</h4>
   <button type="button" data-state="degraded">Output degraded</button>
@@ -452,7 +459,8 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
 <section class="screen page" id="s1" aria-label="Domanda 1">
   <div class="eyebrow">Domanda 1 di 5</div>
   <h1 tabindex="-1">Cosa sta succedendo nella tua vita in questo momento?</h1>
-  <p class="help">Puoi scegliere piu&#39; di una risposta.</p>
+  <p class="help">Puoi scegliere più di una risposta. In questa versione copriamo casa, figli
+    e spese mediche: le altre voci restano in elenco ma non sono ancora selezionabili.</p>
 
   <div class="options" role="group" aria-label="Situazione di vita" id="opt-situazione">
     <button class="opt" type="button" aria-pressed="false" data-val="casa">
@@ -464,21 +472,24 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
       <span class="mark" aria-hidden="true"></span>
       <span class="txt">Ho avuto o aspetto un figlio</span>
     </button>
-    <button class="opt" type="button" aria-pressed="false" data-val="lavoro">
+    <button class="opt" type="button" disabled aria-disabled="true" data-val="lavoro">
       <span class="mark" aria-hidden="true"></span>
-      <span class="txt">Ho perso il lavoro o sto cercando lavoro</span>
+      <span class="txt">Ho perso il lavoro o sto cercando lavoro
+        <span class="sub off">In questa versione non ancora coperto</span></span>
     </button>
     <button class="opt" type="button" aria-pressed="false" data-val="spese_mediche">
       <span class="mark" aria-hidden="true"></span>
       <span class="txt">Ho spese mediche importanti</span>
     </button>
-    <button class="opt" type="button" aria-pressed="false" data-val="auto">
+    <button class="opt" type="button" disabled aria-disabled="true" data-val="auto">
       <span class="mark" aria-hidden="true"></span>
-      <span class="txt">Voglio comprare un&#39;auto</span>
+      <span class="txt">Voglio comprare un&#39;auto
+        <span class="sub off">In questa versione non ancora coperto</span></span>
     </button>
-    <button class="opt" type="button" aria-pressed="false" data-val="under36">
+    <button class="opt" type="button" disabled aria-disabled="true" data-val="under36">
       <span class="mark" aria-hidden="true"></span>
-      <span class="txt">Ho meno di 36 anni</span>
+      <span class="txt">Ho meno di 36 anni
+        <span class="sub off">In questa versione non ancora coperto</span></span>
     </button>
     <button class="opt" type="button" aria-pressed="false" data-val="non_so" data-exclusive="true">
       <span class="mark" aria-hidden="true"></span>
@@ -497,8 +508,8 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
   <div class="eyebrow">Domanda 2 di 5</div>
   <h1 tabindex="-1">Dove abiti in questo momento?</h1>
   <div class="options" role="radiogroup" aria-label="Condizione abitativa" data-single="abitazione" data-next="s3">
-    <button class="opt" type="button" role="radio" aria-checked="false" data-val="proprietario" data-label="Casa di proprieta&#39;">
-      <span class="mark" aria-hidden="true"></span><span class="txt">In una casa di mia proprieta&#39;</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="proprietario" data-label="Casa di proprietà">
+      <span class="mark" aria-hidden="true"></span><span class="txt">In una casa di mia proprietà</span></button>
     <button class="opt" type="button" role="radio" aria-checked="false" data-val="affittuario" data-label="In affitto">
       <span class="mark" aria-hidden="true"></span><span class="txt">In affitto</span></button>
     <button class="opt" type="button" role="radio" aria-checked="false" data-val="ospite_familiari" data-label="Con familiari">
@@ -530,7 +541,7 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
     <button class="chip" type="button" aria-expanded="false" aria-controls="g-piva">Cosa significa partita IVA?</button>
   </div>
   <div class="gloss" id="g-piva" hidden>
-    <b>Partita IVA</b> e&#39; il numero che lo Stato assegna a chi lavora in proprio e deve emettere
+    <b>Partita IVA</b> è il numero che lo Stato assegna a chi lavora in proprio e deve emettere
     fattura. Chi ha solo uno stipendio o una pensione non ce l&#39;ha.
   </div>
   <div class="actions"><button class="btn btn-quiet" type="button" data-goto="s2">&#8592; Indietro</button></div>
@@ -543,10 +554,10 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
   <div class="options" role="radiogroup" aria-label="A che punto sei" data-single="timing" data-next="s4b">
     <button class="opt" type="button" role="radio" aria-checked="false" data-val="da_iniziare" data-label="Devo ancora iniziare">
       <span class="mark" aria-hidden="true"></span><span class="txt">Devo ancora iniziare</span></button>
-    <button class="opt" type="button" role="radio" aria-checked="false" data-val="in_corso" data-label="Gia&#39; cominciato">
-      <span class="mark" aria-hidden="true"></span><span class="txt">Ho gia&#39; cominciato</span></button>
-    <button class="opt" type="button" role="radio" aria-checked="false" data-val="gia_concluso" data-label="Gia&#39; finito">
-      <span class="mark" aria-hidden="true"></span><span class="txt">Ho gia&#39; finito e vorrei recuperare le spese passate</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="in_corso" data-label="Già cominciato">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Ho già cominciato</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="gia_concluso" data-label="Già finito">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Ho già finito e vorrei recuperare le spese passate</span></button>
   </div>
   <div class="actions"><button class="btn btn-quiet" type="button" data-goto="s3">&#8592; Indietro</button></div>
 </section>
@@ -554,19 +565,19 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
 <!-- ========================= S4b — CAF ========================= -->
 <section class="screen page" id="s4b" aria-label="Domanda 5">
   <div class="eyebrow">Domanda 5 di 5</div>
-  <h1 tabindex="-1">Hai gia&#39; un CAF o un commercialista?</h1>
+  <h1 tabindex="-1">Hai già un CAF o un commercialista?</h1>
   <div class="options" role="radiogroup" aria-label="Hai un CAF" data-single="caf" data-next="s5" data-noauto="true">
     <button class="opt" type="button" role="radio" aria-checked="false" data-val="si" data-label="Ha un CAF">
-      <span class="mark" aria-hidden="true"></span><span class="txt">Si&#39;</span></button>
+      <span class="mark" aria-hidden="true"></span><span class="txt">Sì</span></button>
     <button class="opt" type="button" role="radio" aria-checked="false" data-val="no" data-label="Nessun CAF">
       <span class="mark" aria-hidden="true"></span><span class="txt">No</span></button>
     <button class="opt" type="button" role="radio" aria-checked="false" data-val="non_so_cosa_e" data-label="Non sa cosa sia un CAF">
       <span class="mark" aria-hidden="true"></span><span class="txt">Non so cosa sia un CAF</span></button>
   </div>
-  <!-- La spiegazione compare come conseguenza della risposta: non e' un errore e non blocca. -->
+  <!-- La spiegazione compare come conseguenza della risposta: non è un errore e non blocca. -->
   <div class="gloss" id="g-caf" hidden>
-    <b>CAF</b> sta per Centro di Assistenza Fiscale. E&#39; un ufficio, spesso gratuito o a costo basso,
-    dove una persona compila per te le pratiche con lo Stato. Ce n&#39;e&#39; quasi sempre uno vicino a casa.
+    <b>CAF</b> sta per Centro di Assistenza Fiscale. È un ufficio, spesso gratuito o a costo basso,
+    dove una persona compila per te le pratiche con lo Stato. Ce n'è quasi sempre uno vicino a casa.
   </div>
   <div class="actions">
     <button class="btn btn-primary" type="button" id="s4b-next" aria-disabled="true" data-next="s5">Vedi le misure</button>
@@ -586,7 +597,7 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
       <li data-i="2">Sto preparando i passi da fare.</li>
     </ul>
   </div>
-  <p class="help mt6" id="slow-note" hidden>Ci sto mettendo piu&#39; del previsto. Puoi aspettare ancora
+  <p class="help mt6" id="slow-note" hidden>Ci sto mettendo più del previsto. Puoi aspettare ancora
     un momento oppure annullare.</p>
 </section>
 
@@ -600,13 +611,13 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
   <div id="degraded-slot"></div>
 
   <p class="lead" id="count-line"></p>
-  <p class="help" id="order-line">In ordine di situazione, non di convenienza: non c&#39;e&#39; una misura
+  <p class="help" id="order-line">In ordine di situazione, non di convenienza: non c'è una misura
     migliore delle altre.</p>
 
   <div class="cards" id="cards"></div>
 
   <details class="acc" id="excluded-box">
-    <summary>Perche&#39; non vedo altri bonus di cui ho sentito parlare?</summary>
+    <summary>Perché non vedo altri bonus di cui ho sentito parlare?</summary>
     <div class="body" id="excluded-body"></div>
   </details>
 
@@ -618,7 +629,7 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
   <div class="caf">
     <h2>Il prossimo passo lo fai con una persona</h2>
     <p>Questa scheda dice quali misure esistono e cosa vogliono dire. Non dice cosa ti conviene fare:
-      quella e&#39; una decisione, e va presa con qualcuno che puo&#39; guardare i tuoi documenti.</p>
+      quella è una decisione, e va presa con qualcuno che può guardare i tuoi documenti.</p>
     <div class="actions">
       <button class="btn btn-primary" type="button">Trova un CAF vicino a te</button>
       <button class="btn btn-secondary" type="button" data-restart="true">Ricomincia con un profilo diverso</button>
@@ -636,7 +647,7 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
   <div class="caf">
     <h2>Dove puoi chiedere</h2>
     <p>Un CAF guarda la tua posizione con i documenti alla mano e ti dice cosa risulta. Il servizio
-      e&#39; spesso gratuito.</p>
+      è spesso gratuito.</p>
     <div class="actions">
       <button class="btn btn-primary" type="button">Trova un CAF vicino a te</button>
       <button class="btn btn-secondary" type="button" data-restart="true">Ricomincia con un profilo diverso</button>
@@ -649,10 +660,10 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
   <div class="eyebrow">Serve una persona</div>
   <h1 tabindex="-1">Su questo preferiamo non risponderti da soli</h1>
   <div class="caf mt5">
-    <h2>Perche&#39;</h2>
+    <h2>Perché</h2>
     <p>Non abbiamo informazioni verificate su questo caso. Preferiamo dirtelo invece di tirare a
       indovinare: un&#39;informazione sbagliata qui diventa una pratica sbagliata.</p>
-    <p>Un CAF puo&#39; guardare la tua posizione con i documenti alla mano. Il servizio e&#39; spesso gratuito.</p>
+    <p>Un CAF può guardare la tua posizione con i documenti alla mano. Il servizio è spesso gratuito.</p>
     <div class="actions">
       <button class="btn btn-primary" type="button">Trova un CAF vicino a te</button>
       <button class="btn btn-secondary" type="button" data-goto="s1">Torna indietro e cambia una risposta</button>
@@ -662,14 +673,14 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
 
 <!-- ========================= STATO — ERRORE ========================= -->
 <section class="screen page" id="s-errore" aria-label="Errore">
-  <div class="eyebrow">Si e&#39; interrotto</div>
+  <div class="eyebrow">Si è interrotto</div>
   <h1 tabindex="-1">Qualcosa non ha funzionato dalla nostra parte</h1>
   <div class="panel-error" role="alert">
     <div class="head">
       <span class="sign" aria-hidden="true">!</span>
       <h2>Errore durante la ricerca delle misure</h2>
     </div>
-    <p>Non e&#39; colpa di quello che hai risposto. Le tue risposte sono ancora qui: puoi riprovare
+    <p>Non è colpa di quello che hai risposto. Le tue risposte sono ancora qui: puoi riprovare
       senza ricominciare da capo.</p>
     <div class="actions">
       <button class="btn btn-primary" type="button" data-goto="s5">Riprova</button>
@@ -683,7 +694,7 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
 <!-- ========================= DISCLAIMER ANCORATO ========================= -->
 <div class="disclaimer">
   <div class="disclaimer-in">
-    <b>Questo strumento spiega quali misure esistono. Non da&#39; consigli e non fa calcoli sul tuo caso.</b>
+    <b>Questo strumento spiega quali misure esistono. Non dà consigli e non fa calcoli sul tuo caso.</b>
     Verifica le scadenze su agenziaentrate.gov.it e parla con un CAF o un commercialista prima di decidere.
   </div>
 </div>
@@ -700,13 +711,13 @@ details.acc .body{padding:0 var(--sp-5) var(--sp-5)}
 const SCENARI = {
 
   casa: {
-    recap: ["Casa da ristrutturare", "Casa di proprieta'", "Lavoro dipendente", "Devo ancora iniziare"],
+    recap: ["Casa da ristrutturare", "Casa di proprietà", "Lavoro dipendente", "Devo ancora iniziare"],
     misure: [
       { tipo:"detrazione", nome:"Bonus Ristrutturazione",
-        semplice:"Ti torna indietro una parte di quello che spendi per i lavori in casa, sotto forma di sconto sulle tasse, spalmato su piu' anni.",
+        semplice:"Ti torna indietro una parte di quello che spendi per i lavori in casa, sotto forma di sconto sulle tasse, spalmato su più anni.",
         cifre:[["50%","di quanto spendi"],["96.000 €","tetto massimo di spesa"],["10 anni","in quante rate ti torna"]],
         requisiti:[
-          {t:"I lavori devono essere su un immobile gia' esistente, non su una nuova costruzione."},
+          {t:"I lavori devono essere su un immobile già esistente, non su una nuova costruzione."},
           {t:"I pagamenti devono passare da un bonifico con una causale precisa.", tag:"da verificare con un CAF"},
           {t:"L'immobile deve risultare intestato a te o devi averne un titolo."}
         ],
@@ -715,23 +726,11 @@ const SCENARI = {
         passo:"Prima di pagare il primo euro, chiedi all'impresa una fattura intestata a te e fatti dire quale causale scrivere sul bonifico.",
         glossario:["bonifico_parlante","detrazione"],
         fonte:"Agenzia delle Entrate, guida alle ristrutturazioni edilizie — consultata il 12/09/2026" },
-      { tipo:"detrazione", nome:"Ecobonus",
-        semplice:"Riguarda i lavori che fanno consumare meno energia alla casa: caldaia, infissi, cappotto.",
-        cifre:[["65%","di quanto spendi"],["60.000 €","tetto massimo di spesa"],["10 anni","in quante rate ti torna"]],
-        requisiti:[
-          {t:"Serve un tecnico che certifichi il risparmio di energia ottenuto."},
-          {t:"La comunicazione all'ENEA va mandata entro 90 giorni dalla fine dei lavori.", tag:"da verificare con un CAF"}
-        ],
-        scadenza:"Entro 90 giorni dalla fine dei lavori per la comunicazione. Verifica sul sito dell'ente.",
-        attenzione:null,
-        passo:"Chiedi al tecnico che segue i lavori se prevede di fare lui la comunicazione all'ENEA, e mettilo per iscritto.",
-        glossario:["enea"],
-        fonte:"ENEA, portale detrazioni fiscali — consultata il 12/09/2026" },
       { tipo:"detrazione", nome:"Bonus Mobili",
-        semplice:"Se stai gia' facendo lavori in casa, una parte di quello che spendi per mobili ed elettrodomestici nuovi ti torna indietro.",
+        semplice:"Se stai già facendo lavori in casa, una parte di quello che spendi per mobili ed elettrodomestici nuovi ti torna indietro.",
         cifre:[["50%","di quanto spendi"],["5.000 €","tetto massimo di spesa"],["10 anni","in quante rate ti torna"]],
         requisiti:[
-          {t:"Devono esserci lavori di ristrutturazione gia' cominciati sulla stessa casa."},
+          {t:"Devono esserci lavori di ristrutturazione già cominciati sulla stessa casa."},
           {t:"I mobili devono essere comprati dopo l'inizio dei lavori, non prima."}
         ],
         scadenza:"Vale per gli acquisti pagati entro il 31 dicembre 2026.",
@@ -746,50 +745,49 @@ const SCENARI = {
     ],
     glossario:{
       detrazione:["Detrazione","Uno sconto sulle tasse che paghi. Non sono soldi che arrivano sul conto: sono tasse che non paghi, di solito un po' ogni anno per diversi anni.",null],
-      bonifico_parlante:["Bonifico parlante","Un normale bonifico bancario in cui pero' devi scrivere nella causale alcune informazioni precise, fra cui la legge di riferimento e il codice fiscale di chi paga.","Lo fai allo sportello o dall'home banking: molte banche hanno gia' il modulo pronto."],
-      enea:["ENEA","L'ente pubblico a cui va comunicato che hai fatto lavori di risparmio energetico. La comunicazione si manda da un sito, anche tramite il tecnico.",null]
+      bonifico_parlante:["Bonifico parlante","Un normale bonifico bancario in cui però devi scrivere nella causale alcune informazioni precise, fra cui la legge di riferimento e il codice fiscale di chi paga.","Lo fai allo sportello o dall'home banking: molte banche hanno già il modulo pronto."]
     }
   },
 
   figlio: {
-    recap: ["Figlio appena nato", "In affitto", "Lavoro dipendente", "Ho gia' cominciato"],
+    recap: ["Figlio appena nato", "In affitto", "Lavoro dipendente", "Ho già cominciato"],
     misure: [
       { tipo:"assegno", nome:"Assegno Unico e Universale",
         semplice:"Una somma che lo Stato versa ogni mese sul conto, per ogni figlio a carico. Quanto arriva dipende dalla situazione economica della famiglia.",
         cifre:[["199 €","al mese per figlio, importo pieno"],["57 €","al mese, importo minimo"],["ISEE","cosa stabilisce l'importo"]],
         requisiti:[
           {t:"Il figlio deve essere a tuo carico."},
-          {t:"Serve presentare l'ISEE per avere piu' dell'importo minimo.", tag:"da verificare con un CAF"},
+          {t:"Serve presentare l'ISEE per avere più dell'importo minimo.", tag:"da verificare con un CAF"},
           {t:"La domanda si fa una volta e poi si rinnova ogni anno."}
         ],
-        scadenza:"La domanda si puo' fare in qualsiasi momento, ma gli arretrati vengono pagati solo per i mesi indietro consentiti. Verifica sul sito dell'INPS.",
-        attenzione:"Senza ISEE l'assegno arriva comunque, ma all'importo piu' basso.",
+        scadenza:"La domanda si può fare in qualsiasi momento, ma gli arretrati vengono pagati solo per i mesi indietro consentiti. Verifica sul sito dell'INPS.",
+        attenzione:"Senza ISEE l'assegno arriva comunque, ma all'importo più basso.",
         passo:"Vai in un CAF con il codice fiscale tuo e del bambino e chiedi di fare insieme ISEE e domanda: sono due pratiche, si fanno nello stesso appuntamento.",
         glossario:["isee"],
         fonte:"INPS, scheda prestazione assegno unico — consultata il 12/09/2026" },
       { tipo:"contributo", nome:"Bonus Asilo Nido",
         semplice:"Un rimborso di quello che paghi di retta all'asilo nido, versato mese per mese dietro presentazione delle ricevute.",
-        cifre:[["3.000 €","massimo all'anno"],["11","quante mensilita' al massimo"],["ISEE","cosa stabilisce l'importo"]],
+        cifre:[["3.000 €","massimo all'anno"],["11","quante mensilità al massimo"],["ISEE","cosa stabilisce l'importo"]],
         requisiti:[
           {t:"Il nido deve essere pubblico o privato autorizzato."},
-          {t:"La retta deve essere gia' pagata: si rimborsa, non si anticipa."},
+          {t:"La retta deve essere già pagata: si rimborsa, non si anticipa."},
           {t:"L'importo cambia in base all'ISEE.", tag:"da verificare con un CAF"}
         ],
         scadenza:"La domanda va fatta entro il 31 dicembre dell'anno in cui paghi le rette.",
         attenzione:"Le ricevute vanno caricate una per una: se ne salti una, quel mese non viene rimborsato.",
-        passo:"Chiedi al nido una ricevuta intestata a te per ogni mese gia' pagato, e mettile tutte insieme in una cartella.",
+        passo:"Chiedi al nido una ricevuta intestata a te per ogni mese già pagato, e mettile tutte insieme in una cartella.",
         glossario:["isee"],
         fonte:"INPS, bonus asilo nido — consultata il 12/09/2026" },
       { tipo:"esenzione", nome:"Congedo parentale retribuito",
         semplice:"Puoi stare a casa dal lavoro per seguire il bambino continuando a ricevere una parte dello stipendio.",
-        cifre:[["80%","dello stipendio, per il primo mese"],["3 mesi","quanto dura la parte piu' alta"],["12 anni","fino a che eta' del bambino"]],
+        cifre:[["80%","dello stipendio, per il primo mese"],["3 mesi","quanto dura la parte più alta"],["12 anni","fino a che età del bambino"]],
         requisiti:[
           {t:"Devi avere un lavoro dipendente in corso."},
           {t:"La richiesta passa dal datore di lavoro oltre che dall'INPS."}
         ],
-        scadenza:"Non risulta una scadenza fissa: dipende dall'eta' del bambino. Verificala sul sito dell'INPS.",
+        scadenza:"Non risulta una scadenza fissa: dipende dall'età del bambino. Verificala sul sito dell'INPS.",
         attenzione:null,
-        passo:"Parla con l'ufficio del personale della tua azienda: la domanda all'INPS di solito parte da li'.",
+        passo:"Parla con l'ufficio del personale della tua azienda: la domanda all'INPS di solito parte da lì.",
         glossario:[],
         fonte:"INPS, congedo parentale — consultata il 12/09/2026" }
     ],
@@ -802,97 +800,45 @@ const SCENARI = {
     }
   },
 
-  lavoro: {
-    recap: ["In cerca di lavoro", "Con familiari", "Nessuna entrata", "Devo ancora iniziare"],
-    misure: [
-      { tipo:"contributo", nome:"Supporto per la Formazione e il Lavoro",
-        semplice:"Una somma mensile che ricevi mentre segui un corso o un percorso per trovare lavoro. Non e' un sussidio fermo: e' legato alla partecipazione.",
-        cifre:[["350 €","al mese"],["12 mesi","per quanto tempo"],["ISEE","cosa stabilisce l'accesso"]],
-        requisiti:[
-          {t:"Devi risultare disoccupato e iscritto al centro per l'impiego."},
-          {t:"Devi partecipare effettivamente al percorso: le assenze fanno perdere il diritto."},
-          {t:"L'ISEE della famiglia deve essere sotto una certa soglia.", tag:"da verificare con un CAF"}
-        ],
-        scadenza:"Non risulta una scadenza fissa per la domanda. Verificala sul sito dell'INPS.",
-        attenzione:"Se non ti presenti alle attivita' concordate, perdi il diritto alla somma dei mesi successivi.",
-        passo:"Prenota un appuntamento al centro per l'impiego della tua citta': l'iscrizione e' il passo che apre tutto il resto.",
-        glossario:["isee","centro_impiego"],
-        fonte:"INPS, supporto formazione e lavoro — consultata il 12/09/2026" },
-      { tipo:"assegno", nome:"NASpI",
-        semplice:"Una somma mensile per chi ha perso un lavoro dipendente e aveva versato contributi. Dura per un periodo proporzionale a quanto hai lavorato.",
-        cifre:[["75%","dello stipendio medio, all'inizio"],["24 mesi","durata massima"],["68 giorni","entro quando fare domanda"]],
-        requisiti:[
-          {t:"Devi aver perso il lavoro senza esserti dimesso volontariamente."},
-          {t:"Servono contributi versati nei due anni precedenti.", tag:"da verificare con un CAF"}
-        ],
-        scadenza:"La domanda va fatta entro 68 giorni dalla fine del rapporto di lavoro. Passato quel termine il diritto si perde.",
-        attenzione:"Il termine dei 68 giorni e' perentorio: non ci sono proroghe.",
-        passo:"Cerca la data esatta dell'ultimo giorno di lavoro sulla lettera di licenziamento e contala: e' da li' che partono i 68 giorni.",
-        glossario:["contributi"],
-        fonte:"INPS, NASpI — consultata il 12/09/2026" },
-      { tipo:"credito_imposta", nome:"Incentivo all'assunzione under 36",
-        semplice:"Non e' una somma per te: e' uno sconto che riceve l'azienda che ti assume. Sapere che esiste ti serve per dirlo a chi ti fa il colloquio.",
-        cifre:[["100%","dei contributi a carico dell'azienda"],["8.000 €","tetto massimo all'anno"],["36 mesi","per quanto tempo"]],
-        requisiti:[
-          {t:"L'assunzione deve essere a tempo indeterminato."},
-          {t:"Devi avere meno di 36 anni al momento dell'assunzione."}
-        ],
-        scadenza:"Vale per le assunzioni fatte entro il 31 dicembre 2026.",
-        attenzione:null,
-        passo:"Se arrivi a un colloquio, puoi dire che per la tua fascia di eta' esiste uno sgravio contributivo: e' un'informazione che all'azienda interessa.",
-        glossario:["contributi"],
-        fonte:"INPS, incentivi occupazione giovani — consultata il 12/09/2026" }
-    ],
-    escluse:[
-      ["Bonus Asilo Nido","Riguarda una situazione diversa dalla tua: serve un figlio iscritto al nido."],
-      ["Detrazione spese sanitarie","Vale in un momento diverso da quello in cui ti trovi: senza entrate non ci sono tasse da cui togliere lo sconto."]
-    ],
-    glossario:{
-      isee:["ISEE","Un documento che mette insieme redditi e patrimonio di tutta la famiglia e produce un numero. Molti aiuti usano quel numero per decidere se e quanto darti.","Si fa gratis in un CAF, oppure online sul sito dell'INPS."],
-      centro_impiego:["Centro per l'impiego","L'ufficio pubblico dove ci si iscrive come persona in cerca di lavoro. L'iscrizione e' gratuita ed e' la condizione di partenza per quasi tutte le misure sul lavoro.",null],
-      contributi:["Contributi","I soldi che ogni mese vengono messi da parte sul tuo nome per la pensione e per le tutele come la disoccupazione. Li versa il datore di lavoro, li trovi sulla busta paga.",null]
-    }
-  },
-
   spese_mediche: {
-    recap: ["Spese mediche importanti", "Casa di proprieta'", "Pensione", "Ho gia' finito"],
+    recap: ["Spese mediche importanti", "Casa di proprietà", "Pensione", "Ho già finito"],
     misure: [
       { tipo:"detrazione", nome:"Detrazione delle spese sanitarie",
         semplice:"Una parte di quello che hai speso per visite, esami e medicine torna indietro come sconto sulle tasse, quando fai la dichiarazione.",
-        cifre:[["19%","della spesa"],["129,11 €","la franchigia: sotto questa cifra non si detrae"],["5 anni","entro quando si puo' recuperare"]],
+        cifre:[["19%","della spesa"],["129,11 €","la franchigia: sotto questa cifra non si detrae"],["5 anni","entro quando si può recuperare"]],
         requisiti:[
           {t:"Le spese devono risultare da scontrino fiscale parlante o fattura intestata a te."},
           {t:"I pagamenti devono essere tracciabili, tranne che per i medicinali."},
           {t:"Serve avere tasse da pagare da cui togliere lo sconto.", tag:"da verificare con un CAF"}
         ],
         scadenza:"Si possono recuperare le spese degli ultimi 5 anni presentando una dichiarazione integrativa.",
-        attenzione:"Se la tua pensione e' sotto la soglia di tassazione, lo sconto non ha nulla da cui essere tolto: e' un caso da far vedere a un CAF.",
+        attenzione:"Se la tua pensione è sotto la soglia di tassazione, lo sconto non ha nulla da cui essere tolto: è un caso da far vedere a un CAF.",
         passo:"Raccogli in una busta tutti gli scontrini della farmacia e le fatture delle visite degli ultimi cinque anni, anche se sembrano piccoli.",
         glossario:["detrazione","scontrino_parlante","cassetto_fiscale"],
         fonte:"Agenzia delle Entrate, guida alle spese sanitarie — consultata il 12/09/2026" },
       { tipo:"esenzione", nome:"Esenzione dal ticket sanitario",
-        semplice:"Non paghi il ticket su visite ed esami. Dipende dall'eta', dal reddito o dalla presenza di certe malattie.",
+        semplice:"Non paghi il ticket su visite ed esami. Dipende dall'età, dal reddito o dalla presenza di certe malattie.",
         cifre:[["100%","del ticket su visite ed esami"],["Codice E","l'etichetta che compare sulla ricetta"]],
         requisiti:[
-          {t:"Rientrare in una delle categorie previste per eta', reddito o patologia.", tag:"da verificare con un CAF"},
+          {t:"Rientrare in una delle categorie previste per età, reddito o patologia.", tag:"da verificare con un CAF"},
           {t:"L'esenzione va richiesta alla ASL o risulta automaticamente: dipende dalla regione."}
         ],
         scadenza:"Non risulta una scadenza fissa: l'esenzione si rinnova di anno in anno. Verificala presso la tua ASL.",
         attenzione:null,
-        passo:"Chiedi al tuo medico di famiglia se sulla tua posizione risulta gia' un codice di esenzione: spesso c'e' gia' e non lo si sa.",
+        passo:"Chiedi al tuo medico di famiglia se sulla tua posizione risulta già un codice di esenzione: spesso c'è già e non lo si sa.",
         glossario:["ticket"],
         fonte:"Ministero della Salute, esenzioni dal ticket — consultata il 12/09/2026" }
     ],
     escluse:[
       ["Bonus Mobili","Serve una condizione che, da quello che hai risposto, non risulta: lavori di ristrutturazione in corso."],
       ["Assegno Unico","Riguarda una situazione diversa dalla tua: si rivolge a chi ha figli a carico."],
-      ["Bonus Prima Casa Under 36","Il termine per chiederlo e' gia' passato."]
+      ["Bonus Prima Casa Under 36","Il termine per chiederlo è già passato."]
     ],
     glossario:{
       detrazione:["Detrazione","Uno sconto sulle tasse che paghi. Non sono soldi che arrivano sul conto: sono tasse che non paghi.",null],
-      scontrino_parlante:["Scontrino parlante","Lo scontrino della farmacia su cui compaiono il tuo codice fiscale e la natura del prodotto. Senza quei dati la spesa non si puo' portare in detrazione.","Basta dare la tessera sanitaria alla cassa: lo scontrino esce gia' cosi'."],
-      cassetto_fiscale:["Cassetto fiscale","Una pagina sul sito dell'Agenzia delle Entrate dove trovi tutto quello che lo Stato sa di te: redditi, spese sanitarie, dichiarazioni passate.","Per entrare serve SPID, CIE o CNS. Un CAF puo' guardarlo per te con una delega."],
-      ticket:["Ticket","La somma che si paga di tasca propria per una visita o un esame del servizio sanitario pubblico. Non e' il costo pieno: e' una quota.",null]
+      scontrino_parlante:["Scontrino parlante","Lo scontrino della farmacia su cui compaiono il tuo codice fiscale e la natura del prodotto. Senza quei dati la spesa non si può portare in detrazione.","Basta dare la tessera sanitaria alla cassa: lo scontrino esce già così."],
+      cassetto_fiscale:["Cassetto fiscale","Una pagina sul sito dell'Agenzia delle Entrate dove trovi tutto quello che lo Stato sa di te: redditi, spese sanitarie, dichiarazioni passate.","Per entrare serve SPID, CIE o CNS. Un CAF può guardarlo per te con una delega."],
+      ticket:["Ticket","La somma che si paga di tasca propria per una visita o un esame del servizio sanitario pubblico. Non è il costo pieno: è una quota.",null]
     }
   }
 };
@@ -923,7 +869,7 @@ function mostra(id){
 }
 
 /* --- S1: scelta multipla, con opzione esclusiva e annuncio del cambio --- */
-const TUTTE = [...document.querySelectorAll("#opt-situazione .opt")];
+const TUTTE = [...document.querySelectorAll("#opt-situazione .opt:not([disabled])")];
 const ESCLUSIVA = document.querySelector('#opt-situazione .opt[data-exclusive="true"]');
 const s1why = document.getElementById("s1-why");
 
@@ -1023,7 +969,7 @@ function componi(){
   document.getElementById("recap").innerHTML = recapHtml;
   document.getElementById("recap-vuoto").innerHTML = recapHtml;
 
-  // fascia degraded, quando il risultato c'e' ma e' meno affidabile
+  // fascia degraded, quando il risultato c'è ma è meno affidabile
   document.getElementById("degraded-slot").innerHTML = degradato ? (
     '<div class="banner-degraded" role="status">' +
       '<span class="sign" aria-hidden="true">!</span>' +
@@ -1076,17 +1022,17 @@ function componi(){
     });
   });
 
-  // cosa non ti riguarda, e perche'
+  // cosa non ti riguarda, e perché
   document.getElementById("excluded-body").innerHTML =
     '<ul class="bul">' + s.escluse.map(e=>'<li><strong>'+e[0]+'</strong> &mdash; '+e[1]+'</li>').join("") + '</ul>' +
-    '<p class="help">Se pensi che una di queste ti riguardi comunque, e&#39; esattamente il tipo di ' +
+    '<p class="help">Se pensi che una di queste ti riguardi comunque, è esattamente il tipo di ' +
     'domanda da fare a un CAF.</p>';
 
   // glossario: solo i termini realmente comparsi
   const usati = new Set();
   s.misure.forEach(m=>(m.glossario||[]).forEach(k=>usati.add(k)));
   if (profilo.caf === "non_so_cosa_e") usati.add("caf");
-  const voci = {...s.glossario, caf:["CAF","Centro di Assistenza Fiscale: un ufficio, spesso gratuito o a costo basso, dove una persona compila per te le pratiche con lo Stato.","Ce n'e' quasi sempre uno vicino a casa. Porta un documento e il codice fiscale."]};
+  const voci = {...s.glossario, caf:["CAF","Centro di Assistenza Fiscale: un ufficio, spesso gratuito o a costo basso, dove una persona compila per te le pratiche con lo Stato.","Ce n'è quasi sempre uno vicino a casa. Porta un documento e il codice fiscale."]};
   document.getElementById("glossario").innerHTML = [...usati].filter(k=>voci[k]).map(k=>
     '<li><b>'+voci[k][0]+'</b><p>'+voci[k][1]+'</p>'+(voci[k][2] ? '<p class="where">Dove si trova: '+voci[k][2]+'</p>' : '')+'</li>'
   ).join("");

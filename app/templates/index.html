@@ -1,57 +1,396 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A cosa ho diritto?</title>
-  <link rel="stylesheet" href="/static/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A cosa ho diritto?</title>
+<!--
+  Il markup di queste schermate viene da docs/ux/mockup.html. Gli attributi
+  aria-* sono copiati come stanno: sono la parte verificata per l'accessibilita'
+  e non vanno "semplificati" mentre si porta il resto.
+  I token si caricano per primi: tutto il resto dipende da loro.
+-->
+<link rel="stylesheet" href="/static/accenture-tokens.css">
+<link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <header>
-    <div class="header-inner">
-      <h1>A cosa ho diritto?</h1>
-      <button id="btn-reset" onclick="resetSession()">Ricomincia</button>
+
+<a class="skip" href="#contenuto">Salta al contenuto</a>
+
+<!-- Icone: un unico foglio SVG in linea. Nessuna libreria, nessuna risorsa remota,
+     nessuna emoji. Sono decorative: accanto c'e' sempre la parola scritta. -->
+<svg id="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-casa" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="i-famiglia" viewBox="0 0 24 24"><circle cx="8" cy="7" r="3"/><circle cx="17" cy="9" r="2.2"/><path d="M2.5 20c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M15 20c0-2.2 1.3-3.6 3.2-3.6S21.5 17.8 21.5 20"/></symbol>
+  <symbol id="i-lavoro" viewBox="0 0 24 24"><rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></symbol>
+  <symbol id="i-salute" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-9.2A4 4 0 0 1 12 8a4 4 0 0 1 7 2.8C19 15.6 12 20 12 20Z"/><path d="M12 10.5v4M10 12.5h4"/></symbol>
+  <symbol id="i-auto" viewBox="0 0 24 24"><path d="M4 16.5v2h3v-2M17 16.5v2h3v-2"/><path d="M3 16.5v-4l2-5h14l2 5v4Z"/><path d="M6.5 13h2M15.5 13h2"/></symbol>
+  <symbol id="i-under36" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.2"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></symbol>
+  <symbol id="i-bussola" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m15 9-2 4.2L9 15l2-4.2Z"/></symbol>
+  <symbol id="i-tempo" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.2 2"/></symbol>
+  <symbol id="i-documento" viewBox="0 0 24 24"><path d="M13.5 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5Z"/><path d="M13.5 3v5.5H19"/><path d="M4 4l16 16"/></symbol>
+  <symbol id="i-indietro" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 0-2.4 5.7"/><path d="M20 6.5V12h-5.5"/></symbol>
+  <symbol id="i-generico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 8.5v4M12 15.5h.01"/></symbol>
+</svg>
+
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="wordmark">A cosa ho diritto<i>?</i><small>Servizio di orientamento &middot; dati dimostrativi</small></div>
+    <div class="stepwrap" id="stepwrap" hidden>
+      <span class="steptext" id="steptext" role="status" aria-live="polite">Domanda 1 di 5</span>
+      <span class="stepbar" id="stepbar" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </span>
     </div>
-  </header>
+  </div>
+</header>
 
-  <!-- Dichiarazione della modalita demo: visibile, mai nascosta -->
-  <div id="demo-banner" class="hidden" role="status"></div>
+<!-- Da dove arrivano i dati. Si dichiara sempre, ma e' una riga, non un cartello. -->
+<p class="provenienza" id="provenienza" role="status" hidden></p>
 
-  <main id="main-container">
-    <!-- Chat panel -->
-    <section id="chat-panel">
-      <div id="messages"></div>
-      <div id="choices-container"></div>
-      <form id="chat-form" onsubmit="submitText(event)">
-        <input type="text" id="text-input" placeholder="Scrivi qui..." autocomplete="off">
-        <button type="submit">Invia</button>
-      </form>
-    </section>
+<main id="contenuto">
 
-    <!-- Results panel (shown after pipeline) -->
-    <section id="results-panel" class="hidden">
-      <h2>I tuoi bonus</h2>
-      <div id="bonus-cards"></div>
-      <div id="next-step-banner"></div>
-      <div id="escalation-banner" class="hidden"></div>
-    </section>
-  </main>
+<!-- ========================= S0 — APERTURA ========================= -->
+<section class="screen on page" id="s0" aria-label="Schermata iniziale">
+  <div class="eyebrow">Per chi non sa da dove cominciare</div>
+  <h1 class="gradient" tabindex="-1">A cosa ho diritto?</h1>
+  <p class="lead">Ti facciamo cinque domande semplici. Alla fine ti diciamo quali aiuti dello Stato
+    riguardano la tua situazione, cosa vogliono dire e da dove si comincia.</p>
+  <div class="proofs">
+    <div><b>3</b><span>minuti</span></div>
+    <div><b>5</b><span>domande</span></div>
+    <div><b>0</b><span>documenti da cercare</span></div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary" type="button" data-goto="s1">Iniziamo</button>
+  </div>
+  <ul class="promesse">
+    <li><svg class="ico" aria-hidden="true"><use href="#i-documento"></use></svg>
+      <span><b>Niente registrazione</b>Non ti chiediamo nome, email o codice fiscale.</span></li>
+    <li><svg class="ico" aria-hidden="true"><use href="#i-indietro"></use></svg>
+      <span><b>Si torna indietro</b>Puoi cambiare una risposta in qualsiasi momento, senza
+        ricominciare.</span></li>
+    <li><svg class="ico" aria-hidden="true"><use href="#i-bussola"></use></svg>
+      <span><b>Ti diciamo dove andare</b>Alla fine sai quali aiuti ti riguardano, cosa serve e a
+        quale sportello rivolgerti.</span></li>
+  </ul>
+  <p class="help mt5">Nessun dato personale viene salvato.</p>
+</section>
 
-  <!-- Disclaimer sempre visibile -->
-  <footer id="disclaimer">
-    Queste informazioni sono orientative. Verifica le condizioni su
-    <a href="https://www.agenziaentrate.gov.it" target="_blank" rel="noopener">agenziaentrate.gov.it</a>
-    o rivolgiti a un CAF — spesso è gratuito.
-  </footer>
+<!-- ========================= S1 — SITUAZIONE DI VITA (multipla) ========================= -->
+<section class="screen page" id="s1" aria-label="Domanda 1">
+  <div class="eyebrow">Domanda 1 di 5</div>
+  <h1 tabindex="-1">Cosa sta succedendo nella tua vita in questo momento?</h1>
+  <p class="help">Puoi scegliere piu&#39; di una risposta.</p>
 
-  <!-- Loading overlay -->
-  <div id="loading-overlay" class="hidden">
-    <div class="loading-box">
-      <div class="spinner"></div>
-      <p id="loading-text">Sto analizzando il tuo profilo…</p>
+  <div class="options" role="group" aria-label="Situazione di vita" id="opt-situazione">
+    <button class="opt" type="button" aria-pressed="false" data-val="casa"
+            data-label="Sto per comprare o ristrutturare casa">
+      <span class="mark" aria-hidden="true"></span>
+      <svg class="ico" aria-hidden="true"><use href="#i-casa"></use></svg>
+      <span class="txt">Sto per comprare o ristrutturare casa
+        <span class="sub">Lavori in casa, acquisto, interventi in condominio</span></span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="figlio"
+            data-label="Ho avuto o aspetto un figlio">
+      <span class="mark" aria-hidden="true"></span>
+      <svg class="ico" aria-hidden="true"><use href="#i-famiglia"></use></svg>
+      <span class="txt">Ho avuto o aspetto un figlio</span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="lavoro"
+            data-label="Ho perso il lavoro o sto cercando lavoro">
+      <span class="mark" aria-hidden="true"></span>
+      <svg class="ico" aria-hidden="true"><use href="#i-lavoro"></use></svg>
+      <span class="txt">Ho perso il lavoro o sto cercando lavoro</span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="spese_mediche"
+            data-label="Ho spese mediche importanti">
+      <span class="mark" aria-hidden="true"></span>
+      <svg class="ico" aria-hidden="true"><use href="#i-salute"></use></svg>
+      <span class="txt">Ho spese mediche importanti</span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="auto"
+            data-label="Voglio comprare un&#39;auto">
+      <span class="mark" aria-hidden="true"></span>
+      <svg class="ico" aria-hidden="true"><use href="#i-auto"></use></svg>
+      <span class="txt">Voglio comprare un&#39;auto</span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="under36"
+            data-label="Ho meno di 36 anni">
+      <span class="mark" aria-hidden="true"></span>
+      <svg class="ico" aria-hidden="true"><use href="#i-under36"></use></svg>
+      <span class="txt">Ho meno di 36 anni</span>
+    </button>
+    <button class="opt" type="button" aria-pressed="false" data-val="non_so" data-exclusive="true"
+            data-label="Non so da dove partire, mostrami tutto">
+      <span class="mark" aria-hidden="true"></span>
+      <svg class="ico" aria-hidden="true"><use href="#i-bussola"></use></svg>
+      <span class="txt">Non so da dove partire, mostrami tutto</span>
+    </button>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" type="button" id="s1-next" aria-disabled="true" data-next="s2">Avanti</button>
+    <span class="why" id="s1-why" role="status" aria-live="polite">Scegli almeno una risposta per continuare.</span>
+  </div>
+</section>
+
+<!-- ========================= S2 — CASA ========================= -->
+<section class="screen page" id="s2" aria-label="Domanda 2">
+  <div class="eyebrow">Domanda 2 di 5</div>
+  <h1 tabindex="-1">Dove abiti in questo momento?</h1>
+  <div class="options" role="radiogroup" aria-label="Condizione abitativa" data-single="abitazione" data-next="s3">
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="proprietario" data-label="Sono proprietario di casa">
+      <span class="mark" aria-hidden="true"></span><span class="txt">In una casa di mia proprieta&#39;</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="affittuario" data-label="Sono in affitto">
+      <span class="mark" aria-hidden="true"></span><span class="txt">In affitto</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="ospite_familiari" data-label="Sono ospite di familiari">
+      <span class="mark" aria-hidden="true"></span><span class="txt">A casa di familiari</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="non_so" data-label="Preferisco non rispondere">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Preferisco non rispondere</span></button>
+  </div>
+  <div class="actions"><button class="btn btn-quiet" type="button" data-goto="s1">&#8592; Indietro</button></div>
+</section>
+
+<!-- ========================= S3 — REDDITO ========================= -->
+<section class="screen page" id="s3" aria-label="Domanda 3">
+  <div class="eyebrow">Domanda 3 di 5</div>
+  <h1 tabindex="-1">Da dove arrivano i tuoi soldi ogni mese?</h1>
+  <p class="help">Non ti chiediamo quanto guadagni: serve solo sapere di che tipo di entrata si tratta.</p>
+  <div class="options" role="radiogroup" aria-label="Tipo di reddito" data-single="reddito" data-next="s4a">
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="lavoro_dipendente" data-label="Lavoro dipendente">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Uno stipendio da un datore di lavoro</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="pensione" data-label="Pensione">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Una pensione</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="partita_iva" data-label="Partita IVA">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Lavoro in proprio, ho la partita IVA</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="nessun_reddito" data-label="Nessun reddito in questo momento">
+      <span class="mark" aria-hidden="true"></span><span class="txt">In questo momento non ho entrate</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="non_so" data-label="Preferisco non rispondere">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Preferisco non rispondere</span></button>
+  </div>
+  <div class="chips">
+    <button class="chip" type="button" aria-expanded="false" aria-controls="g-piva">Cosa significa partita IVA?</button>
+  </div>
+  <div class="gloss" id="g-piva" hidden>
+    <b>Partita IVA</b> e&#39; il numero che lo Stato assegna a chi lavora in proprio e deve emettere
+    fattura. Chi ha solo uno stipendio o una pensione non ce l&#39;ha.
+  </div>
+  <div class="actions"><button class="btn btn-quiet" type="button" data-goto="s2">&#8592; Indietro</button></div>
+</section>
+
+<!-- ========================= S4a — TIMING ========================= -->
+<section class="screen page" id="s4a" aria-label="Domanda 4">
+  <div class="eyebrow">Domanda 4 di 5</div>
+  <h1 tabindex="-1">A che punto sei?</h1>
+  <div class="options" role="radiogroup" aria-label="A che punto sei" data-single="timing" data-next="s4b">
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="da_iniziare" data-label="Devo ancora iniziare">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Devo ancora iniziare</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="in_corso" data-label="&#200; in corso">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Ho gia&#39; cominciato</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="gia_concluso" data-label="&#200; gia&#39; concluso">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Ho gia&#39; finito e vorrei recuperare le spese passate</span></button>
+  </div>
+  <div class="actions"><button class="btn btn-quiet" type="button" data-goto="s3">&#8592; Indietro</button></div>
+</section>
+
+<!-- ========================= S4b — CAF ========================= -->
+<section class="screen page" id="s4b" aria-label="Domanda 5">
+  <div class="eyebrow">Domanda 5 di 5</div>
+  <h1 tabindex="-1">Hai gia&#39; un CAF o un commercialista?</h1>
+  <div class="options" role="radiogroup" aria-label="Hai un CAF" data-single="caf" data-next="s5" data-noauto="true">
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="si" data-label="S&#236;">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Si&#39;</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="no" data-label="No">
+      <span class="mark" aria-hidden="true"></span><span class="txt">No</span></button>
+    <button class="opt" type="button" role="radio" aria-checked="false" data-val="non_so_cosa_e" data-label="Non so cosa sia un CAF">
+      <span class="mark" aria-hidden="true"></span><span class="txt">Non so cosa sia un CAF</span></button>
+  </div>
+  <!-- La spiegazione compare come conseguenza della risposta: non e' un errore e non blocca. -->
+  <div class="gloss" id="g-caf" hidden>
+    <b>CAF</b> sta per Centro di Assistenza Fiscale. E&#39; un ufficio, spesso gratuito o a costo basso,
+    dove una persona compila per te le pratiche con lo Stato. Ce n&#39;e&#39; quasi sempre uno vicino a casa.
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary" type="button" id="s4b-next" aria-disabled="true" data-next="s-capito">Vedi le misure</button>
+    <button class="btn btn-quiet" type="button" data-goto="s4a">&#8592; Indietro</button>
+  </div>
+</section>
+
+<!-- ========================= S4c — HO CAPITO QUESTO DI TE ========================= -->
+<!-- Il momento che trasforma un questionario in una conversazione: si ripete
+     quello che si e' capito e si lascia correggere una risposta sola, senza
+     ricominciare. -->
+<section class="screen page" id="s-capito" aria-label="Riepilogo delle tue risposte">
+  <div class="eyebrow">Prima di andare avanti</div>
+  <h1 tabindex="-1">Ho capito questo di te</h1>
+  <p class="help">Se qualcosa non torna, cambialo adesso: basta un tocco sulla riga, non si
+    ricomincia da capo.</p>
+  <ul class="capito" id="capito"></ul>
+  <div class="actions">
+    <button class="btn btn-primary" type="button" id="conferma">&#200; giusto, vai avanti</button>
+    <button class="btn btn-quiet" type="button" data-goto="s4b">&#8592; Indietro</button>
+  </div>
+</section>
+
+<!-- ========================= S5 — ELABORAZIONE ========================= -->
+<section class="screen page" id="s5" aria-label="Stiamo guardando la tua situazione">
+  <div class="eyebrow">Un momento</div>
+  <h1 tabindex="-1">Stiamo guardando la tua situazione</h1>
+  <div class="loader" role="status" aria-live="polite">
+    <div class="track" aria-hidden="true"><i></i></div>
+    <ul class="steps-list" id="loading-steps">
+      <li data-i="0">Mettiamo in ordine le tue risposte.</li>
+      <li data-i="1">Cerchiamo le misure che riguardano la tua situazione.</li>
+      <li data-i="2">Prepariamo i passi da fare.</li>
+    </ul>
+  </div>
+  <p class="attesa-tempo" id="attesa-tempo" role="status" aria-live="polite"></p>
+  <p class="attesa-nota" id="attesa-nota"></p>
+</section>
+
+<!-- ========================= S6 — SCHEDA ========================= -->
+<section class="screen page wide" id="s6" aria-label="Quello che risulta per la tua situazione">
+  <div class="eyebrow">Il risultato</div>
+  <h1 tabindex="-1">Ecco cosa risulta per la tua situazione</h1>
+
+  <p class="stampa-intestazione" id="stampa-intestazione"></p>
+
+  <div class="recap" id="recap"></div>
+
+  <div id="degraded-slot"></div>
+
+  <p class="lead" id="count-line"></p>
+  <p class="help" id="order-line">In ordine di situazione, non di convenienza: non c&#39;e&#39; una misura
+    migliore delle altre.</p>
+
+  <div class="cards" id="cards"></div>
+
+  <div id="spid-slot"></div>
+
+  <details class="acc" id="excluded-box" hidden>
+    <summary>Perche&#39; non vedo altri bonus di cui ho sentito parlare?</summary>
+    <div class="body" id="excluded-body"></div>
+  </details>
+
+  <div class="sec" id="glossario-box" hidden>
+    <h3>Le parole che hai incontrato</h3>
+    <ul class="gloss-list" id="glossario"></ul>
+  </div>
+
+  <div class="domani" id="domani-box" hidden>
+    <h2>Cosa puoi fare domani mattina</h2>
+    <p class="card-plain">Un passo per ogni misura. Non sono in ordine di importanza: nessuno di
+      questi dipende dagli altri.</p>
+    <ol id="domani"></ol>
+  </div>
+
+  <div class="vicino" id="vicino">
+    <h2>Vuoi sapere dove andare vicino a te?</h2>
+    <p class="card-plain">Un <b>CAF</b> e un <b>patronato</b> sono uffici dove una persona compila
+      per te le pratiche con lo Stato: il CAF si occupa soprattutto di tasse e ISEE, il patronato
+      di pensioni e prestazioni INPS. Si va quasi sempre su appuntamento.</p>
+    <div class="riga mt4">
+      <label for="cap" class="sr-only">Il tuo CAP o il nome del tuo comune</label>
+      <input type="text" id="cap" inputmode="text" autocomplete="postal-code"
+             placeholder="CAP o nome del comune (facoltativo)">
+      <button class="btn btn-secondary" type="button" id="cerca-caf">Cerca vicino a me</button>
+    </div>
+    <p class="help mt3">Se preferisci non scriverlo, va bene lo stesso: il resto della scheda
+      funziona senza.</p>
+    <div class="esito" id="esito-caf" role="status"></div>
+    <h3 class="mt5">Cosa portare</h3>
+    <ul class="portare" id="portare"></ul>
+  </div>
+
+  <div class="tools">
+    <button class="btn btn-secondary" type="button" data-stampa="true">Stampa questa scheda</button>
+    <button class="btn btn-quiet" type="button" data-goto="s1">Torna indietro e cambia una risposta</button>
+  </div>
+
+  <div class="caf">
+    <h2>Il prossimo passo lo fai con una persona</h2>
+    <p>Questa scheda dice quali misure esistono e cosa vogliono dire. Non dice cosa ti conviene fare:
+      quella e&#39; una decisione, e va presa con qualcuno che puo&#39; guardare i tuoi documenti.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://www.agenziaentrate.gov.it" target="_blank" rel="noopener">Trova un CAF vicino a te</a>
+      <button class="btn btn-secondary" type="button" data-restart="true">Ricomincia con un profilo diverso</button>
     </div>
   </div>
 
-  <script src="/static/app.js"></script>
+  <p class="stampa-intestazione" id="stampa-dove"></p>
+  <p class="nota-scheda" id="nota-scheda"></p>
+</section>
+
+<!-- ========================= STATO — NESSUNA MISURA ========================= -->
+<section class="screen page" id="s-vuoto" aria-label="Nessuna misura pertinente">
+  <div class="eyebrow">Il risultato</div>
+  <h1 tabindex="-1">Da quello che hai risposto non risultano misure che riguardano la tua situazione</h1>
+  <div class="recap" id="recap-vuoto"></div>
+  <p class="lead">Questo non vuol dire che non ti spetti niente: vuol dire che serve guardare il tuo
+    caso da vicino, e da qui non possiamo farlo.</p>
+  <details class="acc" id="excluded-box-vuoto" hidden>
+    <summary>Perche&#39; non vedo altri bonus di cui ho sentito parlare?</summary>
+    <div class="body" id="excluded-body-vuoto"></div>
+  </details>
+  <div class="caf">
+    <h2>Dove puoi chiedere</h2>
+    <p>Un CAF guarda la tua posizione con i documenti alla mano e ti dice cosa risulta. Il servizio
+      e&#39; spesso gratuito.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://www.agenziaentrate.gov.it" target="_blank" rel="noopener">Trova un CAF vicino a te</a>
+      <button class="btn btn-secondary" type="button" data-restart="true">Ricomincia con un profilo diverso</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= STATO — ESCALATION ========================= -->
+<section class="screen page" id="s-escalation" aria-label="Serve l&#39;aiuto di una persona">
+  <div class="eyebrow">Serve una persona</div>
+  <h1 tabindex="-1">Su questo preferiamo non risponderti da soli</h1>
+  <div class="caf mt5">
+    <h2>Perche&#39;</h2>
+    <p>Non abbiamo informazioni verificate su questo caso. Preferiamo dirtelo invece di tirare a
+      indovinare: un&#39;informazione sbagliata qui diventa una pratica sbagliata.</p>
+    <p id="escalation-dettaglio"></p>
+    <p>Un CAF puo&#39; guardare la tua posizione con i documenti alla mano. Il servizio e&#39; spesso gratuito.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://www.agenziaentrate.gov.it" target="_blank" rel="noopener">Trova un CAF vicino a te</a>
+      <button class="btn btn-secondary" type="button" data-goto="s1">Torna indietro e cambia una risposta</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= STATO — ERRORE ========================= -->
+<section class="screen page" id="s-errore" aria-label="Errore">
+  <div class="eyebrow">Si e&#39; interrotto</div>
+  <h1 tabindex="-1">Qualcosa non ha funzionato dalla nostra parte</h1>
+  <div class="panel-error" role="alert">
+    <div class="head">
+      <span class="sign" aria-hidden="true">!</span>
+      <h2>Non siamo riusciti a completare la ricerca</h2>
+    </div>
+    <p>Non e&#39; colpa di quello che hai risposto. Le tue risposte sono ancora qui: puoi riprovare
+      senza ricominciare da capo.</p>
+    <div class="actions">
+      <button class="btn btn-primary" type="button" data-riprova="true">Riprova</button>
+      <a class="btn btn-secondary" href="https://www.agenziaentrate.gov.it" target="_blank" rel="noopener">Vai a un CAF</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ========================= DISCLAIMER ANCORATO ========================= -->
+<div class="disclaimer">
+  <div class="disclaimer-in">
+    <b>Questo strumento spiega quali misure esistono. Non da&#39; consigli e non fa calcoli sul tuo caso.</b>
+    Verifica le scadenze su <a href="https://www.agenziaentrate.gov.it" target="_blank" rel="noopener">agenziaentrate.gov.it</a>
+    e parla con un CAF o un commercialista prima di decidere.
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
 </body>
 </html>
