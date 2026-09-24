@@ -5,27 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>A cosa ho diritto? — Hackathon Agentic Coding</title>
 <!--
-  Presentazione a 8 sezioni, 5:00 totali.
+  Presentazione a 6 sezioni, 3:00 totali.
+  I due minuti restanti dei cinque a disposizione sono demo dal vivo dell'applicazione reale
+  (python app/main.py -> http://localhost:5000). Per questo il deck NON mostra schermate del
+  prodotto né racconta il percorso utente passo per passo: quello lo fa la demo.
+  La sezione 6 è la cerniera fra deck e demo.
+
   File singolo, nessuna dipendenza esterna: nessuna CDN, nessun font remoto, nessun build.
   Si apre offline con doppio clic.
   Navigazione: frecce destra/sinistra, PagSu/PagGiu, barra spaziatrice, Home, Fine, o i pallini in basso.
+
   Nomi, tier, fasi e limiti sono allineati a agents/ARCHITETTURA.md: in caso di divergenza vince quel file.
+  Le cifre della sezione 04 vengono da agents/state/verifica-fase-a.json, riportate senza arrotondamenti.
+  Estetica: docs/ux/estetica-v2.css, inlinata e adattata ai token di questo file.
+  Contrasti: #A100FF come testo è 3.92:1 (sotto soglia) e qui è usato solo per riempimenti e bordi;
+  il testo viola è #BE82FF (7.75:1). I numeri grandi sono bianco -> #D9B8FF su #230B33.
 -->
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --purple:#A100FF;
-  --purple-light:#BE82FF;
-  --ink:#0A0014;
+  --purple:#A100FF;           /* solo riempimenti e bordi */
+  --purple-deep:#8A00DB;      /* riempimento con testo bianco sopra: 6.77:1 */
+  --purple-light:#BE82FF;     /* testo viola: 7.75:1 */
   --bg:#050008;
+  --surface-sunken:#0A0310;
+  --surface-raised:#230B33;   /* bianco 17.99:1 · BE82FF 6.71:1 */
+  --surface-top:#2E1440;
   --line:rgba(255,255,255,0.15);
+  --line-hairline:rgba(255,255,255,0.10);
   --soft:rgba(255,255,255,0.05);
   --muted:rgba(255,255,255,0.64);
+  --dim:#B9B5BC;              /* 9.89:1 su raised */
   --faint:rgba(255,255,255,0.25);
+  --num-gradient:linear-gradient(180deg,#FFFFFF,#D9B8FF);
+  --cat-glow:rgba(190,130,255,0.22);
 }
 html,body{height:100%}
 body{
-  background:#050008;
+  background:var(--bg);
   color:#fff;
   font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   line-height:1.6;
@@ -35,8 +52,8 @@ body{
 body::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
-    radial-gradient(1100px 620px at 84% -14%, rgba(161,0,255,0.24), transparent 62%),
-    radial-gradient(760px 520px at -8% 110%, rgba(161,0,255,0.13), transparent 60%);
+    radial-gradient(1200px 680px at 82% -16%, var(--cat-glow), transparent 62%),
+    radial-gradient(820px 560px at -10% 108%, rgba(161,0,255,0.13), transparent 60%);
 }
 
 /* ---------- struttura ---------- */
@@ -44,7 +61,7 @@ body::before{
 .slide{
   position:absolute;inset:0;
   display:flex;flex-direction:column;justify-content:center;justify-content:safe center;
-  padding:clamp(60px,8vh,96px) clamp(26px,5vw,88px) clamp(70px,9vh,96px);
+  padding:clamp(58px,7.6vh,92px) clamp(26px,5vw,88px) clamp(66px,8.4vh,92px);
   opacity:0;visibility:hidden;transform:translateY(10px);
   transition:opacity .3s ease, transform .3s ease;
   overflow-y:auto;
@@ -55,10 +72,12 @@ body::before{
 /* ---------- chrome ---------- */
 .chrome{position:fixed;left:0;right:0;z-index:5;pointer-events:none;
   padding:0 clamp(26px,5vw,88px);display:flex;align-items:center;justify-content:space-between;gap:18px}
-.chrome.top{top:clamp(18px,3vh,34px)}
-.chrome.bot{bottom:clamp(16px,2.6vh,30px)}
-.logo{font-size:clamp(15px,1.5vw,19px);font-weight:700;letter-spacing:-0.01em;color:#fff}
-.logo i{font-style:normal;color:var(--purple)}
+.chrome.top{top:clamp(16px,2.6vh,30px)}
+.chrome.bot{bottom:clamp(14px,2.3vh,26px)}
+.wordmark{font-size:clamp(14px,1.4vw,18px);font-weight:600;letter-spacing:-0.01em;color:#fff;line-height:1.15}
+.wordmark i{font-style:normal;font-weight:700;color:var(--purple-light)}
+.wordmark small{display:block;margin-top:2px;font-size:10px;font-weight:500;
+  text-transform:uppercase;letter-spacing:0.22em;color:var(--faint)}
 .counter{font-size:12px;letter-spacing:.2em;color:var(--faint);font-variant-numeric:tabular-nums}
 .counter b{color:#fff;font-weight:600}
 .footnote{font-size:11px;text-transform:uppercase;letter-spacing:0.2em;color:rgba(255,255,255,0.25)}
@@ -69,97 +88,154 @@ body::before{
 .dot.on{background:var(--purple);border-color:var(--purple);box-shadow:0 0 0 4px rgba(161,0,255,0.18)}
 .navbtn{width:30px;height:30px;border-radius:999px;border:1px solid var(--line);background:var(--soft);
   color:#fff;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center}
-.navbtn:hover{border-color:var(--purple)}
+.navbtn:hover{border-color:var(--purple-light)}
 
 /* ---------- tipografia ---------- */
-.eyebrow{display:inline-block;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);
+.eyebrow{display:inline-block;border:1px solid var(--line);background:var(--soft);
   border-radius:999px;font-size:11px;text-transform:uppercase;letter-spacing:0.25em;
-  padding:7px 16px 6px;color:rgba(255,255,255,0.74);margin-bottom:clamp(12px,2.1vh,24px)}
-h1,h2{background:linear-gradient(90deg,var(--purple-light),var(--purple));
+  padding:7px 16px 6px;color:rgba(255,255,255,0.74);margin-bottom:clamp(10px,1.8vh,22px)}
+h1,h2{background:linear-gradient(100deg,#FFFFFF,#D9B8FF);
   -webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.06em}
-h1{font-size:clamp(38px,6.2vw,82px);line-height:1.04;letter-spacing:-0.03em;font-weight:700}
-h2{font-size:clamp(27px,3.9vw,50px);line-height:1.12;letter-spacing:-0.02em;font-weight:700;
-  margin-bottom:clamp(10px,1.8vh,20px)}
+h1{font-size:clamp(38px,6vw,78px);line-height:1.04;letter-spacing:-0.03em;font-weight:700}
+h1 q{-webkit-text-fill-color:var(--purple-light);color:var(--purple-light);quotes:none}
+h2{font-size:clamp(25px,3.5vw,46px);line-height:1.13;letter-spacing:-0.02em;font-weight:700;
+  margin-bottom:clamp(8px,1.5vh,18px)}
 h3{font-size:clamp(11px,1.05vw,13px);text-transform:uppercase;letter-spacing:0.2em;
   color:var(--purple-light);font-weight:600;margin-bottom:10px}
-.lead{font-size:clamp(17px,1.62vw,24px);color:rgba(255,255,255,0.88);max-width:74ch}
-.body{font-size:clamp(14px,1.22vw,18px);color:var(--muted)}
-.small{font-size:clamp(12px,1.02vw,15px);color:rgba(255,255,255,0.5)}
-.mt{margin-top:clamp(12px,2vh,24px)}
-.mt2{margin-top:clamp(18px,3vh,34px)}
+.lead{font-size:clamp(16px,1.5vw,22px);color:rgba(255,255,255,0.88);max-width:78ch}
+.body{font-size:clamp(13.5px,1.18vw,17px);color:var(--muted)}
+.small{font-size:clamp(11.5px,1vw,14.5px);color:rgba(255,255,255,0.5)}
+.mt{margin-top:clamp(10px,1.8vh,22px)}
+.mt2{margin-top:clamp(16px,2.6vh,30px)}
 strong{color:#fff;font-weight:600}
+em{color:var(--purple-light);font-style:normal}
 code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:0.88em;color:var(--purple-light);
   background:rgba(161,0,255,0.12);border:1px solid rgba(161,0,255,0.22);border-radius:6px;padding:1px 6px;white-space:nowrap}
 
 ul.b{list-style:none}
 ul.b li{position:relative;padding-left:1.5em;margin-bottom:.5em;
-  font-size:clamp(14px,1.22vw,18px);color:var(--muted)}
-ul.b li::before{content:"\203A";position:absolute;left:0;top:-0.08em;color:var(--purple);font-size:1.3em;line-height:1.5}
+  font-size:clamp(13.5px,1.18vw,17px);color:var(--muted)}
+ul.b li::before{content:"\203A";position:absolute;left:0;top:-0.08em;color:var(--purple-light);font-size:1.3em;line-height:1.5}
 ul.b.tight li{margin-bottom:.3em}
 
 /* ---------- blocchi ---------- */
-.grid{display:grid;gap:clamp(12px,1.5vw,22px)}
+.grid{display:grid;gap:clamp(11px,1.4vw,20px)}
 .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
-.card{border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.035);
-  border-radius:16px;padding:clamp(14px,1.6vw,24px)}
-.card.accent{border-color:rgba(161,0,255,0.45);background:rgba(161,0,255,0.09)}
-.note{border-left:3px solid var(--purple);padding:2px 0 2px 18px;color:#fff;
-  font-size:clamp(15px,1.45vw,21px);line-height:1.45}
-.num{font-size:clamp(22px,2.4vw,34px);font-weight:700;line-height:1;color:var(--purple);
-  font-variant-numeric:tabular-nums;margin-bottom:8px;display:block}
-.kv{display:grid;grid-template-columns:minmax(120px,32%) 1fr;gap:6px 16px;
-  font-size:clamp(13px,1.15vw,17px);color:var(--muted)}
-.kv dt{color:var(--purple-light);font-weight:600}
-table{width:100%;border-collapse:collapse;font-size:clamp(13px,1.14vw,17px)}
+.g2w{grid-template-columns:minmax(0,1.32fr) minmax(0,1fr)}
+.card{position:relative;background:linear-gradient(180deg,#180527,var(--surface-raised));
+  border:1px solid var(--line-hairline);border-top:3px solid var(--purple-light);
+  border-radius:16px;padding:clamp(13px,1.5vw,22px);
+  box-shadow:0 18px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,0.07)}
+.card.flat{border-top:1px solid var(--line-hairline);background:rgba(255,255,255,0.035);box-shadow:none}
+.card.accent{border-color:rgba(161,0,255,0.45);border-top-color:var(--purple-light);
+  background:linear-gradient(180deg,rgba(161,0,255,0.14),rgba(161,0,255,0.07))}
+.note{border-left:3px solid var(--purple-light);padding:2px 0 2px 18px;color:#fff;
+  font-size:clamp(14px,1.38vw,20px);line-height:1.45}
+.quote{background:var(--surface-sunken);border:1px solid var(--line-hairline);
+  border-left:3px solid var(--purple-light);border-radius:12px;
+  padding:clamp(11px,1.3vw,18px) clamp(14px,1.6vw,24px);
+  font-size:clamp(13.5px,1.24vw,18px);line-height:1.5;color:rgba(255,255,255,0.9)}
+.quote cite{display:block;margin-top:7px;font-style:normal;font-size:11px;text-transform:uppercase;
+  letter-spacing:0.2em;color:var(--faint)}
+
+/* ---------- tessere numero (estetica v2 · R1) ---------- */
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:clamp(10px,1.2vw,18px);margin-top:clamp(12px,2vh,24px)}
+.fig{position:relative;background:var(--surface-raised);border:1px solid var(--line-hairline);
+  border-radius:14px;padding:clamp(13px,1.5vw,22px);overflow:hidden}
+.fig::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent)}
+.fig b{display:block;font-size:clamp(34px,3.6vw,58px);font-weight:700;line-height:1.02;
+  letter-spacing:-0.035em;font-variant-numeric:tabular-nums lining-nums;
+  color:#fff;background:var(--num-gradient);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  padding-bottom:.04em}
+.fig span{display:block;margin-top:clamp(6px,1vh,12px);font-size:clamp(11.5px,1vw,14.5px);
+  line-height:1.35;color:var(--dim)}
+.fig.missing b{font-size:clamp(19px,1.9vw,28px);font-weight:500;background:none;
+  -webkit-text-fill-color:currentColor;color:var(--dim);letter-spacing:0;line-height:1.3}
+@media (forced-colors:active){.fig b{-webkit-text-fill-color:CanvasText;background:none}}
+
+table{width:100%;border-collapse:collapse;font-size:clamp(12.5px,1.1vw,16px)}
 th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.2em;color:var(--purple-light);
-  font-weight:600;padding:0 0 10px;border-bottom:1px solid rgba(255,255,255,0.14)}
-td{padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.08);color:var(--muted);vertical-align:top}
-td:first-child{color:#fff;padding-right:26px;width:44%}
-table.tight td{padding:8px 0;font-size:clamp(12.5px,1.05vw,16px)}
-table.tight td:first-child{width:46%;color:rgba(255,255,255,0.72)}
+  font-weight:600;padding:0 0 9px;border-bottom:1px solid rgba(255,255,255,0.14)}
+td{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.08);color:var(--muted);vertical-align:top}
+td:first-child{color:#fff;padding-right:24px;width:44%}
+table.tight td{padding:8px 0;font-size:clamp(12px,1.02vw,15.5px)}
+table.tight td:first-child{width:46%;color:rgba(255,255,255,0.78)}
+table.tri td{padding:9px 0}
+table.tri td:first-child{width:33%}
+table.tri td:nth-child(2),table.tri th:nth-child(2){padding-right:26px}
+table.tri th:first-child{padding-right:26px}
+.was{color:rgba(255,255,255,0.86)}
+.bad{color:#F5B85C}       /* 11.78:1 su fondo scuro */
 
 /* ---------- diagramma ---------- */
-.arch{display:block;width:100%;height:auto;max-height:clamp(200px,45vh,430px);margin:0 auto}
+.arch{display:block;width:100%;height:auto;max-height:clamp(200px,42vh,400px);margin:0 auto}
 .arch text{font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.dense h2{font-size:clamp(22px,2.7vw,36px);margin-bottom:6px}
-.dense>.inner>.body{font-size:clamp(13px,1.05vw,16px)}
-.dense .card{padding:clamp(11px,1.2vw,18px)}
-.dense .card .body{font-size:clamp(12.5px,0.98vw,15.5px)}
-.dense .mt{margin-top:clamp(10px,1.5vh,16px)}
-.legend{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:10px;
-  font-size:clamp(11px,1vw,14px);color:var(--muted)}
+.dense h2{font-size:clamp(21px,2.6vw,34px);margin-bottom:6px}
+.dense>.inner>.body{font-size:clamp(12.5px,1.02vw,15.5px)}
+.dense .card{padding:clamp(10px,1.15vw,17px)}
+.dense .card .body{font-size:clamp(12px,0.96vw,15px)}
+.dense .mt{margin-top:clamp(9px,1.4vh,16px)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:9px;
+  font-size:clamp(11px,0.98vw,13.5px);color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:8px}
 .chip{width:13px;height:13px;border-radius:4px;display:inline-block}
 .chip.opus{background:var(--purple)}
 .chip.sonnet{border:1.5px solid var(--purple-light)}
 .chip.haiku{border:1.5px solid rgba(255,255,255,0.35)}
 
+/* ---------- copertina (estetica v2 · R2) ---------- */
+.cover{overflow:hidden}
+.cover::before{content:"?";position:absolute;right:-1vw;top:50%;transform:translateY(-52%);
+  font-size:min(38rem,58vh);line-height:.8;font-weight:700;
+  color:var(--purple-light);opacity:.055;pointer-events:none;user-select:none;z-index:0}
+.cover .inner{position:relative;z-index:1}
+.proofs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:clamp(12px,1.5vw,22px);margin-top:clamp(18px,3vh,36px);padding-top:clamp(14px,2.4vh,28px);
+  border-top:1px solid var(--line-hairline)}
+.proofs b{display:block;font-size:clamp(20px,2.1vw,30px);font-weight:700;line-height:1.05;
+  letter-spacing:-0.03em;font-variant-numeric:tabular-nums;color:#fff}
+.proofs span{display:block;margin-top:5px;font-size:clamp(11.5px,1vw,14px);color:var(--dim)}
+
 /* ---------- responsive ---------- */
-@media (max-height:800px){
-  .dense{padding-top:52px;padding-bottom:56px}
-  .dense .arch{max-height:35vh}
-  .dense .eyebrow{margin-bottom:8px}
-  .dense h2{font-size:clamp(20px,2.4vw,30px);margin-bottom:4px}
-  .dense>.inner>.body{font-size:12.5px;margin-bottom:6px!important}
-  .dense .card{padding:10px 13px;border-radius:12px}
-  .dense .card .body{font-size:12px}
-  .dense .card h3{margin-bottom:6px}
+@media (max-height:980px){
+  .slide{padding-top:50px;padding-bottom:54px}
+  .eyebrow{margin-bottom:8px;padding:5px 13px 4px}
+  h2{font-size:clamp(22px,2.9vw,34px);margin-bottom:6px}
+  .lead{font-size:clamp(14.5px,1.3vw,18px)}
+  .mt{margin-top:10px}
+  .mt2{margin-top:14px}
+  .figs{margin-top:12px;gap:10px}
+  .fig{padding:12px 14px;border-radius:12px}
+  .fig b{font-size:clamp(28px,2.9vw,42px)}
+  .fig span{margin-top:6px;font-size:11.5px}
+  .card{padding:11px 14px;border-radius:12px}
+  .dense .arch{max-height:38vh}
+  .dense h2{font-size:clamp(19px,2.3vw,28px);margin-bottom:4px}
+  .dense>.inner>.body{font-size:12.5px}
+  .dense .card{padding:9px 12px}
+  .dense .card .body{font-size:11.8px}
+  .dense .card h3{margin-bottom:5px}
   .dense .mt{margin-top:9px}
-  .dense>.inner>.small{font-size:11.5px;line-height:1.45}
-  .dense .lead{font-size:15.5px}
-  .dense table{font-size:12.5px}
-  .dense th{padding-bottom:7px}
-  .dense td{padding:7px 0}
-  .dense ul.b li{font-size:12.5px;margin-bottom:.22em}
-  .dense .mt2{margin-top:12px}
-  .legend{font-size:11px;gap:3px 16px;margin-top:7px}
+  .dense .small{font-size:11.3px;line-height:1.45}
+  table{font-size:12.3px}
+  table.tight{font-size:11.8px}
+  th{padding-bottom:6px}
+  td{padding:7px 0}
+  ul.b li{font-size:12.6px;margin-bottom:.24em}
+  .quote{padding:9px 14px;font-size:12.8px}
+  .note{font-size:14.5px}
+  .legend{font-size:11px;gap:3px 16px;margin-top:6px}
+  .proofs{margin-top:14px;padding-top:12px}
 }
 @media (max-width:900px){
-  .g2,.g3{grid-template-columns:1fr}
-  .kv{grid-template-columns:1fr}
+  .g2,.g3,.g2w{grid-template-columns:1fr}
   .arch{max-height:none}
   td:first-child{width:auto}
+  table.tri td:first-child,table.tri td:nth-child(2){width:auto}
 }
 @media print{
   body{overflow:visible}
@@ -171,156 +247,142 @@ table.tight td:first-child{width:46%;color:rgba(255,255,255,0.72)}
 <body>
 
 <div class="chrome top">
-  <div class="logo">Accenture<i>&gt;</i></div>
-  <div class="counter"><b id="cur">01</b> / <span id="tot">08</span></div>
+  <div class="wordmark">A cosa ho diritto<i>?</i><small>Hackathon Agentic Coding</small></div>
+  <div class="counter"><b id="cur">01</b> / <span id="tot">06</span></div>
 </div>
 
 <main class="deck" id="deck">
 
 <!-- ============================================================
-     SEZIONE 1 — COVER
-     TEMPO ASSEGNATO: 0:15   ·   cumulato 0:15
+     SEZIONE 1 — COPERTINA
+     TEMPO ASSEGNATO: 0:10   ·   cumulato 0:10
      ============================================================ -->
-<section class="slide" aria-label="Copertina">
+<section class="slide cover" aria-label="Copertina">
   <div class="inner">
-    <div class="eyebrow">Hackathon Agentic Coding · Application Engineering · Tema 02 Inclusione finanziaria</div>
-    <h1>A cosa ho diritto?</h1>
-    <p class="lead mt">Orientamento sugli aiuti statali italiani — bonus, detrazioni, assegni — per chi
-      non ha mai aperto un cassetto fiscale. Il sistema spiega quali misure esistono per una situazione,
-      che cosa significano e come si accede.</p>
-    <p class="body mt2"><strong>Non consiglia.</strong> Per ogni decisione rimanda a un CAF o a un
-      commercialista. &nbsp;·&nbsp; Team: Davide Polito, Chiara Gario</p>
+    <div class="eyebrow">Tema 02 · Inclusione finanziaria · Application Engineering</div>
+    <h1>A cosa ho diritto<q>?</q></h1>
+    <p class="lead mt">Gli aiuti pubblici italiani spiegati a chi non li ha mai chiesti, senza che
+      una sola percentuale cambi strada.</p>
+    <div class="proofs">
+      <div><b>7</b><span>componenti agentici, un verbo ciascuno</span></div>
+      <div><b>2</b><span>fasi con economie opposte</span></div>
+      <div><b>1</b><span>agente il cui solo lavoro è dire di no</span></div>
+      <div><b>0</b><span>consigli: si rimanda al CAF, sempre</span></div>
+    </div>
+    <p class="small mt2">Davide Polito, Chiara Gario &nbsp;·&nbsp; 24 settembre 2026</p>
   </div>
 </section>
 
 <!-- ============================================================
-     SEZIONE 2 — IL PROBLEMA
-     TEMPO ASSEGNATO: 0:35   ·   cumulato 0:50
+     SEZIONE 2 — LA PERSONA E LA PERDITA
+     TEMPO ASSEGNATO: 0:30   ·   cumulato 0:40
      ============================================================ -->
-<section class="slide" aria-label="Il problema">
+<section class="slide" aria-label="La persona e la perdita">
   <div class="inner">
     <div class="eyebrow">01 · Il problema</div>
-    <h2>L'aiuto esiste già. La persona non arriva a chiederlo.</h2>
-    <p class="lead">Bonus, detrazioni e assegni sono pubblici, documentati e gratuiti da richiedere.
-      Chi ne avrebbe diritto si ferma prima: non sa da dove partire, non riconosce le parole, e ha
-      paura di sbagliare una pratica vera.</p>
-    <div class="grid g2 mt2">
+    <h2>Marco ha appena rifatto il bagno. Nessuno gli dirà che poteva riavere metà della spesa.</h2>
+    <p class="lead">Ha pagato 18.000 euro con bonifico. Il muratore gli ha detto «c'è la detrazione».
+      Ha aperto la pagina dell'Agenzia delle Entrate, ha letto <em>«detrazione dall'IRPEF da ripartire
+      in 10 quote annuali di pari importo»</em>, e ha chiuso la pagina. Nel 730 non scriverà niente.</p>
+    <div class="figs">
+      <div class="fig"><b>9.000 &euro;</b><span>Il 50% su abitazione principale: la detrazione a cui
+        Marco ha diritto per legge e che non chiederà.</span></div>
+      <div class="fig"><b>900 &euro;</b><span>All'anno per dieci anni. Non la perde una volta sola:
+        non la vedrà in nessuna delle prossime dieci dichiarazioni.</span></div>
+      <div class="fig missing"><b>Nessuno</b><span>gliela ricorderà. Un'agevolazione non si perde
+        sbagliando: si perde stando fermi.</span></div>
+    </div>
+    <p class="note mt2">Non manca l'informazione: è pubblica, gratuita e corretta.
+      Manca la distanza fra l'informazione e la persona che dovrebbe usarla.</p>
+    <p class="small mt">Il conto è nostro, su questa slide, e sta nei limiti dell'IRPEF dovuta.
+      Il sistema non calcola quanto spetta a una persona: è fuori perimetro per scelta (G-18).
+      Marco è una composizione dei quattro profili di <code>docs/validation/scenari.md</code>.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SEZIONE 3 — ADERENZA AL TEMA 02
+     TEMPO ASSEGNATO: 0:35   ·   cumulato 1:15
+     ============================================================ -->
+<section class="slide dense" aria-label="Aderenza al Tema 02">
+  <div class="inner">
+    <div class="eyebrow">02 · Perché è Tema 02</div>
+    <h2>Abbiamo scelto il fisco perché è finanza personale nella forma più concreta che esista</h2>
+    <div class="quote mt">«Supportare l'educazione alla finanza personale di base, aiutando le persone
+      con bassa alfabetizzazione finanziaria a comprendere concetti e gestire meglio le proprie
+      finanze quotidiane.»<cite>Tema 02 — testo della traccia</cite></div>
+
+    <div class="grid g2w mt">
       <div>
-        <h3>I fatti</h3>
-        <ul class="b">
-          <li><strong>Dove si blocca:</strong> alla prima pagina istituzionale. «Detrazione IRPEF
-            ripartita in dieci quote annuali di pari importo, nei limiti della capienza» è una frase
-            corretta e inutilizzabile.</li>
-          <li><strong>Chi è:</strong> chi non ha un commercialista, non ha mai aperto il cassetto
-            fiscale e spesso non sa nemmeno che cosa sia un CAF. È un problema di alfabetizzazione
-            fiscale, non di burocrazia.</li>
-          <li><strong>Perché non basta riscrivere una volta:</strong> percentuali, tetti e scadenze
-            cambiano ogni anno, e una riscrittura fatta a mano non è verificata. Nessuno garantisce
-            che il testo semplificato dica ancora la stessa cosa dell'originale.</li>
-        </ul>
+        <h3>Gli scenari che il tema elenca, e i nostri</h3>
+        <table class="tri">
+          <tbody>
+            <tr>
+              <td>«comprensione di un concetto finanziario di base»</td>
+              <td><strong>Detrazione, IRPEF, aliquota, imponibile, ISEE.</strong> Chi non sa cos'è una
+                detrazione non legge la propria busta paga: sono concetti di base, non tecnicismi da
+                addetti ai lavori.</td>
+            </tr>
+            <tr>
+              <td>«comprensione di costi e commissioni»</td>
+              <td>Il tetto di spesa, la quota annuale, <strong>la parte eccedente i 129,11 euro</strong>:
+                sono le condizioni che decidono quanto torna davvero, ed è lì che la persona si sbaglia
+                sul proprio denaro.</td>
+            </tr>
+            <tr>
+              <td>«lettura di un estratto conto o di una bolletta»</td>
+              <td>«36% su un massimo di 96.000 euro per unità immobiliare, in 10 quote annuali» è
+                <strong>lo stesso problema di lettura di una bolletta</strong>, con in più la conseguenza
+                economica: il documento che rendiamo leggibile è un documento finanziario.</td>
+            </tr>
+            <tr>
+              <td>«simulazione di una scelta quotidiana di risparmio»</td>
+              <td>Entro il 2026 o dal 2028 cambiano aliquota e tetto (36% su 96.000, poi 30% su 48.000).
+                Glielo <strong>spieghiamo</strong>; non lo decidiamo noi.</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="card accent">
-        <h3>Il punto</h3>
-        <p class="note" style="border:0;padding:0">Non manca l'informazione.
-          Manca la distanza fra l'informazione e la persona che dovrebbe usarla.</p>
-        <p class="small mt">Semplificare è facile. Semplificare <strong>senza cambiare una percentuale,
-          un tetto o una scadenza</strong> è il vincolo vero: il sistema è costruito intorno a quel vincolo.</p>
+      <div class="grid" style="align-content:start">
+        <div class="card accent">
+          <h3>Il divieto del tema, preso alla lettera</h3>
+          <p class="body">Niente raccomandazioni, niente consulenza personalizzata, mai dire cosa
+            scegliere. Non è una promessa nella presentazione: è <strong>G-04 nei contratti</strong>,
+            il <code>fidelity-validator</code> che respinge in Fase A e l'hook <code>PostToolUse</code>
+            che blocca a runtime. Orientiamo e spieghiamo; per ogni decisione si va da un CAF o da un
+            commercialista, e il rimando è un campo obbligatorio dell'output (G-20).</p>
+        </div>
+        <div class="card">
+          <h3>La capability, non la riscrittura</h3>
+          <p class="body">Il tema chiede una capability software concreta e mette la «pura riscrittura
+            di testi» fra le cose da evitare. La nostra non è la riscrittura: è la
+            <strong>pipeline di ancoraggio alla fonte con verifica di fedeltà affidata a un agente
+            separato</strong>. La riscrittura è l'output. Il prodotto è la garanzia che quell'output
+            dica ancora la stessa cosa dell'originale.</p>
+        </div>
       </div>
     </div>
+    <p class="small mt">I tre deliverable che il tema chiede per nome, nel repository:
+      <strong>User Difficulty Statement</strong> &rarr; <code>docs/ux/ux-spec.md</code> §1 e
+      <code>docs/validation/scenari.md</code> &nbsp;·&nbsp;
+      <strong>Before/After Simplicity Evidence</strong> &rarr; <code>docs/validation/prima-dopo.md</code>,
+      quattro casi con i testi originali citati alla lettera &nbsp;·&nbsp;
+      <strong>Risk &amp; Clarity Note</strong> &rarr; <code>docs/validation/gate-hitl.md</code> e
+      <code>agents/guardrails.md</code>, 24 regole numerate.</p>
   </div>
 </section>
 
 <!-- ============================================================
-     SEZIONE 3 — UTENTE E SCENARIO
-     TEMPO ASSEGNATO: 0:30   ·   cumulato 1:20
+     SEZIONE 4 — ARCHITETTURA AGENTICA (sezione principale)
+     TEMPO ASSEGNATO: 1:00   ·   cumulato 2:15
      ============================================================ -->
-<section class="slide" aria-label="Utente e scenario">
+<section class="slide dense" aria-label="Architettura agentica">
   <div class="inner">
-    <div class="eyebrow">02 · Utente e scenario</div>
-    <h2>Una persona concreta, quattro situazioni di vita</h2>
-    <div class="grid g2 mt">
-      <div class="card">
-        <h3>La persona</h3>
-        <dl class="kv">
-          <dt>Chi</dt><dd>arriva già convinta di non capire: nessun commercialista, nessuna
-            dimestichezza con i portali pubblici, un tentativo precedente finito male</dd>
-          <dt>Che cosa deve fare</dt><dd>capire quali misure esistono per la sua situazione, che cosa
-            significano, e quale singolo passo fare domani mattina</dd>
-          <dt>Come glielo chiediamo</dt><dd>cinque domande a scelta multipla, nessuna casella di testo
-            libero. «Non so» è sempre una risposta ammessa, non un ripiego</dd>
-          <dt>Su che cosa</dt><dd>pagine ufficiali di Agenzia delle Entrate e INPS, scaricate e datate:
-            il catalogo non viene dalla memoria del modello</dd>
-        </dl>
-        <p class="small mt">Gli scenari della demo: ristrutturazione casa · figlio appena nato ·
-          disoccupato under 36 · pensionato con spese mediche.</p>
-      </div>
-      <div class="card">
-        <h3>Come il sistema la rappresenta</h3>
-        <p class="body">L'agente <code>profiler</code> normalizza le risposte in
-          <code>agents/state/profilo.json</code>: cinque assi su tassonomia chiusa.</p>
-        <ul class="b tight mt">
-          <li>situazione di vita — casa, figlio, lavoro, spese mediche, auto, under 36, non so</li>
-          <li>condizione abitativa — proprietario, affittuario, ospite di familiari</li>
-          <li>tipo di reddito — dipendente, pensione, partita IVA, nessun reddito</li>
-          <li>timing — da iniziare, in corso, già concluso</li>
-          <li>rapporto con il CAF — sì, no, non so che cosa sia</li>
-        </ul>
-        <p class="small mt">Nessun campo libero, nessun identificativo, nessun importo (G-23).
-          Ciò che non è stato chiesto non viene dedotto (G-01) né conservato (G-17).</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     SEZIONE 4 — COME FUNZIONA LA SOLUZIONE
-     TEMPO ASSEGNATO: 0:40   ·   cumulato 2:00
-     ============================================================ -->
-<section class="slide" aria-label="Come funziona la soluzione">
-  <div class="inner">
-    <div class="eyebrow">03 · Come funziona</div>
-    <h2>Dalla pagina ufficiale alla scheda che la persona può usare</h2>
-    <div class="grid g3 mt">
-      <div class="card">
-        <span class="num">01</span>
-        <h3>Si parte dalla fonte, non dalla memoria</h3>
-        <p class="body">Il sistema legge le pagine ufficiali scaricate e destruttura ogni misura:
-          nome, percentuale, tetto, requisiti, scadenza, anni di recupero. Ogni dato porta il
-          riferimento al punto esatto della fonte e la data di consultazione (G-24).</p>
-      </div>
-      <div class="card">
-        <span class="num">02</span>
-        <h3>Ogni misura riscritta, poi verificata</h3>
-        <p class="body">Un agente riscrive la misura in lingua comune; un agente <strong>diverso</strong>
-          la confronta con l'originale. Se una cifra, una data o una condizione si muovono, la misura
-          non entra nel catalogo: viene marcata e la rivede una persona.</p>
-      </div>
-      <div class="card">
-        <span class="num">03</span>
-        <h3>Alla persona si risponde dal catalogo</h3>
-        <p class="body">Cinque domande, poi le misure pertinenti con il requisito che le rende tali,
-          i passi per accedere, il glossario dei documenti citati. Sempre con il rimando al CAF:
-          è un campo dell'output, non una frase lasciata al modello (G-20).</p>
-      </div>
-    </div>
-    <p class="note mt2">Il catalogo verificato è un file: <code>agents/state/catalogo.json</code>.
-      Si produce una volta per fonte e si rilegge a ogni conversazione.</p>
-    <p class="small mt">Nella demo mostriamo il percorso completo su un profilo: cinque risposte a
-      scelta multipla, le misure pertinenti con percentuale e tetto, i passi di accesso, il glossario
-      e il rimando al CAF.</p>
-  </div>
-</section>
-
-<!-- ============================================================
-     SEZIONE 5 — DOVE INTERVIENE L'AGENTE AI (sezione principale)
-     TEMPO ASSEGNATO: 1:30   ·   cumulato 3:30
-     ============================================================ -->
-<section class="slide dense" aria-label="Dove interviene l'agente AI">
-  <div class="inner">
-    <div class="eyebrow">04 · Dove interviene l'agente AI</div>
+    <div class="eyebrow">03 · Dove interviene l'agente AI</div>
     <h2>Un orchestratore, sei sub-agenti, due fasi con economie opposte</h2>
-    <p class="body" style="margin-bottom:10px">L'AI non è uno strato sopra il prodotto: è il prodotto.
-      Ogni componente ha un verbo solo — se due agenti potessero scambiarsi il lavoro, uno dei due sarebbe di troppo.</p>
+    <p class="body" style="margin-bottom:9px">Ogni componente ha un verbo solo: se due agenti potessero
+      scambiarsi il lavoro, uno dei due sarebbe di troppo. La separazione fra chi scrive e chi approva
+      è una conseguenza dei permessi, non una raccomandazione dentro un prompt.</p>
 
     <svg class="arch" viewBox="0 0 1240 444" role="img" aria-labelledby="archTitle archDesc" preserveAspectRatio="xMidYMid meet">
       <title id="archTitle">Architettura agentica in due fasi</title>
@@ -352,35 +414,35 @@ table.tight td:first-child{width:46%;color:rgba(255,255,255,0.72)}
       <!-- input: la fonte ufficiale -->
       <rect x="20" y="66" width="150" height="70" rx="12" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.11)"/>
       <text x="36" y="100" font-size="15" font-weight="600" fill="rgba(255,255,255,0.82)">fonte ufficiale</text>
-      <text x="36" y="120" font-size="12" fill="rgba(255,255,255,0.48)">scaricata e datata</text>
+      <text x="36" y="120" font-size="12" fill="rgba(255,255,255,0.55)">scaricata e datata</text>
 
       <!-- A1 source-analyzer -->
       <rect x="206" y="66" width="196" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="386" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.4)">A1</text>
+      <text x="386" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">A1</text>
       <text x="222" y="104" font-size="16.5" font-weight="600" fill="#ffffff">source-analyzer</text>
-      <rect x="222" y="112" width="66" height="20" rx="10" fill="#A100FF"/>
+      <rect x="222" y="112" width="66" height="20" rx="10" fill="#8A00DB"/>
       <text x="255" y="126" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">opus-5</text>
 
       <!-- A2 explainer -->
       <rect x="438" y="66" width="176" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="598" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.4)">A2</text>
+      <text x="598" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">A2</text>
       <text x="454" y="104" font-size="16.5" font-weight="600" fill="#ffffff">explainer</text>
       <rect x="454" y="112" width="80" height="20" rx="10" fill="none" stroke="#BE82FF"/>
       <text x="494" y="126" text-anchor="middle" font-size="11.5" fill="#BE82FF">sonnet-5</text>
 
       <!-- A3 fidelity-validator: solo Read -->
       <rect x="650" y="66" width="208" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="842" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.4)">A3</text>
+      <text x="842" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">A3</text>
       <text x="666" y="104" font-size="16.5" font-weight="600" fill="#ffffff">fidelity-validator</text>
-      <rect x="666" y="112" width="66" height="20" rx="10" fill="#A100FF"/>
+      <rect x="666" y="112" width="66" height="20" rx="10" fill="#8A00DB"/>
       <text x="699" y="126" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">opus-5</text>
       <text x="742" y="126" font-size="11.5" fill="#BE82FF">solo Read</text>
 
       <!-- A4 catalogo.json -->
       <rect x="1016" y="66" width="200" height="70" rx="12" fill="rgba(161,0,255,0.12)" stroke="#BE82FF"/>
-      <text x="1200" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.4)">A4</text>
+      <text x="1200" y="84" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">A4</text>
       <text x="1032" y="104" font-size="16.5" font-weight="600" fill="#ffffff">catalogo.json</text>
-      <text x="1032" y="124" font-size="12" fill="rgba(255,255,255,0.62)">persistito su disco</text>
+      <text x="1032" y="124" font-size="12" fill="rgba(255,255,255,0.68)">persistito su disco</text>
 
       <path d="M174,101 H202" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
       <path d="M406,101 H434" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
@@ -399,8 +461,8 @@ table.tight td:first-child{width:46%;color:rgba(255,255,255,0.72)}
       <rect x="1016" y="162" width="200" height="58" rx="12" fill="rgba(255,255,255,0.03)"
             stroke="rgba(255,255,255,0.4)" stroke-dasharray="5 4"/>
       <text x="1032" y="181" font-size="13.5" font-weight="600" fill="#BE82FF">GATE HITL</text>
-      <text x="1032" y="197" font-size="11.5" fill="rgba(255,255,255,0.64)">al 2&#176; rifiuto: la misura</text>
-      <text x="1032" y="212" font-size="11.5" fill="rgba(255,255,255,0.64)">non entra nel catalogo</text>
+      <text x="1032" y="197" font-size="11.5" fill="rgba(255,255,255,0.68)">al 2&#176; rifiuto: la misura</text>
+      <text x="1032" y="212" font-size="11.5" fill="rgba(255,255,255,0.68)">non entra nel catalogo</text>
 
       <!-- ===================== FASE B ===================== -->
       <text x="14" y="250" font-size="13.5" letter-spacing="2.2" fill="#BE82FF">FASE B · CONVERSAZIONE — A OGNI SESSIONE, SOLO MODELLI ECONOMICI</text>
@@ -412,38 +474,38 @@ table.tight td:first-child{width:46%;color:rgba(255,255,255,0.72)}
 
       <!-- B1 profiler -->
       <rect x="208" y="282" width="176" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="368" y="300" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.4)">B1</text>
+      <text x="368" y="300" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">B1</text>
       <text x="224" y="320" font-size="16.5" font-weight="600" fill="#ffffff">profiler</text>
       <rect x="224" y="328" width="84" height="20" rx="10" fill="none" stroke="rgba(255,255,255,0.32)"/>
-      <text x="266" y="342" text-anchor="middle" font-size="11.5" fill="rgba(255,255,255,0.72)">haiku-4.5</text>
+      <text x="266" y="342" text-anchor="middle" font-size="11.5" fill="rgba(255,255,255,0.78)">haiku-4.5</text>
 
       <!-- B2 eligibility -->
       <rect x="408" y="282" width="186" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="578" y="300" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.4)">B2</text>
+      <text x="578" y="300" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">B2</text>
       <text x="424" y="320" font-size="16.5" font-weight="600" fill="#ffffff">eligibility</text>
       <rect x="424" y="328" width="80" height="20" rx="10" fill="none" stroke="#BE82FF"/>
       <text x="464" y="342" text-anchor="middle" font-size="11.5" fill="#BE82FF">sonnet-5</text>
 
       <!-- B3 navigator -->
       <rect x="618" y="282" width="176" height="70" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
-      <text x="778" y="300" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.4)">B3</text>
+      <text x="778" y="300" text-anchor="end" font-size="11" letter-spacing="1" fill="rgba(255,255,255,0.45)">B3</text>
       <text x="634" y="320" font-size="16.5" font-weight="600" fill="#ffffff">navigator</text>
       <rect x="634" y="328" width="84" height="20" rx="10" fill="none" stroke="rgba(255,255,255,0.32)"/>
-      <text x="676" y="342" text-anchor="middle" font-size="11.5" fill="rgba(255,255,255,0.72)">haiku-4.5</text>
+      <text x="676" y="342" text-anchor="middle" font-size="11.5" fill="rgba(255,255,255,0.78)">haiku-4.5</text>
 
       <!-- output: la scheda -->
       <rect x="818" y="282" width="174" height="70" rx="12" fill="rgba(161,0,255,0.12)" stroke="#BE82FF"/>
       <text x="834" y="310" font-size="15" font-weight="600" fill="#ffffff">scheda misure</text>
-      <text x="834" y="330" font-size="12" fill="rgba(255,255,255,0.62)">passi, glossario,</text>
-      <text x="834" y="344" font-size="12" fill="rgba(255,255,255,0.62)">rimando al CAF</text>
+      <text x="834" y="330" font-size="12" fill="rgba(255,255,255,0.68)">passi, glossario,</text>
+      <text x="834" y="344" font-size="12" fill="rgba(255,255,255,0.68)">rimando al CAF</text>
 
       <!-- gate HITL di fase B -->
       <rect x="1012" y="282" width="204" height="74" rx="12" fill="rgba(255,255,255,0.03)"
             stroke="rgba(255,255,255,0.4)" stroke-dasharray="5 4"/>
       <text x="1028" y="303" font-size="13.5" font-weight="600" fill="#BE82FF">GATE HITL</text>
-      <text x="1028" y="320" font-size="11.5" fill="rgba(255,255,255,0.64)">la misura non si propone:</text>
-      <text x="1028" y="335" font-size="11.5" fill="rgba(255,255,255,0.64)">rimando al CAF, dichiarando</text>
-      <text x="1028" y="350" font-size="11.5" fill="rgba(255,255,255,0.64)">il perch&#233;</text>
+      <text x="1028" y="320" font-size="11.5" fill="rgba(255,255,255,0.68)">la misura non si propone:</text>
+      <text x="1028" y="335" font-size="11.5" fill="rgba(255,255,255,0.68)">rimando al CAF, dichiarando</text>
+      <text x="1028" y="350" font-size="11.5" fill="rgba(255,255,255,0.68)">il perch&#233;</text>
 
       <path d="M188,317 H204" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
       <path d="M388,317 H404" stroke="#BE82FF" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
@@ -453,190 +515,155 @@ table.tight td:first-child{width:46%;color:rgba(255,255,255,0.72)}
             stroke-dasharray="5 4" marker-end="url(#ahd)"/>
       <text x="790" y="381" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.72)">confidence &lt; 0,6 oppure caso non coperto dal catalogo</text>
 
-      <text x="20" y="410" font-size="12.5" fill="rgba(255,255,255,0.5)">Nessuna chiamata a opus-5 in Fase B: il runtime legge catalogo.json da disco.</text>
-      <text x="20" y="428" font-size="12.5" fill="rgba(255,255,255,0.5)">Stato della sessione in state/run-&lt;id&gt;.json, fuori dalla finestra di contesto (G-12).</text>
+      <text x="20" y="410" font-size="12.5" fill="rgba(255,255,255,0.55)">Nessuna chiamata a opus-5 in Fase B: il runtime legge catalogo.json da disco.</text>
+      <text x="20" y="428" font-size="12.5" fill="rgba(255,255,255,0.55)">Stato della sessione in state/run-&lt;id&gt;.json, fuori dalla finestra di contesto (G-12).</text>
     </svg>
 
     <div class="legend">
       <span><i class="chip haiku"></i> haiku-4.5 — instradamento e assemblaggio (3 componenti su 7)</span>
       <span><i class="chip sonnet"></i> sonnet-5 — riscrittura e incrocio vincolati (2 su 7)</span>
       <span><i class="chip opus"></i> opus-5 — lettura della fonte e giudizio (2 su 7)</span>
-      <span>Fonte: <code>agents/ARCHITETTURA.md</code>, <code>agents/workflows/main-pipeline.md</code></span>
+      <span>Fonte: <code>agents/ARCHITETTURA.md</code></span>
     </div>
 
     <div class="grid g3 mt">
       <div class="card">
         <h3>Chi scrive non approva</h3>
         <p class="body"><code>explainer</code> riformula, <code>fidelity-validator</code> giudica, e il
-          giudice ha <strong>solo <code>Read</code></strong> fra i suoi strumenti: non può riscrivere ciò
-          che respinge. La separazione è una conseguenza dei permessi, non una raccomandazione dentro un prompt.</p>
+          giudice ha <strong>solo <code>Read</code></strong> fra i suoi strumenti: non può riscrivere
+          ciò che respinge. È un permesso, non un'istruzione.</p>
       </div>
       <div class="card">
         <h3>Due economie opposte</h3>
-        <p class="body">La Fase A usa <code>opus-5</code> <strong>una volta per fonte</strong> e persiste
-          il catalogo. La Fase B, ad alta frequenza, sono tre invocazioni economiche che leggono un JSON
-          già verificato. Il costo non cresce con il numero di conversazioni.</p>
+        <p class="body">Fase A: 16.165 token di istruzioni e i due modelli più capaci,
+          <strong>una volta per catalogo</strong>. Fase B: 6.183 token e tre invocazioni economiche su un
+          JSON già verificato. Il costo cresce con le misure, non con le conversazioni
+          (<code>docs/token-budget.md</code>).</p>
       </div>
       <div class="card">
-        <h3>L'escalation umana è una funzionalità</h3>
-        <p class="body">Le condizioni sono numeriche: 2 giri <code>explainer</code>&#8596;<code>fidelity-validator</code>,
-          <code>confidence &lt; 0,6</code>, 3 misure guidate per sessione, 3 retry con backoff poi
-          <code>status: degraded</code>. Al limite si escala dichiarandolo, non si ritenta in silenzio.</p>
+        <h3>L'escalation è una funzionalità</h3>
+        <p class="body">Condizioni numeriche, non impressioni: 2 giri
+          <code>explainer</code>&#8596;<code>fidelity-validator</code>, <code>confidence &lt; 0,6</code>,
+          3 retry con backoff poi <code>status: degraded</code>. Al limite si escala dichiarandolo,
+          non si ritenta in silenzio.</p>
       </div>
     </div>
-    <p class="small mt">Tre hook rendono deterministica la disciplina — <code>PreToolUse</code> sulla proprietà dei file,
-      <code>PostToolUse</code> anti-consulenza, <code>Stop</code> per lo snapshot di sessione — accanto a
-      <strong>24 guardrail</strong> numerati e citati per codice dentro gli agenti e a <strong>15 contratti
-      JSON Schema</strong> in <code>agents/schemas/</code>, uno per ogni passaggio fra componenti.</p>
+    <p class="small mt">Rendono deterministica la disciplina tre hook — <code>PreToolUse</code> sulla
+      proprietà dei file, <code>PostToolUse</code> anti-consulenza, <code>Stop</code> per lo snapshot di
+      sessione — accanto a <strong>24 guardrail</strong> numerati e citati per codice dentro gli agenti,
+      <strong>15 contratti JSON Schema</strong> in <code>agents/schemas/</code> e <strong>3 skill</strong>
+      caricate on-demand, mai più di una per invocazione (G-13).</p>
   </div>
 </section>
 
 <!-- ============================================================
-     SEZIONE 6 — QUALE MIGLIORAMENTO VIENE PRODOTTO
-     TEMPO ASSEGNATO: 0:40   ·   cumulato 4:10
+     SEZIONE 5 — LA PROVA CHE FUNZIONA, E I LIMITI
+     TEMPO ASSEGNATO: 0:35   ·   cumulato 2:50
      ============================================================ -->
-<section class="slide" aria-label="Il miglioramento prodotto">
+<section class="slide dense" aria-label="La prova e i limiti">
   <div class="inner">
-    <div class="eyebrow">05 · Il miglioramento</div>
-    <h2>Che cosa cambia, e per chi</h2>
-    <div class="grid g2 mt">
-      <div class="card accent">
-        <h3>Per la persona — le stesse informazioni, altre parole</h3>
-        <table class="tight">
-          <thead><tr><th>Quello che trova oggi</th><th>Quello che riceve</th></tr></thead>
-          <tbody>
-            <tr>
-              <td>«Detrazione IRPEF ripartita in dieci quote annuali»</td>
-              <td>Uno sconto sulle tasse, restituito un decimo all'anno per dieci anni</td>
-            </tr>
-            <tr>
-              <td>«Accedere all'area riservata con identità digitale»</td>
-              <td>Tre passi numerati, con lo SPID come prima cosa da fare</td>
-            </tr>
-            <tr>
-              <td>Nessun punto di partenza, misure su siti diversi</td>
-              <td>Le misure pertinenti al suo caso in una scheda, con il requisito che le rende tali</td>
-            </tr>
-          </tbody>
-        </table>
-        <p class="small mt">Nessuna misura la raggiunge senza essere passata dal
-          <code>fidelity-validator</code>, e nessuna scheda esce senza il rimando al CAF (G-20).
-          Il sistema spiega che cosa significa una cosa, non dice che cosa conviene fare (G-04).</p>
-      </div>
-      <div class="card">
-        <h3>Per il costo di esercizio</h3>
-        <ul class="b">
-          <li><strong>Il lavoro costoso si paga una volta.</strong> <code>source-analyzer</code> e
-            <code>fidelity-validator</code> (opus-5) girano solo in Fase A e il catalogo è persistito.</li>
-          <li><strong>Il runtime non usa opus-5.</strong> Una conversazione sono tre invocazioni:
-            <code>profiler</code> (haiku-4.5), <code>eligibility</code> (sonnet-5),
-            <code>navigator</code> (haiku-4.5).</li>
-          <li><strong>Lo stato sta su disco, non in contesto:</strong> <code>catalogo.json</code>,
-            <code>profilo.json</code>, <code>run-&lt;id&gt;.json</code> (G-12).</li>
-          <li><strong>Le istruzioni lunghe stanno in tre skill</strong> caricate on-demand: 905 righe
-            che non pesano finché non servono, e nessuna invocazione ne carica più di una (G-13).</li>
-          <li><strong>Fra gli agenti passa JSON conforme a schema,</strong> mai la trascrizione della
-            conversazione (G-05, G-14).</li>
-        </ul>
-      </div>
+    <div class="eyebrow">04 · La prova, e i limiti</div>
+    <h2>Un agente il cui unico lavoro è smentire l'altro. Su sei misure l'ha fermato quattro volte.</h2>
+    <div class="figs">
+      <div class="fig"><b>6</b><span>misure lavorate, da 8 fonti ufficiali datate di Agenzia delle
+        Entrate e INPS</span></div>
+      <div class="fig"><b>8</b><span>giri di verifica eseguiti: tre misure sono passate al primo,
+        tre hanno dovuto rifarlo</span></div>
+      <div class="fig"><b>4</b><span>divergenze bloccanti trovate e corrette prima che qualcuno le
+        leggesse</span></div>
+      <div class="fig"><b>1</b><span>misura mai pubblicata: la fonte si contraddice, e lo diciamo
+        invece di indovinare</span></div>
     </div>
-  </div>
-</section>
 
-<!-- ============================================================
-     SEZIONE 7 — LIMITI E RISCHI
-     TEMPO ASSEGNATO: 0:35   ·   cumulato 4:45
-     ============================================================ -->
-<section class="slide dense" aria-label="Limiti e rischi">
-  <div class="inner">
-    <div class="eyebrow">06 · Limiti e rischi</div>
-    <h2>Che cosa può andare storto, e che cosa gli abbiamo messo contro</h2>
-    <p class="lead">Una percentuale sbagliata su un bonus <strong>non è un refuso: è un danno a una
-      persona</strong> che presenta una pratica vera. Tutta l'architettura nasce da questa frase.</p>
-    <table class="mt">
-      <thead><tr><th>Rischio</th><th>Contromisura presente nel repository</th></tr></thead>
+    <table class="tri mt">
+      <thead><tr><th>Quello che dice la fonte</th><th>Quello che aveva scritto l'explainer</th><th>Che cosa sarebbe successo alla persona</th></tr></thead>
       <tbody>
         <tr>
-          <td>Una cifra inventata o alterata: percentuale, tetto, scadenza, anni di recupero.</td>
-          <td>Le cifre vengono da fonti ufficiali con riferimento puntuale (<code>source_refs</code>),
-            si riportano identiche alla fonte (G-03) e passano da un verificatore separato che in
-            dubbio respinge (G-02).</td>
+          <td class="was">«Su un massimo di 96.000 euro <strong>per unità immobiliare</strong>»</td>
+          <td class="bad">«Il limite massimo di spesa è 96.000 euro.»</td>
+          <td>Chi ristruttura due unità crede di avere un tetto unico e presenta una spesa destinata
+            a essere ridimensionata.</td>
         </tr>
         <tr>
-          <td>Il sistema nomina una misura che non esiste, o che ricorda dall'addestramento.</td>
-          <td>Ciò che non sta in <code>agents/state/catalogo.json</code> non viene nominato come
-            esistente: la risposta corretta è il rimando al CAF (G-19, G-01). Senza catalogo la
-            Fase B non parte.</td>
+          <td class="was">«il 19% delle spese sanitarie <strong>per la parte eccedente</strong> l'importo di 129,11 euro»</td>
+          <td class="bad">«il 19% delle spese sanitarie che superano 129,11 euro»</td>
+          <td>Il 19% sembra calcolarsi sull'intera spesa: si aspetta uno sconto più grande di quello
+            che riceverà.</td>
         </tr>
         <tr>
-          <td>Il sistema scivola dall'informazione al consiglio finanziario.</td>
-          <td>Due strati: il <code>fidelity-validator</code>, semantico, in Fase A; l'hook
-            <code>PostToolUse</code>, deterministico, a runtime. Nessun calcolo sul caso concreto
-            (G-18), nessuna graduatoria per importo (G-21).</td>
-        </tr>
-        <tr>
-          <td>Il sistema insiste su un caso che non sa trattare.</td>
-          <td>Soglie numeriche e non impressioni: 2 giri, <code>confidence &lt; 0,6</code>, 3 misure
-            per sessione, 3 retry. Al limite si escala dicendo alla persona che cosa sta succedendo
-            (G-08, G-09).</td>
+          <td class="was">«entro il 30 aprile <strong>dell'anno successivo a quello a cui si riferiscono
+            le mensilità</strong>»</td>
+          <td class="bad">«Devi caricare i documenti entro il 30 aprile 2027.»</td>
+          <td>Una data che nella fonte non esiste: chi chiede mensilità di un altro anno perde il termine.</td>
         </tr>
       </tbody>
     </table>
-    <div class="mt2">
-      <h3>Limiti che restano, dichiarati</h3>
-      <ul class="b tight">
-        <li>Il catalogo copre le misure già verificate in Fase A: dove una misura manca, il sistema
-          rimanda al CAF invece di ricostruire i dati a memoria. La copertura si estende una fonte alla volta.</li>
-        <li>Nessun calcolo sul caso concreto: il sistema non calcola l'ISEE e non stima quanto spetta a
-          questa persona. È una scelta di perimetro (G-18), non una funzione mancante.</li>
-        <li>Nessun accesso ai sistemi reali: spiega come si arriva al cassetto fiscale, non ci entra,
-          non compila moduli e non prenota appuntamenti.</li>
-        <li>Le fonti ufficiali stanno nel repository e la Fase A gira su quelle, ma
-          <code>agents/state/catalogo.json</code> non è fra i file committati: il catalogo va
-          rigenerato su ogni macchina prima di una demo, e finché non c'è la Fase B non parte.</li>
-        <li>Il costo in token per agente non è ancora misurato su un run reale: è una voce aperta
-          dichiarata in <code>agents/README.md</code>.</li>
-      </ul>
+
+    <div class="grid g2 mt">
+      <div class="card">
+        <h3>La misura che non è entrata</h3>
+        <p class="body">La detrazione sui canoni di locazione per i 20-30 anni: la stessa riga della
+          fonte dice «età compresa tra i 20 e 30 anni» e «nel limite del compimento dei 31 anni».
+          Il perimetro anagrafico è un requisito, quindi sempre bloccante. Lo scenario «under 36»
+          resta senza misura a catalogo: <strong>è un buco dichiarato, non nascosto</strong>.</p>
+      </div>
+      <div class="card flat">
+        <h3>Gli altri limiti, dichiarati</h3>
+        <ul class="b tight">
+          <li>Nessun calcolo sul caso concreto: non stimiamo l'ISEE né quanto spetta (G-18).</li>
+          <li>Nessun accesso ai sistemi reali: spieghiamo come si arriva al cassetto fiscale, non ci entriamo.</li>
+          <li>Fase A eseguita a mano seguendo alla lettera i file degli agenti: gli artefatti sono
+            veri, il meccanismo di invocazione no. Lo dichiariamo nel repository.</li>
+        </ul>
+      </div>
     </div>
+    <p class="small mt">Ogni cifra di questa slide sta in <code>agents/state/verifica-fase-a.json</code>,
+      con testo originale e testo respinto per ogni divergenza.</p>
   </div>
 </section>
 
 <!-- ============================================================
-     SEZIONE 8 — CHIUSURA
-     TEMPO ASSEGNATO: 0:15   ·   cumulato 5:00
+     SEZIONE 6 — PASSAGGIO ALLA DEMO
+     TEMPO ASSEGNATO: 0:10   ·   cumulato 3:00
+     (poi 2:00 di demo dal vivo, fuori dal conteggio del deck)
      ============================================================ -->
-<section class="slide" aria-label="Chiusura">
+<section class="slide" aria-label="Passaggio alla demo">
   <div class="inner">
-    <div class="eyebrow">Chiusura</div>
-    <h2>Semplificare senza cambiare una cifra non è una raccomandazione dentro un prompt.</h2>
-    <p class="lead">È un agente separato che può dire di no, con solo <code>Read</code> fra i suoi
-      strumenti, un limite di due giri e un'escalation umana dichiarata.</p>
-    <div class="grid g2 mt2">
+    <div class="eyebrow">05 · Adesso il prodotto</div>
+    <h2>Due minuti sull'applicazione vera</h2>
+    <p class="lead">Non un video, non un mockup: <code>python app/main.py</code> in esecuzione su questa
+      macchina, che legge <code>agents/state/catalogo.json</code> verificato in Fase A.</p>
+    <div class="grid g3 mt2">
       <div class="card">
-        <h3>Dove verificarlo nel repository</h3>
-        <ul class="b tight">
-          <li><code>agents/ARCHITETTURA.md</code> — la decisione canonica: sette componenti, due fasi, gate</li>
-          <li><code>agents/orchestrator.md</code> — routing, stato, limiti di iterazione, gate HITL</li>
-          <li><code>agents/workflows/main-pipeline.md</code> — la sequenza eseguibile A1-A4 e B1-B4</li>
-          <li><code>agents/guardrails.md</code> — 24 regole numerate, 7 di dominio fiscale</li>
-          <li><code>agents/schemas/</code> — i 15 contratti JSON fra i componenti</li>
-          <li><code>agents/hooks/</code> — i tre controlli che non passano dal giudizio del modello</li>
-        </ul>
+        <h3>Che cosa vedete</h3>
+        <p class="body">Il percorso di Marco: cinque domande a scelta multipla, la scheda delle misure
+          pertinenti, i passi per accedere, il glossario. Dall'inizio alla fine, senza tagli.</p>
       </div>
       <div class="card accent">
-        <h3>In una riga</h3>
-        <p class="note" style="border:0;padding:0">Un sistema che si ferma onestamente vale più di uno
-          che tira a indovinare su una detrazione vera.</p>
-        <p class="small mt">Davide Polito, Chiara Gario — Accenture Application Engineering</p>
+        <h3>Dove guardare</h3>
+        <ul class="b tight">
+          <li>Ogni cifra porta <strong>la fonte e la data</strong> di consultazione.</li>
+          <li>«Per unità immobiliare» e «parte eccedente» <strong>ci sono</strong>: è il
+            <code>fidelity-validator</code> che li ha rimessi.</li>
+          <li>Il rimando al CAF è <strong>un campo dell'output</strong>, non una frase gentile.</li>
+          <li>Chiuderemo su un caso che il sistema <strong>rifiuta</strong> di trattare.</li>
+        </ul>
+      </div>
+      <div class="card flat">
+        <h3>Che cosa non vedrete</h3>
+        <p class="body">Un numero che il sistema non sa da dove viene. Se non è in catalogo, non
+          compare: compare il rimando a una persona.</p>
       </div>
     </div>
+    <p class="note mt2">Una percentuale sbagliata su un bonus non è un refuso: è un danno a una
+      persona che presenta una pratica vera. Da qui discende tutto il resto.</p>
   </div>
 </section>
 
 </main>
 
 <div class="chrome bot">
-  <div class="footnote">Hackathon Agentic Coding · Application Engineering</div>
+  <div class="footnote">Davide Polito · Chiara Gario · Application Engineering</div>
   <div class="nav">
     <button class="navbtn" id="prev" type="button" aria-label="Sezione precedente">&#8249;</button>
     <div class="dots" id="dots" role="tablist" aria-label="Indice delle sezioni"></div>
@@ -695,5 +722,36 @@ table.tight td:first-child{width:46%;color:rgba(255,255,255,0.72)}
   go(isNaN(h) ? 0 : h - 1);
 })();
 </script>
+
+<style>
+/* --- leggibilita della tabella di mappatura tema -> soluzione -------------
+   Le due colonne avevano lo stesso trattamento: non si distingueva cio che
+   dice il tema da cio che rispondiamo noi. Ora la citazione del tema e' una
+   colonna a se, con colore e filetto propri, e la risposta resta prosa. --- */
+table.tri{border-collapse:separate;border-spacing:0;width:100%}
+table.tri td{padding:14px 0;vertical-align:top;border-top:1px solid rgba(255,255,255,.09)}
+table.tri tr:first-child td{border-top:0}
+table.tri td:first-child{
+  width:31%;padding-right:26px;position:relative;
+  color:#BE82FF;                       /* 7.75:1 sul fondo: e' la voce del tema */
+  font-weight:600;line-height:1.45;
+}
+table.tri td:first-child::before{
+  content:"";position:absolute;left:0;top:18px;bottom:18px;width:2px;
+  background:rgba(190,130,255,.35);border-radius:2px;
+}
+table.tri td:first-child{padding-left:16px}
+table.tri td:last-child{
+  padding-left:26px;color:#D0CCD3;line-height:1.55;  /* 12.61:1 */
+  border-left:1px solid rgba(255,255,255,.07);
+}
+table.tri td:last-child strong{color:#fff}
+@media (max-width:900px){
+  table.tri td{display:block;border-top:0}
+  table.tri td:first-child{width:auto;padding-bottom:6px}
+  table.tri td:last-child{border-left:0;padding-left:16px;padding-bottom:18px;
+    border-bottom:1px solid rgba(255,255,255,.09)}
+}
+</style>
 </body>
 </html>

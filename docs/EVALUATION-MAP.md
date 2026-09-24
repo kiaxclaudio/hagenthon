@@ -22,6 +22,11 @@ presente ma con lacune dichiarate · **Scoperto** = nessuna evidenza verificabil
 
 ## Quadro sintetico, in ordine di peso
 
+> **Nota di stato, 24/09 ore 14:45.** Questo documento e stato scritto a meta gara, quando il
+> sistema era specificato ma non ancora eseguibile. Diverse sue affermazioni sulle lacune sono
+> state superate dai fatti. La fonte di verita sempre aggiornata e `python tools/check_repo.py`.
+
+
 | Peso | Criterio | Evidenza principale | Copertura |
 |---|---|---|---|
 | 24% | Profondita' agentica | `agents/orchestrator.md`, `agents/workflows/main-pipeline.md`, 6 sub-agenti, 3 skill, 15 schemi JSON | Parziale |
@@ -55,9 +60,11 @@ presente ma con lacune dichiarate · **Scoperto** = nessuna evidenza verificabil
 
 ### Cosa manca
 
-- **Niente di tutto questo e' eseguibile.** `app/` contiene solo un README: non esiste un
+- **AGGIORNATO 24/09 h14:45 — ora e' eseguibile.** `app/` contiene dieci moduli Python, il
+  collaudo offline passa 31 verifiche su 31 e cinque percorsi girano end-to-end. Resta un
   orchestratore in codice che legga questi file. Il sistema e' specificato, non dimostrato.
-- `agents/state/` contiene solo `.gitkeep`: nessuno dei quattro file di stato dichiarati
+- `agents/state/` contiene 33 artefatti versionati: catalogo verificato, misure grezze,
+  spiegazioni, verifiche del validator e fonti. I file di stato dichiarati
   nella sezione "Stato" esiste come esempio. Lo stato esternalizzato e' descritto, non esibito.
 - Nessun output reale di agente e' committato: non c'e' un solo JSON prodotto da un run.
 - Il ciclo `simplifier` ↔ `fidelity-validator` e' la parte piu' interessante del sistema e non
@@ -119,7 +126,8 @@ presente ma con lacune dichiarate · **Scoperto** = nessuna evidenza verificabil
 
 ### Cosa manca
 
-- **Nessuna prova che un gate scatti davvero.** `docs/validation/` contiene solo `.gitkeep`:
+- **AGGIORNATO — i gate sono dimostrati.** `docs/validation/` contiene scenari eseguiti,
+  confronto prima/dopo e output reale dei gate HITL:
   non c'e' un caso di rottura provocato e catturato. Il playbook prevede la passata di
   robustezza alle 3:15; finche' non e' fatta, la robustezza e' dichiarata e non dimostrata.
 - Timeout, retry e backoff esistono come parametri in `.env.example` e come regola G-16, ma
@@ -239,7 +247,7 @@ presente ma con lacune dichiarate · **Scoperto** = nessuna evidenza verificabil
   valutatore automatico legge.
 - Nessun prerequisito e nessun comando di avvio: la sezione "Setup" contiene una sola riga
   (`cp .env.example .env`) e un segnaposto.
-- `docs/validation/` e' vuota, ma il README rimanda a quella cartella per le evidenze.
+- `docs/validation/` e popolata e coerente con il README.
 - Gli strumenti non sono documentati in prosa da nessuna parte (vedi criterio 11%).
 
 ---
