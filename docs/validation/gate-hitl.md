@@ -85,14 +85,32 @@ confidence sopra soglia ma dichiara ugualmente escalation: true (ad es. per
 profilo_incompleto o requisiti_non_verificabili), il sistema rimanda al CAF
 indipendentemente dalla confidence.
 
-**Comportamento atteso**
+**Comportamento osservato - verifica per ispezione del codice (2026-09-24)**
+
+Il gate non e raggiungibile con gli scenari demo attuali: lo scenario `escalation`
+ha confidence 0.45 e scatta il gate di Test 2 prima di arrivare a questo punto.
+In modalita live (DEMO_MODE=false), il gate scatterebbe quando eligibility dichiara
+`escalation: true` con confidence sopra soglia (es. profilo ambiguo su misure non verificate).
+
+Codice verificato in agents.py:554-560:
+
+```python
+if payload.get("escalation"):
+    return _hitl_response(
+        motivo="escalation_agente",
+        messaggio=payload.get("messaggio_escalation", ""),
+        misure=misure_pertinenti,
+    )
+```
+
+La struttura dell'output e identica a quella dei Test 1 e 2:
 
 ```json
 {
   "status": "hitl_required",
   "escalation": true,
-  "motivo_escalation": "<motivo dichiarato dall'agente>",
-  "messaggio_escalation": "<spiegazione dall'agente>",
+  "motivo_escalation": "escalation_agente",
+  "messaggio_escalation": "<testo prodotto dall'agente eligibility>",
   "explainer": null,
   "navigator": null
 }
@@ -102,6 +120,8 @@ indipendentemente dalla confidence.
 
 I gate HITL sono a strati: deterministico (Test 1), numerico (Test 2), semantico (Test 3).
 I primi due sono in codice Python, non in istruzioni LLM: non si bypassano con un prompt.
+Il terzo e una rete di sicurezza semantica: anche se i controlli quantitativi passano,
+l'agente puo dichiarare direttamente che il caso supera la sua competenza.
 
 ---
 
